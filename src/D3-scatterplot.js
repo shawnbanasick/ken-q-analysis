@@ -1,0 +1,1227 @@
+//Ken-Q Analysis
+//Copyright (C) 2016 Shawn Banasick
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+
+
+// JSlint declarations
+/* global localStorage: false, swal: false, sessionStorage: false, console: false, $: false, _: false, d3: false, Handsontable:false, window: false; evenRound: false, document: false*/
+
+// todo - remove factor selection from localStorage
+// todo - fix bug - apply varimax twice then undo gives strange results
+
+$(document).ready(function () {
+
+    // initialize D3 chart and 2 factor rotation chart
+    reInitializePlotAndChart();
+
+    // reset 'has split factor' marker
+    var hasSplitFactor = 0;
+    localStorage.setItem("hasSplitFactor", hasSplitFactor);
+
+    // triggered by "Display Selected Factors" button
+    $("#generateRotationItemsButton").on("click", function (e) {
+        e.preventDefault();
+        var rotFacStateArray = JSON.parse(localStorage.getItem("rotFacStateArray"));
+        var tempRotFacStateArray = _.cloneDeep(rotFacStateArray);
+        localStorage.setItem("tempRotFacStateArray", JSON.stringify(tempRotFacStateArray));
+
+        // pull the selected factors and then pull their data
+        setRotationFactorsFromCheckbox();
+        setTwoFactorRotationalArray(rotFacStateArray);
+
+        // expects bare full array
+        var arrayWithCommunalities = calculateCommunalities(rotFacStateArray);
+
+        // gets array for fSig testing from LS of calculateCommunalities - sets fSigCriterionResults
+        calculatefSigCriterionValues("noFlag");
+
+        // returns dataValuesArray for D3 chart
+        // creates arrays for table/D3 (LS) from state
+        var d3Prep = doD3ChartDataPrep(arrayWithCommunalities);
+
+        drawD3Chart(d3Prep);
+        // clone the state array to prevent changes
+        var chartData = _.cloneDeep(rotFacStateArray);
+        var prepTwoFactorTable = prepTwoFactorUpdateHandsontable(chartData);
+
+        // set baseline data to calc "change due to factor rotation" (2 factor)
+        var baseLineData = _.cloneDeep(prepTwoFactorTable);
+        localStorage.setItem("baseLineData", JSON.stringify(baseLineData));
+
+        // creates 2 factor rotation display table data
+        updateDatatable1(prepTwoFactorTable);
+
+        // reset degree display, button color and stored value
+        $("#handRotationDisplayContainer div").html("0&deg");
+        sessionStorage.setItem("rotationDegreeDisplayValue", 0);
+        var rotationDegreeDisplayValue = 0;
+        saveRotationButtonColor(rotationDegreeDisplayValue);
+
+        //draw rotation table for the first time
+        var isRotatedFactorsTableUpdate = "no";
+        drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+    });
+
+    // rotation button 1 event listener
+    $("#clockwiseButton").on("click", function (e) {
+        e.preventDefault();
+        var rotationDegreeDisplayValue = parseInt(sessionStorage.getItem("rotationDegreeDisplayValue"));
+
+        var rotationDegree = parseInt($("#rotationDisplayInput").val());
+        rotationDegreeDisplayValue = rotationDegreeDisplayValue + rotationDegree;
+        var rotationDegreeDisplay = $("#handRotationDisplayContainer div");
+        rotationDegreeDisplay.html(rotationDegreeDisplayValue + "&deg");
+
+        sessionStorage.setItem("rotationDegreeDisplayValue", rotationDegreeDisplayValue);
+
+        saveRotationButtonColor(rotationDegreeDisplayValue);
+        calculateRotatedFactors(rotationDegree);
+    });
+
+    // rotation button 2 event listener
+    $("#counter-clockwiseButton").on("click", function (e) {
+        e.preventDefault();
+        var rotationDegreeDisplayValue = sessionStorage.getItem("rotationDegreeDisplayValue");
+
+        var rotationDegree = parseInt($("#rotationDisplayInput").val());
+        rotationDegreeDisplayValue = rotationDegreeDisplayValue - rotationDegree;
+
+        var rotationDegreeDisplay = $("#handRotationDisplayContainer div");
+        rotationDegreeDisplay.html(rotationDegreeDisplayValue + "&deg");
+        rotationDegree = -rotationDegree;
+
+        sessionStorage.setItem("rotationDegreeDisplayValue", rotationDegreeDisplayValue);
+
+        saveRotationButtonColor(rotationDegreeDisplayValue);
+        calculateRotatedFactors(rotationDegree);
+    });
+    $("#saveRotationButton").on("click", function (e) {
+        e.preventDefault();
+        saveRotation();
+    });
+
+
+    $("#rotationHistoryList").on("click", "button", function (e) {
+        e.preventDefault();
+        var $this = $(this);
+        if ($this.hasClass("deleteButton") && $this.hasClass("varimaxCalled")) {
+            $("#factorVarimaxButton").removeClass("buttonActionComplete").addClass("blackHover").prop('value', 'Apply Varimax Rotation').prop('disabled', false);
+            undoFactorRotation();
+            $this.parent().remove();
+        } else if ($this.hasClass("deleteSplitFactorButton")) {
+            undoSplitFactorRotation();
+            $this.parent().remove();
+        } else if ($this.hasClass("deleteButton")) {
+            undoFactorRotation();
+            $this.parent().remove();
+        }
+    });
+
+    // INVERT FACTOR BUTTON - event listener
+    $("#invertFactorButton").on("click", function (e) {
+        e.preventDefault();
+        $('#invertModal').toggleClass('active');
+    });
+
+    // SPLIT BIPOLAR FACTOR BUTTON
+    $("#splitFactorButton").on("click", function (e) {
+        e.preventDefault();
+        $('#splitModal').toggleClass('active');
+    });
+
+    // todo - try to remember what this event handler does and if needed
+    $('#factorRotationTable2 tbody').on('click', 'tr', function () {
+
+        var table = $('#factorRotationTable2').DataTable(); //
+        var data = table
+            .rows()
+            .data();
+    });
+});
+
+
+// **********************************************************************  Data Model
+// **********  Archive function to allow undo of rotations **************************
+// **********************************************************************************
+
+function archiveFactorScoreStateMatrixAndDatatable() {
+
+    // saveRotationArchieveCounter is reset to 1 on centroid extraction function call
+
+    // get current table data including flags
+    var table = $('#factorRotationTable2').dataTable();
+    var chartData = table.fnGetData();
+
+
+    // get copy of current state matrix
+    var rotFacStateArray = _.cloneDeep(JSON.parse(localStorage.getItem("rotFacStateArray")));
+
+    // get copy of current rotation table headers (for undo bipolar split charting)
+    var columnHeadersArray = _.cloneDeep(JSON.parse(localStorage.getItem("columnHeadersArray")));
+
+
+    var archiveArray = [];
+
+    // store curr rotation data, chartdata with user flags, and headers in archive array
+    archiveArray.push(rotFacStateArray, chartData, columnHeadersArray);
+
+    // archive both in local storage with key + counter
+    localStorage.setItem("rotFacStateArrayArchive" + saveRotationArchiveCounter("get"), JSON.stringify(archiveArray));
+
+    saveRotationArchiveCounter("increase");
+}
+
+
+
+// ******************************************************************  VIEW CONTROLER
+// **********  re-initialize chart after save rotation or varimax *******************
+// **********************************************************************************
+
+function reInitializePlotAndChart() {
+    // data to initialize D3 chart
+    var emptyArray = [{
+        "respondent": "",
+        "factor1": 0,
+        "factor2": 0
+}];
+    var emptyArray2 = [];
+    drawD3Chart(emptyArray);
+    updateDatatable1(emptyArray2);
+}
+
+// **********************************************************************  DATA MODEL
+// **********  undo factor rotation insertion ***************************************
+// **********************************************************************************
+
+function undoFactorRotation() {
+
+    // get counter and data values
+    var getSaveRotationArchiveCounter = saveRotationArchiveCounter("get");
+
+    // decrement counter
+    if (getSaveRotationArchiveCounter > 1) {
+        saveRotationArchiveCounter("decrease");
+    }
+
+    // adjust counter value
+    var retrieveName = getSaveRotationArchiveCounter - 1;
+
+    // retrieve archived data using the now adjusted counter
+    var newData2 = JSON.parse(localStorage.getItem("rotFacStateArrayArchive" + retrieveName));
+
+    // re-set archived data to state matrix ==> "rotFactorStateArray"ip
+    var rotFacStateArrayPrep1 = _.cloneDeep(newData2[0]);
+    localStorage.setItem("rotFacStateArray", JSON.stringify(rotFacStateArrayPrep1));
+
+    // pull chart data from retrieved archive array
+    var chartData = newData2[1];
+
+    // redraw the rotated factors table
+    var table = $('#factorRotationTable2').DataTable();
+    table.clear();
+    table.rows.add(chartData).draw();
+
+    // clear out the 2 factor rotation chart and D3 plot
+    reInitializePlotAndChart();
+}
+
+
+// ********************************************************************** model state
+// *********  save rotation counter *************************************************
+// **********************************************************************************
+
+// always reset to zero on centroid extraction (in centroid.js file)
+function saveRotationArchiveCounter(option) {
+    var saveRotationCounter = parseInt(localStorage.getItem("saveRotationCounter"));
+    if (option === "increase") {
+        saveRotationCounter = saveRotationCounter + 1;
+        localStorage.setItem("saveRotationCounter", saveRotationCounter);
+    } else if (option === "decrease") {
+        saveRotationCounter = saveRotationCounter - 1;
+        localStorage.setItem("saveRotationCounter", saveRotationCounter);
+    } else if (option === "get") {
+        return saveRotationCounter;
+    } else if (option === "reset") {
+        localStorage.setItem("saveRotationCounter", 1);
+    }
+}
+
+// **********************************************************************  DATA MODEL
+// **********  chartData ARRAY TO resultsArray OBJECT FOR HANDSONTABLE **************
+// **********************************************************************************
+function prepChartDataArray(chartData) {
+
+    var arrayLength = chartData.length;
+    var arrayLength2 = chartData[0].length;
+
+    var resultsArray = [];
+
+    var tempObj2;
+    var factorNumber;
+    var factorSig;
+    var respondentNames = JSON.parse(localStorage.getItem("qavRespondentNames"));
+    var fSig = JSON.parse(localStorage.getItem("fSigCriterionResults"));
+    var rowH2 = JSON.parse(localStorage.getItem("rowH2"));
+
+
+    for (var j = 0; j < arrayLength; j++) {
+        tempObj2 = {
+            respondent: respondentNames[j]
+        };
+        for (var m = 0; m < arrayLength2; m++) {
+            factorNumber = "factor" + (m + 1);
+            factorSig = "factorSig" + (m + 1);
+            tempObj2[factorNumber] = chartData[j][m];
+            tempObj2[factorSig] = fSig[j][m];
+        }
+        tempObj2.communality = rowH2[j];
+        resultsArray.push(tempObj2);
+    }
+
+    var eigenvaluesAndVariance = calculateEigenvaluesAndVariance();
+
+    resultsArray.push(eigenvaluesAndVariance[0]);
+    resultsArray.push(eigenvaluesAndVariance[1]);
+
+    return resultsArray;
+}
+
+
+// **********************************************************************  DATA MODEL
+// **********  chartData ARRAY TO resultsArray OBJECT FOR datatables ****************
+// **********************************************************************************
+function prepChartDataArray2(chartData) {
+
+    var arrayLength = chartData.length;
+    var arrayLength2 = chartData[0].length;
+
+    var resultsArray = [];
+
+
+
+    var respondentNames = JSON.parse(localStorage.getItem("qavRespondentNames"));
+    var fSig = JSON.parse(localStorage.getItem("fSigCriterionResults"));
+    var rowH2 = JSON.parse(localStorage.getItem("rowH2"));
+
+
+    for (var j = 0; j < arrayLength; j++) {
+        var tempObj2 = [];
+        tempObj2.push(respondentNames[j]);
+
+        for (var m = 0; m < arrayLength2; m++) {
+            tempObj2.push(chartData[j][m]);
+            tempObj2.push(fSig[j][m]);
+        }
+        tempObj2.push(rowH2[j]);
+        resultsArray.push(tempObj2);
+    }
+
+    // calculate eigenvalues and variance and add to results array
+    var eigenvaluesAndVariance = calculateEigenvaluesAndVariance2();
+    resultsArray.push(eigenvaluesAndVariance[0]);
+    resultsArray.push(eigenvaluesAndVariance[1]);
+
+    return resultsArray;
+}
+
+// ****************************************************************************  view
+// **********  Rotation button state    *********************************************
+// **********************************************************************************
+
+function saveRotationButtonColor(rotationDegreeDisplayValue) {
+    var saveRotButton = $("#saveRotationButton");
+    if (rotationDegreeDisplayValue !== 0) {
+        saveRotButton.removeClass("saveRotationButtonGray")
+        saveRotButton.addClass("saveRotationButtonYellow");
+    } else {
+        saveRotButton.removeClass("saveRotationButtonYellow");
+        saveRotButton.addClass("saveRotationButtonGray");
+    }
+}
+
+
+// *****************************************************************************
+// *************    D3 Code Save as Image   ************************************
+// *****************************************************************************
+//
+// example - http://plnkr.co/edit/MkZcXJPS7hrcWh3M0MZ1?p=preview
+// http://www.inkfood.com/svg-to-canvas/
+// https: //github.com/sampumon/SVG.toDataURL
+// change data format to JSON
+
+
+
+// ************************************************************  view controller
+// *************    SAVE SELECTED factors for rotation   ***********************
+// *****************************************************************************
+function setRotationFactorsFromCheckbox() {
+
+    // get the factors to send to 2 factor chart
+    var pullFactors = [];
+    var checkboxes = document.getElementsByName('radioCheck');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            pullFactors.push(checkboxes[i].value);
+        }
+    }
+
+    // account for sending null set on page load to display empty chart
+    if (pullFactors !== null) {
+
+        var rotationFactorA = pullFactors[0];
+        var rotationFactorB = pullFactors[1];
+
+        localStorage.setItem("rotationFactorA", rotationFactorA);
+        localStorage.setItem("rotationFactorB", rotationFactorB);
+    }
+}
+
+// *******************************************************************  data model
+// *************   Data format array to object   *********************************
+// *******************************************************************************
+
+// CALLED BY "DISPLAY FACTORS FOR ROTATION BUTTON"
+
+function doD3ChartDataPrep(rotFacStateArray) {
+
+    var rotationFactorA = localStorage.getItem("rotationFactorA");
+    var rotationFactorB = localStorage.getItem("rotationFactorB");
+    var step4 = JSON.parse(localStorage.getItem("qavRespondentNames"));
+    var fSigCriterionResults = JSON.parse(localStorage.getItem("fSigCriterionResults"));
+
+    var chartData = _.cloneDeep(rotFacStateArray);
+    var dataValuesArray = [];
+    var initialTwoFactorTableArray = [];
+    var step1, step3, ilen, factorNameArrayFrag, respondent2, factor1c, factor2c;
+    var tempObj;
+
+    ilen = chartData.length;
+    for (var i = 0; i < ilen; i++) {
+        step1 = chartData[i];
+        step3 = fSigCriterionResults[i];
+
+        // CONVERT ARRAY TO OBJECT for D3js chart
+        tempObj = {
+            num: i + 1,
+            respondent: step4[i],
+            factor1: step1[rotationFactorA - 1],
+            factor1Sig: step3[rotationFactorA - 1],
+            factor2: step1[rotationFactorB - 1],
+            factor2Sig: step3[rotationFactorB - 1],
+        };
+        dataValuesArray.push(tempObj);
+    }
+
+    factorNameArrayFrag = [];
+    respondent2 = "";
+    factor1c = "Factor " + rotationFactorA;
+    factor2c = "Factor " + rotationFactorB;
+
+    factorNameArrayFrag.push(respondent2, factor1c, factor2c);
+
+    initialTwoFactorTableArray.unshift(factorNameArrayFrag);
+
+    return dataValuesArray;
+}
+
+
+// *********************************************************************** view model
+// **********  draw D3 Chart  *******************************************************
+// **********************************************************************************
+
+function drawD3Chart(dataValuesArray) {
+    var rotationFactorA = localStorage.getItem("rotationFactorA");
+    var rotationFactorB = localStorage.getItem("rotationFactorB");
+    var data;
+
+    d3.select("svg").remove();
+
+    var significanceLevel = calculateFactorLoadingSignificanceLevel();
+
+    data = dataValuesArray;
+
+
+    var chartSize = $(window).width() / 2.25;
+
+    var margin = {
+            top: 20,
+            right: 10,
+            bottom: 40,
+            left: 40
+        },
+
+        width = chartSize - margin.left - margin.right,
+        height = chartSize - margin.top - margin.bottom;
+    //        width = 640 - margin.left - margin.right,
+    //        height = 640 - margin.top - margin.bottom;
+    // todo - coordinate with canvas size on html so download works
+
+    /*
+     * value accessor - returns the value to encode for a given data object.
+     * scale - maps value to a visual display encoding, such as a pixel position.
+     * map function - maps from data value to display value
+     * axis - sets up axis
+     */
+
+    // setup x
+    var xValue = function (d) {
+            return d.factor2;
+        }, // data -> value
+        xScale = d3.scale.linear().range([0, width]), // value -> display
+        xMap = function (d) {
+            return xScale(xValue(d));
+        }, // data -> display
+        xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(2).tickSize(-height, 0, 0);
+
+    // setup y
+    var yValue = function (d) {
+            return d.factor1;
+        }, // data -> value
+        yScale = d3.scale.linear().range([height, 0]), // value -> display
+        yMap = function (d) {
+            return yScale(yValue(d));
+        }, // data -> display
+        yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(2).tickSize(-width, 0, 0);
+
+    // todo - remove setup fill color?
+    //        var cValue = function (d) {
+    //                return d.respondent;
+    //            },
+    //            color = d3.scale.category10();
+
+    // add the graph canvas to the webpage
+    var svg = d3.select("#d3_scatterchart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    // confirm number format
+    data.forEach(function (d) {
+        d.factor1 = +d.factor1;
+        d.factor2 = +d.factor2;
+        d.factor1Sig = d.factor1Sig + '';
+        d.factor2Sig = d.factor2Sig + '';
+    });
+
+
+    xScale.domain([-1, +1]);
+    yScale.domain([-1, +1]);
+    //  xScale.domain([d3.min(data, xValue) - 1, d3.max(data, xValue) + 1]);
+    //  yScale.domain([d3.min(data, yValue) - 1, d3.max(data, yValue) + 1]);
+
+
+    // x-axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("x", width)
+        .attr("y", -6)
+        .style("text-anchor", "end");
+    //  .text("Factor " + rotationFactorB);
+
+    // create x axis title
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 35)
+        .style("text-anchor", "middle")
+        .style("font-weight", "bold")
+        .text("Factor " + rotationFactorB + "  (B)");
+
+
+    // y-axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end");
+    // .text("Factor " + rotationFactorA);
+
+    // create Y axis label
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .style("font-weight", "bold")
+        .text("Factor " + rotationFactorA + "  (A)");
+
+
+    /*  drawing dots and circles based on http://jsfiddle.net/eamonnmag/Q567s/   */
+
+    /*    telling D3 that all nodes (g elements with class node) will have data attached to them. The 'key' used (to let D3 know the uniqueness of items) will be the "num" */
+    var index = svg.selectAll("g.node").data(data, function (d) {
+        return d.num;
+    });
+
+    /* 'enter' the data, making the SVG group (to contain a circle and text) with a class node. This corresponds with what we told the data it should be above. */
+    var indexGroup = index.enter().append("g").attr("class", "node")
+        .attr('transform', function (d) {
+            return "translate(" + xMap(d) + "," + yMap(d) + ")";
+        });
+
+    // add the circles
+    indexGroup.append("circle")
+        .attr("r", 9)
+        .attr("class", "dot")
+        .style("fill", "#83cafe")
+        .style("fill", function (d) {
+            // return color(cValue(d));
+            if ((d.factor1 > significanceLevel || d.factor1 < -significanceLevel) && (d.factor2 > significanceLevel || d.factor2 < -significanceLevel)) {
+                return "#83cafe";
+            } else if (d.factor1 > significanceLevel || d.factor1 < -significanceLevel) {
+                return "#ffe4b2";
+            } else if (d.factor2 > significanceLevel || d.factor2 < -significanceLevel) {
+                return "aquamarine";
+            } else {
+                return "#d8d8d8";
+            }
+        })
+        .on("mouseover", function (d) {
+            d3.select("#tooltip")
+                //.style("left", d3.event.pageX + "px")
+                //.style("top", d3.event.pageY + "px")
+                .style("opacity", 1)
+                .select("#factorLoadingValue")
+                .html("<strong>" + d.respondent + "</strong>&nbsp;&nbsp;" + yValue(d) + ", " + xValue(d));
+            // .text(d.value);
+        })
+        .on("mouseout", function () {
+            // Hide the tooltip
+            d3.select("#tooltip")
+                .style("opacity", 0);
+        });
+
+    // add the text labels
+    indexGroup.append("text")
+        .style("text-anchor", "middle")
+        .attr("font-size", "9px")
+        .attr("dy", 3)
+        .text(function (d) {
+            return d.num;
+        })
+        .on("mouseover", function (d) {
+            d3.select("#tooltip")
+                .style("opacity", 1)
+                .select("#factorLoadingValue")
+                .html("<strong>" + d.respondent + "</strong>&nbsp;&nbsp;" + yValue(d) + ", " + xValue(d));
+        })
+        .on("mouseout", function () {
+            // Hide the tooltip
+            d3.select("#tooltip")
+                .style("opacity", 0);
+        });
+
+    //  todo - check to see if I need to exit the dots
+
+}
+
+
+// todo - store this info on auto flagging somewhere else
+//These are the two standard criteria for automatic flagging used in Q method analysis:
+//1. Q-sorts which factor loading is higher than the threshold for p-value < 0.05, and
+//2. Q-sorts which square loading is higher than the sum of square loadings of the same Q-sort in
+//    all other factors.
+
+
+// ******************************************************************* data analysis
+// **********  calc significance Levels  *******************************************
+//**********************************************************************************
+
+function calculateFactorLoadingSignificanceLevel() {
+    var totalStatements = localStorage.getItem("qavOriginalSortSize");
+    var significanceLevel = 2.58 * (1 / Math.sqrt(totalStatements));
+    return significanceLevel;
+}
+
+// **************************************************************************  model
+// **********  calc h2 communalities  **********************************************
+//**********************************************************************************
+
+function calculateCommunalities(currentFactorData) {
+
+    var calculateCommunalityArray = _.cloneDeep(currentFactorData);
+
+    // calculateCommunalityArray.shift();
+    function square(m) {
+        return m * m;
+    }
+
+    var temp, temp2, temp3, chartDataLength;
+    var communalitiesArray = [];
+    var fSigCriterion = [];
+
+    _.forEach(calculateCommunalityArray, function (n) {
+        temp = _.map(n, square);
+        temp2 = temp.reduce(function (a, b) {
+            return a + b;
+        }, 0);
+        temp3 = parseFloat(temp2.toFixed(5));
+        communalitiesArray.push(temp3);
+        fSigCriterion.push(temp);
+    });
+
+    localStorage.setItem("fSigCriterion", JSON.stringify(fSigCriterion));
+    localStorage.setItem("rowH2", JSON.stringify(communalitiesArray));
+
+
+    chartDataLength = calculateCommunalityArray.length;
+    for (var i = 0; i < chartDataLength; i++) {
+        calculateCommunalityArray[i].push(communalitiesArray[i]);
+    }
+
+    return calculateCommunalityArray;
+}
+
+// todo - remove conditional formatting for h2 column on rotation history chart
+
+// ***************************************************************************  model
+// **********  Calculate Fuerntratt Criterion on Communalities **********************
+// **********************************************************************************
+
+
+// todo - relocate function?  
+function calculatefSigCriterionValues(addFlag) {
+
+    var fSigCriterionArray = JSON.parse(localStorage.getItem("fSigCriterion"));
+
+    var arrayLength = fSigCriterionArray.length;
+    var arrayLength2 = fSigCriterionArray[0].length;
+    var temp1, testValue, others, array, significant;
+    var i, j, tempArray;
+    var fSigCriterionResults = [];
+
+    for (i = 0; i < arrayLength; i++) {
+        temp1 = fSigCriterionArray[i];
+        tempArray = [];
+        for (j = 0; j < arrayLength2; j++) {
+            array = _.clone(temp1);
+            testValue = _.pullAt(array, j);
+            others = array.reduce(function (a, b) {
+                return a + b;
+            }, 0);
+            if (addFlag === "flag" && testValue > others) {
+                significant = 'true';
+            } else {
+                significant = 'false';
+            }
+            tempArray.push(significant);
+        }
+        fSigCriterionResults.push(tempArray);
+    }
+    localStorage.setItem("fSigCriterionResults", JSON.stringify(fSigCriterionResults));
+}
+
+// ***************************************************************************  model
+// **********  Rotation procedure  **************************************************
+// **********************************************************************************
+
+function calculateRotatedFactors(rotationDegree) {
+    var rotationFactorA = localStorage.getItem("rotationFactorA");
+    var rotationFactorB = localStorage.getItem("rotationFactorB");
+    var counterClockwiseRotation = false;
+    var calculateRotationsArray = JSON.parse(localStorage.getItem("calculateRotationsArray"));
+    var tempRotFacStateArray = (JSON.parse(localStorage.getItem("tempRotFacStateArray")));
+
+    var rotatedFactors;
+    var looplen = calculateRotationsArray.length;
+
+    if (rotationDegree < 0) {
+        counterClockwiseRotation = true;
+    }
+
+    rotationDegree = Math.abs(rotationDegree);
+
+    function sinDegrees(num) {
+        return Math.sin(num * (Math.PI / 180));
+    }
+
+    function cosDegrees(num) {
+        return Math.cos(num * (Math.PI / 180));
+    }
+
+    // see Brown 1980 page 231
+    function rotateClockwise(element) {
+        var valueA;
+        var valueB;
+        var tempArray;
+        var sinDegreesValue;
+        var cosDegreesValue;
+        var valueA1;
+        var valueB1;
+
+        sinDegreesValue = parseFloat((sinDegrees(rotationDegree)).toFixed(5));
+        cosDegreesValue = parseFloat((cosDegrees(rotationDegree)).toFixed(5));
+
+        valueA1 = parseFloat((element[1] * sinDegreesValue).toFixed(5));
+        valueB1 = parseFloat((element[0] * cosDegreesValue).toFixed(5));
+
+        valueA = parseFloat((valueA1 + valueB1).toFixed(5));
+
+        valueB = parseFloat(((element[1] * cosDegreesValue) - (element[0] * sinDegreesValue)).toFixed(5));
+        tempArray = [];
+        tempArray.push(valueA, valueB);
+        return tempArray;
+    }
+
+    function rotateCounterClockwise(element) {
+        var valueA = parseFloat((element[0] * cosDegrees(rotationDegree) - element[1] * sinDegrees(rotationDegree)).toFixed(5));
+        var valueB = parseFloat((element[0] * sinDegrees(rotationDegree) + element[1] * cosDegrees(rotationDegree)).toFixed(5));
+        var tempArray = [];
+        tempArray.push(valueA, valueB);
+        return tempArray;
+    }
+
+
+    if (counterClockwiseRotation !== true) {
+        rotatedFactors = _.map(calculateRotationsArray, rotateClockwise);
+    } else {
+        rotatedFactors = _.map(calculateRotationsArray, rotateCounterClockwise);
+    }
+
+    //insert rotated factors into temp rotational state array
+    for (var i = 0; i < looplen; i++) {
+        tempRotFacStateArray[i][rotationFactorA - 1] = rotatedFactors[i][0];
+        tempRotFacStateArray[i][rotationFactorB - 1] = rotatedFactors[i][1];
+    }
+
+    localStorage.setItem("calculateRotationsArray", JSON.stringify(rotatedFactors));
+
+    // create obj for two factor table display
+    setTwoFactorRotationalArray(tempRotFacStateArray);
+
+    // expects bare full array
+    var arrayWithCommunalities = calculateCommunalities(tempRotFacStateArray);
+
+    // gets array for fSig testing from LS of calculateCommunalities - sets fSigCriterionResults
+    calculatefSigCriterionValues("noFlag");
+
+    // returns dataValuesArray for D3 chart
+    var d3Prep = doD3ChartDataPrep(arrayWithCommunalities); // creates arrays for table/D3 (LS) from state
+
+    drawD3Chart(d3Prep);
+    var prepTwoFactorTable = prepTwoFactorUpdateHandsontable(tempRotFacStateArray);
+    localStorage.setItem("tempRotFacStateArray", JSON.stringify(tempRotFacStateArray));
+
+    // re-draw two factor rotation table
+    updateDatatable1(prepTwoFactorTable);
+}
+
+
+// **************************************************************************** model
+// **********  prep two factor and create initial rot array *************************
+// **********************************************************************************
+function prepTwoFactorUpdateHandsontable(chartData) {
+
+    var twoFactorTableArray = [];
+    var step1, i, step3, tempObj;
+    var rotationFactorA = localStorage.getItem("rotationFactorA");
+    var rotationFactorB = localStorage.getItem("rotationFactorB");
+    var fSigCriterionResults = JSON.parse(localStorage.getItem("fSigCriterionResults"));
+    var respondentNames = JSON.parse(localStorage.getItem("qavRespondentNames"));
+    var ilen = chartData.length;
+
+    for (i = 0; i < ilen; i++) {
+        step1 = chartData[i];
+        step3 = fSigCriterionResults[i];
+        tempObj = {
+            respondent: respondentNames[i],
+            factor1: step1[rotationFactorA - 1],
+            factor1Sig: step3[rotationFactorA - 1],
+            factor2: step1[rotationFactorB - 1],
+            factor2Sig: step3[rotationFactorB - 1],
+        };
+        twoFactorTableArray.push(tempObj);
+    }
+    return twoFactorTableArray;
+}
+
+
+// ***************************************************************************  model
+// **********  initial array for two factor table ***********************************
+// **********************************************************************************
+function setTwoFactorRotationalArray(chartData) {
+    var rotationFactorA = localStorage.getItem("rotationFactorA");
+    var rotationFactorB = localStorage.getItem("rotationFactorB");
+    var ilen = chartData.length;
+    var calculateRotationsArray = [];
+    var tempArray;
+    var temp1;
+    var temp2;
+
+    for (var i = 0; i < ilen; i++) {
+        tempArray = [];
+        temp1 = chartData[i][rotationFactorA - 1];
+
+        temp2 = chartData[i][rotationFactorB - 1];
+
+        tempArray.push(temp1, temp2);
+        calculateRotationsArray.push(tempArray);
+    }
+    localStorage.setItem("calculateRotationsArray", JSON.stringify(calculateRotationsArray));
+}
+
+
+// ***************************************************************************** view
+// **********  draw two factors table  **********************************************
+// **********************************************************************************
+function updateDatatable1(newData) {
+
+    // todo - fix error on baselinedata setting after displaying factors once
+
+    var i, baseLineData, tempArray1, temp1, temp1a, temp2, temp2b, temp2a;
+    var new2FactorDataArray = [];
+    var temp3, temp4, temp5, temp6a, temp6b, table;
+
+    // check to see if datatabel already exists - returns boolean
+    var testVar = $.fn.dataTable.isDataTable('#twoFactorDisplayTable');
+
+    if (testVar === true) {
+
+        baseLineData = JSON.parse(localStorage.getItem("baseLineData"));
+
+        new2FactorDataArray = [];
+        for (i = 0; i < newData.length; i++) {
+            tempArray1 = [];
+            temp1a = i + 1;
+            tempArray1.push(temp1a);
+            temp1 = newData[i].respondent;
+            tempArray1.push(temp1);
+
+            temp2 = newData[i].factor1;
+            tempArray1.push(temp2);
+            temp2b = baseLineData[i].factor1;
+            temp2a = evenRound((temp2 - temp2b), 5);
+            tempArray1.push(temp2a);
+
+            temp4 = newData[i].factor2;
+            tempArray1.push(temp4);
+            temp6b = baseLineData[i].factor2;
+            temp6a = evenRound((temp4 - temp6b), 5);
+            tempArray1.push(temp6a);
+
+            new2FactorDataArray.push(tempArray1);
+        }
+
+        table = $('#twoFactorDisplayTable').DataTable();
+        table.clear();
+        table.rows.add(new2FactorDataArray).draw();
+
+    } else {
+        baseLineData = JSON.parse(localStorage.getItem("baseLineData"));
+
+        if (baseLineData === null) {
+            baseLineData = [1, "", 0, 0, 0, 0];
+        }
+
+        for (i = 0; i < newData.length; i++) {
+
+            tempArray1 = [];
+            temp1a = i + 1;
+            tempArray1.push(temp1a);
+            temp1 = newData[i].respondent;
+            tempArray1.push(temp1);
+
+            temp2 = newData[i].factor1;
+            tempArray1.push(temp2);
+            temp2b = baseLineData[i].factor1;
+            temp2a = evenRound((temp2 - temp2b), 5);
+            tempArray1.push(temp2a);
+
+            temp4 = newData[i].factor2;
+            tempArray1.push(temp4);
+            temp6b = baseLineData[i].factor2;
+            temp6a = evenRound((temp4 - temp6b), 5);
+            tempArray1.push(temp6a);
+
+            new2FactorDataArray.push(tempArray1);
+        }
+        var significanceLevel = calculateFactorLoadingSignificanceLevel();
+
+        table = $('#twoFactorDisplayTable').DataTable({
+            // "dom": '<"top"i>rt<"bottom"flp><"clear">',
+            "retrieve": true,
+            "searching": false,
+            "ordering": true,
+            "info": false,
+            "scrollY": 600,
+            "scrollCollapse": true,
+            "scrollX": true,
+            "paging": false,
+            //"autoWidth": true,
+            "columnDefs": [{
+                    targets: [2, 3, 4, 5],
+                    className: 'dt-body-right',
+            }, {
+                    targets: [0, 1],
+                    className: 'dt-body-center'
+            }, {
+                    targets: [0],
+                    orderData: [0, 1]
+            }, {
+                    targets: [2],
+                    orderData: [2]
+            }, {
+                    targets: [3],
+                    orderData: [3]
+            },
+                {
+                    targets: [4],
+                    orderData: [4]
+            }, {
+                    targets: [5],
+                    orderData: [5]
+            },
+                {
+                    'targets': [2],
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        if (cellData > significanceLevel || cellData < -significanceLevel) {
+                            $(td).css('background', '#ffe4b2');
+                        }
+                    }
+            }, {
+                    'targets': [4],
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        if (cellData > significanceLevel || cellData < -significanceLevel) {
+                            $(td).css('background', 'aquamarine');
+                        }
+                    }
+            }],
+
+            data: new2FactorDataArray,
+            "columns": [
+                {
+                    title: "Res.",
+                    className: 'dt-head-center dt-body-center'
+                },
+                {
+                    title: "Name",
+                    className: 'dt-head-center dt-body-center'
+                },
+                {
+                    title: "Fac. A",
+                    className: 'dt-head-center dt-body-right'
+                },
+                {
+                    title: "Chg A",
+                    className: 'dt-head-center dt-body-right'
+                },
+                {
+                    title: "Fac. B",
+                    className: 'dt-head-center dt-body-right'
+                },
+                {
+                    title: "Chg B",
+                    className: 'dt-head-center dt-body-right'
+                },
+            ],
+        });
+
+        // TODO -  FOR COLUMN HIGHLIGHTING - FIND ERROR AND RESTORE
+        //        var lastIdx = null;
+        //        $('#twoFactorDisplayTable tbody')
+        //            .on('mouseover', 'td', function () {
+        //                var colIdx = table.cell(this).index().column;
+        //                if (colIdx !== lastIdx) {
+        //                    $(table.cells().nodes()).removeClass('highlight');
+        //                    $(table.column(colIdx).nodes()).addClass('highlight');
+        //                }
+        //            })
+        //            .on('mouseleave', function () {
+        //                $(table.cells().nodes()).removeClass('highlight');
+        //            });
+    }
+}
+// **************************************************************************** model
+// **********  save D3 rotated factors to state matrix array  ***********************
+// **********************************************************************************
+function saveRotation() {
+    var rotationDegree = sessionStorage.getItem("rotationDegreeDisplayValue");
+    var rotationFactorA = localStorage.getItem("rotationFactorA");
+    var rotationFactorB = localStorage.getItem("rotationFactorB");
+    var listText;
+    var rotFacStateArray;
+    var tempRotFacStateArray;
+
+
+    // archive factor rotation table
+    archiveFactorScoreStateMatrixAndDatatable();
+
+    // update rotation history
+    listText = "Factors " + rotationFactorA + " and " + rotationFactorB + " rotated " + rotationDegree + " degrees";
+    $("#rotationHistoryList").append('<li>' + listText + '<button class="deleteButton">undo</button></li>');
+
+    rotFacStateArray = JSON.parse(localStorage.getItem("rotFacStateArray"));
+
+    tempRotFacStateArray = JSON.parse(localStorage.getItem("tempRotFacStateArray"));
+
+    // save temp array as new current state array
+    localStorage.setItem("rotFacStateArray", JSON.stringify(tempRotFacStateArray));
+
+    // re-draw factor table
+    var isRotatedFactorsTableUpdate = "yes";
+    drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+
+    // clear out the 2 factor rotation chart and plot
+    reInitializePlotAndChart();
+
+    // reset degree display, button color and stored value
+    $("#handRotationDisplayContainer div").html("0&deg");
+    sessionStorage.setItem("rotationDegreeDisplayValue", 0);
+    saveRotationButtonColor(0);
+
+    // force re-calc of results if additional rotations made and then download / display buttons called
+    localStorage.setItem("outputComplete", "false");
+}
+
+
+
+// ***************************************************************************** view
+// **********  draw rotated factors table using jquery dataTables   *****************
+// **********************************************************************************
+
+function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
+
+    // pull current table state from global variable
+    var chartData = _.cloneDeep(JSON.parse(localStorage.getItem("rotFacStateArray")));
+
+    // format data for table  
+    var newData = prepChartDataArray2(chartData);
+
+    // var declarations
+    var loopLength = chartData[0].length + 1;
+    var temp;
+    var columnHeadersArray = [];
+
+    calculateFactorLoadingSignificanceLevel();
+
+    columnHeadersArray.push({
+        title: 'Respond.',
+        class: "dt-head-center dt-body-center"
+    });
+
+    for (var i = 1; i < loopLength; i++) {
+
+        temp = {
+            title: 'Ftr ' + i,
+            class: "dt-head-center dt-body-right"
+        };
+        columnHeadersArray.push(temp);
+        columnHeadersArray.push({
+            title: 'flag',
+            class: "dt-head-center dt-body-center"
+        });
+    }
+    columnHeadersArray.push({
+        title: 'h<sup>2</sup>',
+        class: "dt-head-center dt-body-right"
+    });
+
+    localStorage.setItem("columnHeadersArray", JSON.stringify(columnHeadersArray));
+
+    var columnTargets = [];
+    var targetLoopLen = columnHeadersArray.length;
+    for (var k = 2; k < targetLoopLen; k += 2) {
+        columnTargets.push(k);
+    }
+
+    var columnTargets2 = [];
+    for (var m = 1; m < targetLoopLen; m += 2) {
+        columnTargets2.push(m);
+    }
+
+    // if table, remove from DOM and draw table
+
+    var table;
+
+    if (isRotatedFactorsTableUpdate === "yes") {
+        table = $('#factorRotationTable2').DataTable();
+        table.clear();
+        table.rows.add(newData).draw();
+    } else if (isRotatedFactorsTableUpdate === "destroy") {
+        table = $('#factorRotationTable2').DataTable();
+        table.destroy();
+        $('#factorRotationTable2').empty();
+
+        table = $("#factorRotationTable2").DataTable({
+            "retrieve": true,
+            "searching": false,
+            "ordering": false,
+            "info": false,
+            "scrollY": 600,
+            "scrollCollapse": true,
+            "scrollX": true,
+            "paging": false,
+            data: newData,
+            columns: columnHeadersArray,
+            columnDefs: [{
+                'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+                'searchable': false,
+                'orderable': false,
+                'render': function (data) { // (data, type, full, meta) {
+                    if (
+                        data === "") {
+                        return "";
+                    } else {
+                        return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+                    }
+                }
+            }],
+        });
+    } else {
+        table = $("#factorRotationTable2").DataTable({
+            "retrieve": true,
+            "searching": false,
+            "ordering": false,
+            "info": false,
+            "scrollY": 600,
+            "scrollCollapse": true,
+            "scrollX": true,
+            "paging": false,
+            data: newData,
+            columns: columnHeadersArray,
+            columnDefs: [{
+                'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+                'searchable': false,
+                'orderable': false,
+                'render': function (data) { // (data, type, full, meta) {
+                    if (
+                        data === "") {
+                        return "";
+                    } else {
+                        return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+                    }
+                }
+            }],
+        });
+    }
+}
+// todo - fix hidden degree symbol when rotations hit 3 digits
+// todo - check to see if 2 factor updates significance checking and auto flagging
+
+/*******************************************************************************
+ *******************************************************************************
+ ******************************************************************************* *******************************************************************************
+ ******************   WITH UNIT TESTS IN JASMINE   *****************************
+ *******************************************************************************
+ *******************************************************************************
+ *******************************************************************************
+ ******************************************************************************/
+
+
+
+// todo - spawn new web page and print - http://stackoverflow.com/questions/12997123/print-specific-part-of-webpage
+// todo - use library big.js for rounding in centroid and varimax?. see docs or shift to all integers

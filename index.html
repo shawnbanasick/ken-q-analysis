@@ -1,0 +1,1332 @@
+<!DOCTYPE HTML PUBLIC"-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd">;
+
+<html>
+
+<head>
+
+    <!-- Basic Page Needs and other tests
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title> Ken-Q Analysis</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <!--<link href="http://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">-->
+    <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+
+    <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="icon" type="image/ico" href="images/favicon.ico" />
+
+
+    <!-- load other CSS libraries -->
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
+    <link rel="stylesheet" type="text/css" href="css/datatables.min.css">
+    <link rel="stylesheet" type="text/css" href="css/fixedColumns.dataTables.min.css">
+
+
+</head>
+
+<body>
+
+    <!-- Primary Page Layout ***************************
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+    <div class="container">
+        <!--        skeleton page container start -->
+
+        <div class="single-page-nav">
+            <ul class="navigationBar">
+                <li><a id="heroSection" href="#section1">Page Top</a>
+                </li>
+                <li><a id="dataInput" href="#section2">Data Source</a>
+                </li>
+                <li><a id="analysisPrep" href="#section3">Correlation Table</a>
+                </li>
+                <li><a id="rotationArea" href="#section4">Factor Rotation</a>
+                </li>
+                <li><a href="#section5">Factor Loadings</a>
+                </li>
+                <li><a href="#section6">Results</a>
+                </li>
+                <li><a href="#section7">Legal</a>
+                </li>
+            </ul>
+        </div>
+        <br>
+        <br>
+        <br>
+
+        <!-- Section TOP Layout ***************************
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+        <div class="section" id="section1">
+            <div>
+                <h1><strong>Ken-Q Analysis</strong></h1>
+                <h2>A Web Application for Q Methodology</h2>
+                <h5><i>Version 0.3 (March 2016)</i></h5>
+                <br>
+                <ul>
+                    <li>Requires a recent version of either Chrome or Firefox web browser.</li>
+                    <li>CAUTION - Ken-Q Analysis saves data locally inside the browser. If you are using a shared computer in a computer lab or internet cafe you should delete all locally-stored data after you download the results of your analysis</li>
+                    <li>Ken-Q Analysis is open source - you can view the source files <a href="https://github.com/shawnbanasick/ken-q-analysis/tree/gh-pages">HERE.</a></li>
+                    <li>Functionality not yet implemented:</li>
+                    <ul>
+                        <li>Principal components factor analysis</li>
+                        <li>Alternative (Horst) centroid factor extraction</li>
+                        <li>Manual input of unrestrained sorts</li>
+                        <li>Factor loading adjustment for Heywood case (communality equal to or greater than 1.0)</li>
+                    </ul>
+                    <li>Worried about data privacy? Want to work offline? Download Ken-Q Analysis <a href="https://github.com/shawnbanasick/ken-q-analysis/archive/gh-pages.zip">HERE</a> and run it locally from your computer. (after downloading the file, unzip it and double-click on the "index.html" file to start the web app.)</li>
+                </ul>
+            </div>
+
+        </div>
+        <!-- end section1 div     -->
+
+
+        <!-- Section SELECT DATA Layout ***************************
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <div class="section" id="section2">
+
+
+            <div class="bigNumberDiv">
+                <p>1</p>
+            </div>
+            <h4 class="specialH4">Data Source</h4>
+
+            <form>
+                <div class="row">
+
+                    <div class="three columns">
+                        <div class="radioButtonDiv">
+                            <input type="radio" name="radio" id="radio2" class="radio" />
+                            <label for="radio2">User Input</label>
+                        </div>
+                    </div>
+                    <div class="three columns">
+                        <div class="radioButtonDiv">
+                            <input type="radio" name="radio" id="radio3" class="radio" />
+                            <label for="radio3">PQMethod File</label>
+                        </div>
+                    </div>
+                    <div class="three columns">
+                        <div class="radioButtonDiv">
+                            <input type="radio" name="radio" id="radio4" class="radio" />
+                            <label for="radio4">Excel File</label>
+                        </div>
+                    </div>
+                    <div class="three columns">
+                        <div class="radioButtonDiv">
+                            <input type="radio" name="radio" id="radio1" class="radio" checked/>
+                            <label for="radio1">Demo Data</label>
+                        </div>
+                    </div>
+                    <!-- end three column div     -->
+                </div>
+                <!-- end skeleton row div     -->
+            </form>
+
+
+            <!-- Subsection USE EXISTING DATA SET Layout ***************************––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+            <div id="databaseSelectDiv">
+                <!--   opening data range selection div     -->
+                <h5>Select Data Set</h5>
+                <select id="existingDatabaseSelect" name="existingDatabaseSelect">
+                    <option value="default" disabled selected>Select</option>
+                    <option value="Lipset"> 9 Sorts 33 Statements- Lipset Data</option>
+                    <option value="Medium"> 60 Sorts 58 Statements - Office Buzzwords</option>
+                    <option value="Large"> 120 Sorts 80 Statements - Motivational</option>
+                </select>
+                <p class="helperText u-pull-right">The Office Buzzwords and Motivational data sets contain randomized data and are only provided so that users can get a sense of calculation times for medium and large-sized data sets.</p>
+
+            </div>
+            <!-- end USE EXISTING DATA SET Layout     -->
+
+
+            <!-- Subsection CREATE NEW DATA Layout ***************************
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+            <div id="manualInputContainer">
+
+                <br>
+                <div class="row">
+
+
+
+                    <div class="six columns">
+                        <form role="form" id="inputForm" way-data="formData" way-persistent="true">
+                            <!--   opening data range selection div     -->
+                            <h4>Project Name</h4>
+                            <input class="useLocal useLocalInput" id="projectNameMI" size="40" type="text" name="projectName" autocomplete="off" placeholder="Name" value="" required/>
+                        </form>
+                    </div>
+
+
+                    <div class="twelve columns" id="rawStatements">
+                        <h4>Paste Q-Sort Statements</h4>
+                        <form id="statementTextarea">
+                            <textarea id="statementsInputBoxMI" class="textbox" name="rawStatements" rows="20" cols="102"></textarea>
+                        </form>
+                    </div>
+
+                    <!-- end class = row columns-->
+                </div>
+                <br>
+
+                <div id="sortValuesRange">
+                    <form role="form" id="sortValuesRangeForm">
+
+                        <!--   opening dropdown selection div     -->
+                        <br>
+                        <br>
+                        <h4>Input Q-Sorts for this Data Set</h4>
+                        <br>
+                        <br>
+
+                        <div class="row">
+                            <div class="twelve columns">
+                                <div>
+                                    <!--   opening data range selection div     -->
+                                    <h4>Q-Sort Range</h4>
+                                    <select id="dataRangeSelect" name="dataRangeSelect">
+                                        <option disabled selected> -- select -- </option>
+                                        <option value="-3,3"> -3 to +3</option>
+                                        <option value="-4,4"> -4 to +4</option>
+                                        <option value="-5,5"> -5 to +5</option>
+                                        <option value="-6,6"> -6 to +6</option>
+                                        <option value="1,5"> +1 to +5</option>
+                                        <option value="1,6"> +1 to +6</option>
+                                        <option value="1,7"> +1 to +7</option>
+                                        <option value="1,8"> +1 to +8</option>
+                                        <option value="1,9"> +1 to +9</option>
+                                        <option value="1,10"> +1 to +10</option>
+                                        <option value="1,11"> +1 to +11</option>
+                                        <option value="1,12"> +1 to +12</option>
+                                        <option value="1,13"> +1 to +13</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- end dropdown selection div     -->
+                            <!--                        </div>-->
+                            <!-- end dropdown selection div     -->
+
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+
+
+
+                            <h4>Number of Statements in Each Q-sort Column</h4>
+
+                            <input type="button" class="clearLocalSelect blackHover" value="Clear Current Column Selections" />
+
+                            <div id="pyramidDropdownSelectors">
+                                <div id="pyramidShape1" class="statementSelectorDiv">
+                                    <p>-6
+                                    </p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-6" id="pyramidShape-6">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape2" class="statementSelectorDiv">
+                                    <p>-5
+                                    </p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-5" id="pyramidShape-5">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape3" class="statementSelectorDiv">
+                                    <p>-4</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-4" id="pyramidShape-4">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape4" class="statementSelectorDiv">
+                                    <p>-3</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-3" id="pyramidShape-3">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape5" class="statementSelectorDiv">
+                                    <p>-2</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-2" id="pyramidShape-2">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape6" class="statementSelectorDiv">
+                                    <p>-1</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-1" id="pyramidShape-1">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape7" class="statementSelectorDiv">
+                                    <p>0</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-0" id="pyramidShape-0">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape8" class="statementSelectorDiv">
+                                    <p>+1</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" id="select0" name="pyramidShape+1">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape9" class="statementSelectorDiv">
+                                    <p>+2</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+2" id="pyramidShape+2">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape10" class="statementSelectorDiv">
+                                    <p>+3</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+3" id="pyramidShape+3">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape11" class="statementSelectorDiv">
+                                    <p>+4</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+4" id="pyramidShape+4">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape12" class="statementSelectorDiv">
+                                    <p>+5</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+5" id="pyramidShape+5">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape13" class="statementSelectorDiv">
+                                    <p>+6</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+6" id="pyramidShape+6">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape14" class="statementSelectorDiv">
+                                    <p>+7</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+7" id="pyramidShape+7">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape15" class="statementSelectorDiv">
+                                    <p>+8</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+8" id="pyramidShape+8">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape16" class="statementSelectorDiv">
+                                    <p>+9</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+9" id="pyramidShape+9">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape17" class="statementSelectorDiv">
+                                    <p>+10</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+10" id="pyramidShape+10">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape18" class="statementSelectorDiv">
+                                    <p>+11</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+11" id="pyramidShape+11">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape19" class="statementSelectorDiv">
+                                    <p>+12</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+12" id="pyramidShape+12">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+
+                                <div id="pyramidShape20" class="statementSelectorDiv">
+                                    <p>+13</p>
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+13" id="pyramidShape+13">
+                                        <option disabled>?</option>
+                                        <option selected value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!--  end dropdown selection  div  -->
+                    </form>
+                </div>
+                <!--  end sortvalues range  div  -->
+
+
+                <div id="pyramidContainer">
+
+                    <div class="flex-container" id="stack1">
+                        <div class="row" id="rstack1"></div>
+                    </div>
+                    <!-- end stack 1  -->
+
+                    <div class="flex-container" id="stack2">
+                        <div class="row" id="rstack2"></div>
+                    </div>
+                    <!-- end stack 2  -->
+
+                    <div class="flex-container" id="stack3">
+                        <div class="row" id="rstack3"></div>
+                    </div>
+                    <!-- end stack 3  -->
+
+                    <div class="flex-container" id="stack4">
+                        <div class="row" id="rstack4"></div>
+                    </div>
+                    <!-- end stack 4  -->
+
+                    <div class="flex-container" id="stack5">
+                        <div class="row" id="rstack5"></div>
+                    </div>
+                    <!-- end stack 5  -->
+
+                    <div class="flex-container" id="stack6">
+                        <div class="row" id="rstack6"></div>
+                    </div>
+                    <!-- end stack 6  -->
+
+
+                    <div class="flex-container" id="stack7">
+                        <div class="row" id="rstack7"></div>
+                    </div>
+                    <!-- end stack 7  -->
+
+                    <div class="flex-container" id="stack8">
+                        <div class="row" id="rstack8"></div>
+                    </div>
+                    <!-- end stack 8  -->
+
+                    <div class="flex-container" id="stack9">
+                        <div class="row" id="rstack9"></div>
+                    </div>
+                    <!-- end stack 9  -->
+
+                    <div class="flex-container" id="stack10">
+                        <div class="row" id="rstack10"></div>
+                    </div>
+                    <!-- end stack 10  -->
+
+
+                    <div class="flex-container" id="stack11">
+                        <div class="row" id="rstack11"></div>
+                    </div>
+                    <!-- end stack 11  -->
+
+
+                    <div class="flex-container" id="stack12">
+                        <div class="row" id="rstack12"></div>
+                    </div>
+                    <!-- end stack 12  -->
+
+                    <div class="flex-container" id="stack13">
+                        <div class="row" id="rstack13"></div>
+                    </div>
+                    <!-- end stack 13  -->
+
+
+                    <div class="flex-container" id="stack14">
+                        <div class="row" id="rstack14"></div>
+                    </div>
+                    <!-- end stack 14  -->
+
+                    <div class="flex-container" id="stack15">
+                        <div class="row" id="rstack15"></div>
+                    </div>
+                    <!-- end stack 15  -->
+
+                    <div class="flex-container" id="stack16">
+                        <div class="row" id="rstack16"></div>
+                    </div>
+                    <!-- end stack 16  -->
+
+                    <div class="flex-container" id="stack17">
+                        <div class="row" id="rstack17"></div>
+                    </div>
+                    <!-- end stack 17  -->
+
+
+                    <div class="flex-container" id="stack18">
+                        <div class="row" id="rstack18"></div>
+                    </div>
+                    <!-- end stack 18  -->
+
+
+                    <div class="flex-container" id="stack19">
+                        <div class="row" id="rstack19"></div>
+                    </div>
+                    <!-- end stack 19  -->
+
+                    <div class="flex-container" id="stack20">
+                        <div class="row" id="rstack20"></div>
+                    </div>
+                    <!-- end stack 20  -->
+
+
+                </div>
+                <!-- end pyramid container-->
+
+
+                <div id="panelInput">
+                    <!-- begin form div -->
+
+                    <form role="form" id="inputForm2">
+                        <div class="form-group">
+
+                            <div class="row">
+                                <div class="eleven columns" style="white-space:nowrap">
+                                    <label style="width:600px">Respondent Name&nbsp&nbsp&nbsp <span style="color:#a6a6a6">(Names are truncated to 8 characters for PQMethod export)</span></label>
+                                    <div id="respondentNameInput">
+                                        <input type="text" class="form-control tabable" name="name" id="respondentNameInput1" placeholder="Name" autocomplete="off">
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <!-- end skeleton row div for proj name and respon name -->
+                            <div id="cardInputContainerDiv">
+                                <div class="row">
+                                    <div class="six columns">
+
+
+                                        <div>
+                                            <label id="label-6">-6 statements </label>
+                                            <input type="text" id="neg6state" tabindex="0" class="form-control cardInput tabable" name="cards14" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label-5">-5 statements </label>
+                                            <input type="text" id="neg5state" tabindex="0" class="form-control cardInput tabable" name="cards13" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label-4">-4 statements </label>
+                                            <input type="text" id="neg4state" tabindex="0" class="form-control cardInput tabable" name="cards12" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label-3">-3 statements </label>
+                                            <input type="text" id="neg3state" tabindex="0" class="form-control cardInput tabable" name="cards11" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label-2">-2 statements </label>
+                                            <input type="text" id="neg2state" tabindex="0" class="form-control cardInput tabable" name="cards10" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label-1">-1 statements </label>
+                                            <input type="text" id="neg1state" tabindex="0" class="form-control cardInput tabable" name="cards9" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label-0">0 statements </label>
+                                            <input type="text" id="neg0state" tabindex="0" class="form-control cardInput tabable" name="cards8" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+
+
+                                    </div>
+                                    <!-- end skeleton six column div 1-->
+
+                                    <div class="six columns">
+                                        <div>
+                                            <label>+1 statements </label>
+                                            <input type="text" id="pos1state" tabindex="0" class="form-control cardInput tabable" name="cards7" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label>+2 statements </label>
+                                            <input type="text" id="pos2state" tabindex="0" class="form-control cardInput tabable" name="cards6" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label>+3 statements </label>
+                                            <input type="text" id="pos3state" tabindex="0" class="form-control cardInput tabable" name="cards5" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label4">+4 statements </label>
+                                            <input type="text" id="pos4state" tabindex="0" class="form-control cardInput tabable" name="cards4" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label5">+5 statements </label>
+                                            <input type="text" id="pos5state" tabindex="0" class="form-control cardInput tabable" name="cards3" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label6">+6 statements </label>
+                                            <input type="text" id="pos6state" tabindex="0" class="form-control cardInput tabable" name="cards2" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label7">+7 statements </label>
+                                            <input type="text" id="pos7state" tabindex="0" class="form-control cardInput tabable" name="cards1" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label8">+8 statements </label>
+                                            <input type="text" id="pos8state" tabindex="0" class="form-control cardInput tabable" name="cardsp8" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label9">+9 statements </label>
+                                            <input type="text" id="pos9state" tabindex="0" class="form-control cardInput tabable" name="cardsp9" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label10">+10 statements </label>
+                                            <input type="text" id="pos10state" tabindex="0" class="form-control cardInput tabable" name="cardsp10" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label11">+11 statements </label>
+                                            <input type="text" id="pos11state" tabindex="0" class="form-control cardInput tabable" name="cardsp11" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label12">+12 statements </label>
+                                            <input type="text" id="pos12state" tabindex="0" class="form-control cardInput tabable" name="cardsp12" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+                                        <div>
+                                            <label id="label13">+13 statements </label>
+                                            <input type="text" id="pos13state" tabindex="0" class="form-control cardInput tabable" name="cardsp13" placeholder="Statement Numbers" autocomplete="off">
+                                        </div>
+
+                                    </div>
+                                    <!-- end skeleton six column div 2-->
+                                </div>
+                                <!-- end skeleton row div -->
+                            </div>
+
+                            <div id="submitButtonDiv">
+
+                                <!--todo - add event listener for sortinputsubmit button-->
+
+                                <input id="sortInputSubmit" type="submit" class="tabable" value="add respondent to dataset">
+
+
+                                <div id="manualInputErrorMessagesDiv">
+                                    <h4>Sort is not symmetric! </h4>
+                                    <ul id="errorList">
+                                    </ul>
+                                </div>
+
+                                <!--
+                                <div id="manualInputSuccessDiv">
+                                    <h4>Sort is symmetric! </h4>
+                                </div>
+-->
+                            </div>
+                            <!--   end submit button div-->
+
+
+                        </div>
+                        <!-- end form group div -->
+                    </form>
+
+                    <div class="modal manualInputModal" id="addSortModal">
+                        <header>
+                            <h2>Sort added.</h2>
+                        </header>
+                    </div>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <div>
+                        <div id="respondentListDiv">
+                            <h4>Respondent List</h4>
+                        </div>
+                        <div id="sortExportButtonDiv">
+                            <input type="button" id="beginMIAnalysis" class="blackHover" value="Stage Data for Analysis" />
+                            <!--                            <input type="button" id="exportSortsExcel" class=" blackHover" value="Export to Excel" />-->
+                            <input type="button" id="exportSortsPQM" class=" blackHover" value="Export to PQmethod DAT file" />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="divBlock" id="respondentSortsDiv">
+                            <ol class="respondentList custom-counter" id="respondentList"></ol>
+                        </div>
+                        <div class="divBlock">
+
+                            <textarea id="sortExportBox" class="textbox" name="sortExports" rows="20" cols="102"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <!-- end panel input div -->
+            </div>
+            <!--  end manual input container div  -->
+
+            <!-- Subsection PASTE PQMETHOD DATA Layout ***************************––––––––––––––––––––––––––––––––––––––––––––––––– -->
+            <div id="rawSorts">
+                <h4 class="pastePQM">Paste Sort Data</h4>
+                <div class="choose_filePQM">
+                    <span>OR UPLOAD DAT FILE</span>
+                    <input accept=".DAT" onchange="filePickedTextPQM(event)" id="fileSelectPQM" type="file" />
+                </div>
+                <h4 class="pastePQM">from PQMethod or Ken-Q Mobile</h4>
+                <form>
+                    <textarea id="sortInputBox" class="textbox" name="rawQsorts" rows="40" cols="102"></textarea>
+                    <h4 class="pastePQM">Paste Q-Sort Statements</h4>
+                    <div class="choose_filePQM">
+                        <span>OR UPLOAD STA FILE</span>
+                        <input accept=".STA" onchange="filePickedTextSTA(event)" id="fileSelectSTA" type="file" />
+                    </div>
+                    <textarea id="statementsInputBoxPqmethod" class="textbox" name="rawStatementsPqmethod" rows="40" cols="102"></textarea>
+                    <br>
+
+                    <input type="button" class="blackHover" id="beginAnalysisPqmethod" value="Create Correlation Table">
+
+                </form>
+            </div>
+
+            <!-- Subsection PASTE EXCEL DATA Layout    ***************************––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+            <div id="pasteExcelDataDiv">
+
+
+                <br>
+                <div id="excelActionButtonsContainerDiv">
+                    <div class="choose_file">
+                        <span>UPLOAD HAND-CODED EXCEL FILE</span>
+                        <input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onchange="filePicked(event)" id="fileSelect" type="file" />
+                    </div>
+                    <div class="choose_file">
+                        <span>UPLOAD KEN-Q RESULTS FILE</span>
+                        <input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onchange="filePickedKenq(event)" id="fileSelectKenq" type="file" />
+                    </div>
+                    <div id="excelActionButtonsDiv">
+                        <!--                       <input type="button" id="beginExcelAnalysis" class="button-primary blackHover" value="Begin Analysis" />-->
+                        <input type="button" id="exportExcelSortsPQM" class=" blackHover" value="EXPORT Q-SORTS to PQMETHOD" />
+                    </div>
+                </div>
+
+                <div id="excelUploadErrorDiv">
+                    <h3></h3>
+                    <ul></ul>
+                </div>
+
+
+                <div class="divBlock">
+
+                    <textarea id="excelSortExportBox" class="textbox" name="excelSortExports" rows="20" cols="102"></textarea>
+                </div>
+
+            </div>
+
+            <div class="analysisDataDiv">
+                <h4>Analysis Data</h4>
+                <ol id="existingDatabaseStatementList"></ol>
+                <br>
+                <ul id="existingDatabaseRespondentList"></ul>
+            </div>
+
+
+
+        </div>
+        <!--  end nav section s2  -->
+
+
+        <div class="section" id="section3">
+
+            <div class="bigNumberDiv">
+                <p>2</p>
+            </div>
+            <h4 class="specialH4"> Correlation Table</h4>
+            <div class="specialH4" id="correlationsSpinner"></div>
+            <div id="localDataButtonDiv"></div>
+
+
+            <div id="correlationTable">
+                <table id="correlationTable2" class="display compact nowrap cell-border stripe"></table>
+            </div>
+
+            <br>
+            <br>
+            <br>
+            <div class="bigNumberDiv">
+                <p>3</p>
+            </div>
+            <h4 class="singleLine">Factor Extraction&nbsp&nbsp</h4>
+            <div class="singleLine">
+                <select id="factorSelect" class="singleLIne vertical">
+                    <!--  <option disabled="disabled" selected="selected">Choose option</option>-->
+                    <option value="2">2 factors</option>
+                    <option value="3">3 factors</option>
+                    <option value="4">4 factors</option>
+                    <option value="5">5 factors</option>
+                    <option value="6">6 factors</option>
+                    <option value="7" selected="selected">7 factors</option>
+                    <option value="8">8 factors</option>
+                </select>
+
+                <div class="singleLine">
+                    <input type="button" class="blackHover singleLine vertical" id="factorExtractionButton" value="Extract Centroid Factors">
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div id="factorMatrixTable"> </div>
+            <br>
+        </div>
+        <!-- end section 3 nav div -->
+
+        <!-- Section 4 Manual Rotation Layout ***************************
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <div class="section" id="section4">
+
+
+            <div class="bigNumberDiv">
+                <p>4a</p>
+            </div>
+            <h4 class="singleLine">Optional - Varimax Rotation</h4>
+
+            <input type="button" class="blackHover singleLine vertical" id="factorVarimaxButton" value="Apply Varimax Rotation">
+            <br>
+            <br>
+
+            <div class="bigNumberDiv">
+                <p>4b</p>
+            </div>
+            <h4 class="specialH4">Judgemental Rotation</h4>
+            <p id="judgementalRotationHelperText" class="helperText u-pull-right">Only two factors can be selected. To change the selection, first uncheck a factor and then select the new factor</p>
+            <br>
+            <br>
+            <form>
+                <div class="row" id="checkboxFrame">
+
+                    <!-- end three column div     -->
+                </div>
+                <!-- end skeleton row div     -->
+            </form>
+
+            <input type="button" class="blackHover" id="generateRotationItemsButton" value="Display Selected Factors">
+
+            <br>
+            <br>
+            <br>
+
+            <div id="handRotationDisplayContainer">
+                <label for="rotationDisplayInput">Rotate axes</label>
+                <input type="number" min="1" max="180" id="rotationDisplayInput" name="name" value="1">
+                <p>degree(s)</p>
+                <input type="button" class="blackHover rotationButtons" id="clockwiseButton" value="clockwise">
+                <input type="button" class="blackHover rotationButtons" id="counter-clockwiseButton" value="counter-clockwise">
+                <div class="degreeDiv"></div>
+                <input type="button" class="u-pull-right" id="saveRotationButton" value="Save Rotation">
+            </div>
+
+            <div id="chartAndTableContainerDiv">
+                <div id="chartTable">
+                    <div id="tooltip" class="hidden">
+                        <p><span id="factorLoadingValue"></span>
+                        </p>
+                    </div>
+                    <div id="d3_scatterchart"></div>
+                    <!--                <div id="twoFactorDisplayTable" class="handsontable"></div>-->
+                </div>
+
+
+                <div id="twoFactorDisplayTableDiv">
+                    <!--                    <table id="twoFactorDisplayTable" class="display compact responsive nowrap cell-border" align="right" cellspacing="0" width="100%">-->
+                    <table id="twoFactorDisplayTable" class="display compact nowrap cell-border" align="right" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Res.</th>
+                                <th>Name</th>
+                                <th>Fac. A</th>
+                                <th>Chg A</th>
+                                <th>Fac. B</th>
+                                <th>Chg B</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- end section s4 div   -->
+
+        <!-- Section 5 ROTATION STATE AND HISTORY Layout ***************************
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <div class="section" id="section5">
+            <!--   end of manual sort values range container -->
+
+
+            <br>
+            <br>
+            <br>
+            <div id="rotationHistoryDiv">
+                <div class="bigNumberDiv">
+                    <p>5</p>
+                </div>
+                <h4 class="singleLine">Factor Loadings - Flagging</h4>
+                <input type="button" class="blackHover u-pull-right rightMargin" id="autoflagButton" value="Auto Flag Factor Loadings">
+                <div class="row">
+                    <div class="eleven columns" id="factorRotationTable">
+                        <table id="factorRotationTable2" class="display compact nowrap cell-border stripe"></table>
+                    </div>
+                </div>
+                <br>
+                <div class="row" id="splitFactorDiv">
+                    <div class="eight columns">
+                        <input type="button" class="blackHover" id="splitFactorButton" value="Split Bipolar Factor">
+                    </div>
+                    <div class="three columns">
+                        <input type="button" class="blackHover" id="invertFactorButton" value="Invert Factor">
+                    </div>
+                </div>
+                <br>
+                <div class="modal" id="invertModal">
+                    <header>
+                        <h2>Invert Factor</h2>
+
+                    </header>
+                    <div>
+                        <p>Please input a Factor Number</p>
+                        <input type="number" class="u-pull-full input-inside" max="8" min="1" name="invertFactorInput">
+                    </div>
+                    <br>
+                    <div>
+                        <button class="button-cancel u-pull-left">Cancel</button>
+                        <button class="button-submit u-pull-right">Submit</button>
+                    </div>
+                </div>
+                <div class="modal successModal">
+                    <header>
+                        <h2>Success!</h2>
+                    </header>
+                </div>
+                <br>
+                <br>
+                <div class="modal" id="splitModal">
+                    <header>
+                        <h2>Split Factor</h2>
+                    </header>
+                    <div>
+                        <p>Input the number of
+                            <br> the Factor to split</p>
+                        <input type="number" class="u-pull-full input-inside" max="8" min="1" name="splitFactorInput">
+                    </div>
+                    <br>
+                    <div>
+                        <button class="button-cancel u-pull-left">Cancel</button>
+                        <button class="button-submit u-pull-right">Submit</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="eleven columns">
+                        <h4>Rotation History</h4>
+                    </div>
+                </div>
+                <div>
+                    <div class="divBlock">
+                        <ol class="custom-counter" id="rotationHistoryList"></ol>
+                    </div>
+                    <div class="divBlock"></div>
+                </div>
+            </div>
+
+            <!--todo - use proper css and get rid of br-->
+            <br>
+            <br>
+            <br>
+            <br>
+
+
+        </div>
+        <!--  end of section 5 div -->
+
+        <!-- Section 6  OUTPUT RESULTS Layout ***************************
+–––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+        <div class="section" id="section6">
+
+            <div class="bigNumberDiv">
+                <p>6</p>
+            </div>
+            <h4 class="singleLine">Results</h4>
+            <br>
+            <br>
+
+            <div>
+                <input type="button" class="blackHover" name="displayFactorSelection" id="selectFactorsForOutputButton" value="Choose Factors for Output">
+            </div>
+            <div id="selectFactorsForOutputDiv"></div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div id="outputResultsButtonsDiv">
+                <input type="button" name="dump" id="displayQuickResultsButton" class="blackHover" data-dump="#factorRotationTable" value="Display Preliminary Output">
+
+                <input type="button" class="downloadHover" name="outputResults" id="downloadResultsButton" value="Download Complete Output">
+
+                <input type="button" class="deleteHover u-pull-right" name="clearStorage" id="clearStorageButton" value="Permanently Delete All Locally-Stored Data">
+            </div>
+
+            <div class="modal" id="deleteLocalDataModal">
+                <header>
+                    <h2>Delete Local Data?</h2>
+                    <!--<button class="close toggleModal">Close</button>-->
+                </header>
+                <div>
+                    <p>Delete all locally-saved data? (including user-entered respondent sorts)
+                        <br>
+                        <br> <strong>The data will be permanently deleted and cannot be recovered.</strong>
+                        <br>
+                        <br> Are you sure you want to delete this data?</p>
+                </div>
+                <div>
+                    <button class="button-cancel u-pull-left"> No, Keep Data </button>
+                </div>
+                <div>
+                    <button id="deleteLocalDataConfirmButton" class="button-error u-pull-right">Delete</button>
+                </div>
+            </div>
+            <div class="modal successDeleteModal">
+                <header>
+                    <h2>Data Deleted!</h2>
+                </header>
+            </div>
+
+            <br>
+            <br>
+            <div class="modal" id="noFactorLoadingModal">
+                <header>
+                    <h2 class="u-full-width">Error</h2>
+                    <!--<button class="close toggleModal">Close</button>-->
+                </header>
+                <div>
+                    <p>One of the selected factors has no flagged sort. Please re-select the factors for analysis.</p>
+                </div>
+                <div>
+                    <button class="button-cancel">Cancel</button>
+                </div>
+            </div>
+
+
+            <div class="modal" id="sortLoadingMultipleFactorsModal">
+                <header>
+                    <h2 class="u-full-width">Error</h2>
+                    <!--<button class="close toggleModal">Close</button>-->
+                </header>
+                <br>
+                <div id="multipleFlagModalMessageDiv"></div>
+                <div>
+                    <button class="button-cancel">Cancel</button>
+                </div>
+
+
+            </div>
+
+
+            <br>
+            <br>
+            <div id="factorCorrelationTableTitle"></div>
+            <div id="factorCorrelationTableDiv">
+            </div>
+
+            <div id="factorTables"></div>
+
+            <div class="spacer"></div>
+
+
+        </div>
+        <!-- end of section 6 nav div -->
+
+
+        <div class="section" id="section7">
+            <h3> Legal</h3>
+            <div class="row">
+                <h5 class="eleven columns">Ken-Q Analysis<br> Copyright (C) 2016 Shawn Banasick<br>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+                </h5>
+                <br>
+                <h5 class="eleven columns"> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</h5>
+                <br>
+                <h5>Libraries:</h5>
+                <ul>
+                    <li>D3.js (BSD license)</li>
+                    <li>AlaSQL (MIT license)</li>
+                    <li>Datatables JQuery Plug-in (MIT license)</li>
+                    <li>Iscroll-Lite (MIT license)</li>
+                    <li>JQuery (MIT license)</li>
+                    <li>Lo-Dash (MIT license)</li>
+                </ul>
+            </div>
+        </div>
+        <!-- end of section 7 nav div -->
+
+    </div>
+    <!-- end skeleton document container div -->
+    <!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+
+    <!-- load Libraries -->
+    <script type="text/javascript" src="lib/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="lib/iscroll-lite.js"></script>
+    <script type="text/javascript" src="lib/lodash.js"></script>
+    <script type="text/javascript" src="lib/jquery.singlePageNav.min.js"></script>
+    <script type="text/javascript" src="lib/FileSaver.min.js"></script>
+    <script type="text/javascript" src="lib/d3.min.js"></script>
+    <script type="text/javascript" src="lib/alasql.min.js"></script>
+    <script type="text/javascript" src="lib/xlsx.core.min.js"></script>
+    <script type="text/javascript" src="lib/datatables.min.js"></script>
+    <script type="text/javascript" src="lib/dataTables.fixedColumns.min.js"></script>
+
+    <!-- load custom JS -->
+    <script type="text/javascript" src="src/viewControls.js"></script>
+    <script type="text/javascript" src="src/inputNewData.js"></script>
+    <script type="text/javascript" src="src/pastePQMethodData.js"></script>
+    <script type="text/javascript" src="src/importExcelData.js"></script>
+    <script type="text/javascript" src="src/useDemoDataSet.js"></script>
+    <script type="text/javascript" src="src/centroid.js"></script>
+    <script type="text/javascript" src="src/varimaxPQMETHOD.js"></script>
+    <script type="text/javascript" src="src/D3-scatterplot.js"></script>
+    <script type="text/javascript" src="src/qAnalysis.js"></script>
+    <script type="text/javascript" src="src/factorLoadings.js"></script>
+
+</body>
+
+</html>

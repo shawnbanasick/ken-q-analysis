@@ -175,8 +175,8 @@
                 </div>
                 <div class="row">
 
-                    <div class="twelve columns" id="rawStatements">
-                        <h4>Paste Q-Sort Statements</h4>
+                    <div id="rawStatements">
+                        <h4 class="twelve columns">Paste Q-Sort Statements</h4>
                         <form id="statementTextarea">
                             <textarea id="statementsInputBoxMI" class="textbox" name="rawStatements" rows="20" cols="102"></textarea>
                         </form>
@@ -904,12 +904,15 @@
                 <h4 class="pastePQM">from PQMethod or Ken-Q Mobile</h4>
                 <form>
                     <textarea id="sortInputBox" class="textbox" name="rawQsorts" rows="40" cols="102"></textarea>
-                    <h4 class="pastePQM">Paste Q-Sort Statements</h4>
-                    <div class="choose_filePQM">
-                        <span>OR UPLOAD STA FILE</span>
-                        <input accept=".STA" onchange="filePickedTextSTA(event)" id="fileSelectSTA" type="file" />
+                    <div class="row">
+                        <h4 class="pastePQM">Paste Q-Sort Statements</h4>
+                        <div class="choose_filePQM">
+                            <span>OR UPLOAD STA FILE</span>
+                            <input accept=".STA" onchange="filePickedTextSTA(event)" id="fileSelectSTA" type="file" />
+                        </div>
                     </div>
                     <textarea id="statementsInputBoxPqmethod" class="textbox" name="rawStatementsPqmethod" rows="40" cols="102"></textarea>
+
                     <br>
 
                     <input type="button" class="blackHover" id="beginAnalysisPqmethod" value="Create Correlation Table">

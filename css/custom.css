@@ -800,6 +800,7 @@ MODAL WINDOW CSS
 }
 
 #section7 ul {
+    display: block;
     list-style: square outside none;
     margin-left: 5%;
 }

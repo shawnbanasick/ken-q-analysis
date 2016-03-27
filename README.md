@@ -1,2 +1,2 @@
-# ken-q-analysis
+# Ken-Q Analysis
 A web application for Q Methodology

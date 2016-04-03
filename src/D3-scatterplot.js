@@ -509,12 +509,29 @@ function drawD3Chart(dataValuesArray) {
         d.factor2Sig = d.factor2Sig + '';
     });
 
+    // check for case with factor loading greater than 1 and adjust axis
+    var axisMax;
+    var maxXAxis = d3.max(data, xValue);
+    var minXAxis = d3.min(data, xValue);
+    var maxYAxis = d3.max(data, yValue);
+    var minYAxis = d3.min(data, yValue);
 
-    xScale.domain([-1, +1]);
-    yScale.domain([-1, +1]);
-    //  xScale.domain([d3.min(data, xValue) - 1, d3.max(data, xValue) + 1]);
-    //  yScale.domain([d3.min(data, yValue) - 1, d3.max(data, yValue) + 1]);
+    var axisTestArray = [maxXAxis, minXAxis, maxYAxis, minYAxis];
+    var maxArrayValue = _.max(axisTestArray);
+    var minArrayValue = _.min(axisTestArray);
 
+    if (maxArrayValue > 1 || minArrayValue < -1) {
+        if (maxArrayValue > -minArrayValue) {
+            axisMax = maxArrayValue;
+        } else {
+            axisMax = -minArrayValue;
+        }
+    } else {
+        axisMax = 1;
+    }
+
+    xScale.domain([-axisMax, +axisMax]);
+    yScale.domain([-axisMax, +axisMax]);
 
     // x-axis
     svg.append("g")
@@ -1101,6 +1118,11 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
     // format data for table  
     var newData = prepChartDataArray2(chartData);
 
+    var expVar = newData.pop();
+    newData.pop();
+
+    newData.push(expVar);
+
     // var declarations
     var loopLength = chartData[0].length + 1;
     var temp;
@@ -1170,7 +1192,7 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
             columnDefs: [{
                 'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
                 'searchable': false,
-                'orderable': false,
+                'orderable': true,
                 'render': function (data) { // (data, type, full, meta) {
                     if (
                         data === "") {
@@ -1196,7 +1218,7 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
             columnDefs: [{
                 'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
                 'searchable': false,
-                'orderable': false,
+                'orderable': true,
                 'render': function (data) { // (data, type, full, meta) {
                     if (
                         data === "") {

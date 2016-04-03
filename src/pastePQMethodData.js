@@ -24,6 +24,14 @@ $(document).ready(function () {
             localStorage.setItem("qavStatementsInputBoxPqmethod", this.value);
         });
     })();
+
+    $("#clearInputBoxDataButton").on("click", function () {
+        $("#sortInputBox").val("");
+        localStorage.setItem("sortInputBox", "");
+        $("#statementsInputBoxPqmethod").val("");
+        localStorage.setItem("qavStatementsInputBoxPqmethod", "");
+    });
+
 });
 
 
@@ -50,7 +58,8 @@ function callCentroidFromPQMethod() {
     var sortNumberString = array1.shift();
 
     // parsing first line of PQMethod file to set qav variables
-    var numberSorts = parseInt(projectTitleString.slice(4, 6)); // lipset 9
+    var numberSorts = parseInt(projectTitleString.slice(3, 6)); // lipset 9
+
     localStorage.setItem("qavTotalNumberSorts", numberSorts);
 
     var originalSortSize = parseInt(projectTitleString.slice(7, 9)); // lipset 33

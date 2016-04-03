@@ -74,7 +74,7 @@
             <div>
                 <h1><strong>Ken-Q Analysis</strong></h1>
                 <h2>A Web Application for Q Methodology</h2>
-                <h5><i>Version 0.3 (March 2016)</i></h5>
+                <h5><i>Version 0.3.1 (April 3, 2016)</i></h5>
                 <br>
                 <ul>
                     <li>Requires a recent version of Chrome, Firefox, Internet Explorer, or the Microsoft Edge web browser.</li>
@@ -90,8 +90,30 @@
                     <li>Worried about data privacy? Want to work offline? Download Ken-Q Analysis <a href="https://github.com/shawnbanasick/ken-q-analysis/archive/gh-pages.zip">HERE</a> and run it locally from your computer. (after downloading the file, unzip it and double-click on the "index.html" file to start the web app.)</li>
                 </ul>
             </div>
+            <div id="accordionDiv">
+                <h5>Change Log</h5>
+                <div id="accordion">
+                    <a href="#one" class="first">Beta Version 0.3.1 Test Release (April 3, 2016)</a>
+                    <div id="one">
+                        <ul>
+                            <li>removed eigenvalues row from factor loadings table</li>
+                            <li>fixed upload error when PQMethod DAT file has special characters</li>
+                            <li>fixed D3 scatterplot bug when factor loading greater than 1</li>
+                            <li>fixed bug in Excel import function</li>
+                        </ul>
+                    </div>
+
+                    <a href="#two">Beta Version 0.3 Test Release (March 30, 2016)</a>
+                    <div id="two">
+                        Initial beta test release
+                    </div>
+                </div>
+            </div>
+
 
         </div>
+
+
         <!-- end section1 div     -->
 
 
@@ -903,7 +925,7 @@
                 </div>
                 <h4 class="pastePQM">from PQMethod or Ken-Q Mobile</h4>
                 <form>
-                    <textarea id="sortInputBox" class="textbox" name="rawQsorts" rows="40" cols="102"></textarea>
+                    <textarea id="sortInputBox" class="textbox inputBoxAutoWidth" name="rawQsorts" rows="40"></textarea>
                     <div class="row">
                         <h4 class="pastePQM">Paste Q-Sort Statements</h4>
                         <div class="choose_filePQM">
@@ -911,12 +933,15 @@
                             <input accept=".STA" onchange="filePickedTextSTA(event)" id="fileSelectSTA" type="file" />
                         </div>
                     </div>
-                    <textarea id="statementsInputBoxPqmethod" class="textbox" name="rawStatementsPqmethod" rows="40" cols="102"></textarea>
+                    <textarea id="statementsInputBoxPqmethod" class="textbox inputBoxAutoWidth" name="rawStatementsPqmethod" rows="40"></textarea>
 
                     <br>
+                    <div class="row">
+                        <input type="button" class="blackHover" id="beginAnalysisPqmethod" value="Create Correlation Table">
 
-                    <input type="button" class="blackHover" id="beginAnalysisPqmethod" value="Create Correlation Table">
+                        <input type="button" class="blackHover u-pull-right rightMargin" id="clearInputBoxDataButton" value="Clear All Data From Input Boxes">
 
+                    </div>
                 </form>
             </div>
 

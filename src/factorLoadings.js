@@ -56,7 +56,7 @@ function factorSplitFunction(factorNumber) {
     localStorage.setItem("splitFactorHeadersArchive" + hasSplitFactor, JSON.stringify(archiveHeaders));
 
     var results = [];
-    var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 2;
+    var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
     var data = $('#factorRotationTable2').DataTable();
 
     // retrieve column headers
@@ -76,9 +76,14 @@ function factorSplitFunction(factorNumber) {
         results.push(data2);
     }
 
+    // console.log(JSON.stringify(results));
+
     // remove the explnVariance and eigenvalues rows from table data
     var explnVariance = results.pop();
-    var eigenvalues = results.pop();
+    //var eigenvalues = results.pop();
+
+    // console.log(JSON.stringify(explnVariance));
+    // console.log(JSON.stringify(results));
 
     // j loop through sorts
     var listText, j;
@@ -110,11 +115,11 @@ function factorSplitFunction(factorNumber) {
     // insert gaps for new split factor in explnVariance and eigenvalue rows
     explnVariance.splice(insertionNumber + 2, 0, "");
     explnVariance.splice(insertionNumber + 3, 0, "");
-    eigenvalues.splice(insertionNumber + 2, 0, "");
-    eigenvalues.splice(insertionNumber + 3, 0, "");
+    //eigenvalues.splice(insertionNumber + 2, 0, "");
+    //eigenvalues.splice(insertionNumber + 3, 0, "");
 
     // append explnVariance and eigenvalue rows back into table data
-    results.push(eigenvalues);
+    //results.push(eigenvalues);
     results.push(explnVariance);
 
     var negativeFactorName1 = ("Ftr " + factorNumber + "2");
@@ -204,13 +209,15 @@ function bipolarSplitTableRedraw(headers, results) {
             {
                 'targets': columnTargets2, // todo - find out why this doesn't work
                 'className': 'dt-body-right',
+                'orderable': true,
             }, {
                 'targets': [0],
-                'className': 'dt-body-center dt-body-name'
+                'className': 'dt-body-center dt-body-name',
+                'orderable': true
             }, {
                 'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
                 'searchable': false,
-                'orderable': false,
+                'orderable': true,
                 'className': 'dt-body-right',
                 'render': function (data) { // (data, type, full, meta) {
                     if (
@@ -230,6 +237,8 @@ function bipolarSplitTableRedraw(headers, results) {
 // **********************************************************************************
 
 function factorInvertFunction(factorNumber, currentRotationTable) {
+
+    // console.log(JSON.stringify(currentRotationTable));
 
     // declare variables
     var listText, newData;
@@ -339,7 +348,7 @@ function undoSplitFactorRotation() {
         columnDefs: [{
             'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
             'searchable': false,
-            'orderable': false,
+            'orderable': true,
             'render': function (data) { // (data, type, full, meta) {
                 if (
                     data === "") {

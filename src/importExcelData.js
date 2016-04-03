@@ -72,7 +72,7 @@ function filePicked(e) {
                 var tester2 = tester.split(/\n/);
 
                 tempArray = [];
-                for (var i = 1; i < 240; i++) {
+                for (var i = 1; i < 100; i++) {
                     var tester3 = tester2[i].split(',');
                     tempArray.push(tester3);
                 }
@@ -82,6 +82,7 @@ function filePicked(e) {
                 tempArray.push(tester4);
             }
             allWorksheets.push(tempArray);
+
         });
         formatUploadForDisplay(allWorksheets);
     };
@@ -127,38 +128,42 @@ function formatUploadForDisplay(data) {
     // QAV PREP
     var sortData = [];
     var sortLength = 29 + qavOriginalSortSize;
+    var counter = (data[0][28].length) - 1;
+
     for (var k = 28; k < sortLength; k++) {
         var key = data[0][k][0];
         var value;
         var tempArray1 = [];
         var j = 1;
-        do {
+        var tempObj1;
+
+        for (var kr = 0; kr < counter; kr++) {
             value = data[0][k][j];
 
             // catch the respondent names first
             if (k === 28 && value !== "") {
-                var tempObj1 = {};
+                tempObj1 = {};
                 tempObj1.sortValue = key;
                 tempObj1.statementNum = value;
                 tempArray1.push(tempObj1);
             } else {
                 if (value !== "") {
-                    var tempObj1 = {};
+                    tempObj1 = {};
                     tempObj1.sortValue = +key;
                     tempObj1.statementNum = +value;
                     tempArray1.push(tempObj1);
                 }
             }
             j = j + 1;
-        } while (value !== "");
+        }
         sortData.push(tempArray1);
     }
 
     // QAV #4
     var qavRespondentNames = [];
     var namesData = sortData.shift();
-    for (var j = 0; j < namesData.length; j++) {
-        var temp1 = namesData[j].statementNum;
+    for (var m = 0; m < namesData.length; m++) {
+        var temp1 = namesData[m].statementNum;
         if (temp1 !== "") {
             qavRespondentNames.push(temp1);
         }
@@ -170,7 +175,6 @@ function formatUploadForDisplay(data) {
     var qavTotalNumberSorts = qavRespondentNames.length;
     localStorage.setItem("qavTotalNumberSorts", JSON.stringify(qavTotalNumberSorts));
 
-
     // QAV #6   respondent sorts
     var sortDataTransposed = _.zip.apply(_, sortData);
 
@@ -180,28 +184,28 @@ function formatUploadForDisplay(data) {
             return o.statementNum;
         });
         data2.push(sortedArray1);
-    };
+    }
 
     var respondentDataSorts3 = [];
-    for (var p = 0; p < data2.length; p++) {
-        var temp1 = data2[p];
+    for (var q = 0; q < data2.length; q++) {
+        var temp11 = data2[q];
         var tempArray3 = [];
-        for (var r = 0; r < temp1.length; r++) {
-            var temp2 = temp1[r].sortValue;
+        for (var r = 0; r < temp11.length; r++) {
+            var temp2 = temp11[r].sortValue;
             tempArray3.push(temp2);
         }
         respondentDataSorts3.push(tempArray3);
     }
     localStorage.setItem("qavRespondentSortsFromDbStored", JSON.stringify(respondentDataSorts3));
-    var qavRespondentSortsFromDbStored = _.cloneDeep(respondentDataSorts3)
+    var qavRespondentSortsFromDbStored = _.cloneDeep(respondentDataSorts3);
 
     // QAV #7
     var qavCurrentStatements = [];
-    for (var p = 0; p < data[1][0].length; p++) {
-        var temp11 = data[1][0][p].Statements;
+    for (var s = 0; s < data[1][0].length; s++) {
+        var temp12 = data[1][0][s].Statements;
 
-        if (temp11 === "" || temp11 === undefined || temp11 === null) {} else {
-            qavCurrentStatements.push(temp11);
+        if (temp12 === "" || temp12 === undefined || temp12 === null) {} else {
+            qavCurrentStatements.push(temp12);
         }
     }
     localStorage.setItem("qavCurrentStatements", JSON.stringify(qavCurrentStatements));
@@ -210,34 +214,34 @@ function formatUploadForDisplay(data) {
     // SYMMETRY TESTING
     var shouldDisplayResults = [];
     var checkHeader = false;
-    for (var s = 0; s < qavRespondentSortsFromDbStored.length; s++) {
-        var qsortValueMatch = checkQsortValueMatch(qavRespondentSortsFromDbStored[s], qavSortTriangleShape);
+    for (var ss = 0; ss < qavRespondentSortsFromDbStored.length; ss++) {
+        var qsortValueMatch = checkQsortValueMatch(qavRespondentSortsFromDbStored[ss], qavSortTriangleShape);
 
         if (qsortValueMatch.length === 0) {} else {
             if (checkHeader === false) {
                 $("#excelUploadErrorDiv h3").append(" *** Error *** ");
             }
             shouldDisplayResults.push(s);
-            $("#excelUploadErrorDiv ul").append("<li>The Q-sort from respondent <strong>" + qavRespondentNames[s] + "</strong> is not symmetric. </li>");
+            $("#excelUploadErrorDiv ul").append("<li>The Q-sort from respondent <strong>" + qavRespondentNames[ss] + "</strong> is not symmetric. </li>");
             checkHeader = true;
         }
     }
     // Display respondents and sorts
     var respondentSorts = [];
     if (shouldDisplayResults.length === 0) {
-        for (var q = 0; q < qavCurrentStatements.length; q++) {
-            var sortStatement = qavCurrentStatements[q];
+        for (var qq = 0; qq < qavCurrentStatements.length; qq++) {
+            var sortStatement = qavCurrentStatements[qq];
             $("#existingDatabaseStatementList").append("<li>" + sortStatement + "</li>");
         }
-        for (var r = 0; r < qavRespondentSortsFromDbStored.length; r++) {
-            var sortItem = qavRespondentSortsFromDbStored[r];
+        for (var rr = 0; rr < qavRespondentSortsFromDbStored.length; rr++) {
+            var sortItem = qavRespondentSortsFromDbStored[rr];
             var sortItem2 = sortItem.join();
             var sortItem3 = sortItem2.replace(/,/g, " ").replace(/ -/g, "-");
             if (sortItem3.charAt(0) !== "-") {
                 sortItem3 = " " + sortItem3;
             }
             respondentSorts.push((sortItem3));
-            var respondent = qavRespondentNames[r];
+            var respondent = qavRespondentNames[rr];
             $("#existingDatabaseRespondentList").append("<li>" + respondent + "," + sortItem + "</li>");
         }
     }
@@ -556,9 +560,10 @@ function filePickedTextPQM(e) {
     reader.onload = function (e) {
         var data = e.target.result;
         $("#sortInputBox").val(data);
+        localStorage.setItem("sortInputBox", data);
 
     }; // end of reader function
-    reader.readAsText(files);
+    reader.readAsText(files, "ASCII");
 }
 
 
@@ -573,16 +578,17 @@ function filePickedTextSTA(e) {
     reader.onload = function (e) {
         var data = e.target.result;
         $("#statementsInputBoxPqmethod").val(data);
+        localStorage.setItem("qavStatementsInputBoxPqmethod", data);
 
     }; // end of reader function
-    reader.readAsText(files);
+    reader.readAsText(files, "ASCII");
 }
 
 
 //// *********************************************************************************
 //// *********************************************************************************
 //// *********************************************************************************
-/*  DO NOT DELETE - CODE FOR JSON IMPORT FUNCTIONALITY - COMING SOON! */
+/*  DO NOT DELETE - CODE FOR JSON IMPORT FUNCTIONALITY */
 //// *********************************************************************************
 //// *********************************************************************************
 //// *********************************************************************************

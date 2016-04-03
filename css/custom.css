@@ -840,3 +840,51 @@ MODAL WINDOW CSS
     border: black 1px solid;
     padding: 5px 5px 5px 5px;
 }
+
+.inputBoxAutoWidth {
+    width: 95%;
+}
+
+#accordion {
+    margin-top: 10px;
+    margin-left: 10%;
+    border: thin solid #cecece;
+    border-top: none;
+    border-bottom: none;
+}
+
+#accordion div {
+    padding-top: 20px;
+    padding-bottom: 3px;
+    background: white;
+    height: auto;
+    line-height: 20px;
+    width: 500px;
+    display: none;
+    border-bottom: thin solid #cecece;
+    padding-left: 15px;
+}
+
+#accordion a {
+    display: block;
+    width: 500px;
+    background: #f4f4f4;
+    color: #959696;
+    padding-left: 15px;
+    height: 40px;
+    line-height: 40px;
+    text-decoration: none;
+    border-bottom: thin solid #cecece;
+    font-family: Arial;
+    font-size: 13px;
+    font-weight: bold;
+    text-shadow: 0px 1px 1px white;
+}
+
+#accordion .first {
+    border-top: thin solid #cecece;
+}
+
+#accordionDiv {
+    height: 300px;
+}

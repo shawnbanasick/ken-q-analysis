@@ -30,7 +30,7 @@ $(document).ready(function () {
 
         // pull the state data (selected factor loadings - checkboxes) from table
         var results = [];
-        var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 2;
+        var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
         var data = $('#factorRotationTable2').DataTable();
 
         for (var i = 0; i < loopLen1; i++) {
@@ -316,12 +316,13 @@ function pullFlaggedFactorLoadings() {
     var numberFactorsExtracted = parseInt(localStorage.getItem("numberFactorsExtracted"));
 
     var results = JSON.parse(localStorage.getItem("results"));
+
     var jLoopLen = (numberFactorsExtracted * 2) + 1;
     var significantLoadingsArray = [];
     var i, j;
     var isLoadingSignificant, factorNumber, respondentName, factorLoading;
     // todo check to see if this can be removed see bind dump button function
-    var iLoopLen = results.length - 2;
+    var iLoopLen = results.length - 1;
     var factorLabelsArray = JSON.parse(localStorage.getItem("factorLabelsArray"));
 
     var loadingSortCheckArray = [];
@@ -397,12 +398,20 @@ function pullFlaggedFactorLoadings() {
 
 function computeFactorWeights(significantLoadingsArray) {
 
-
     for (var i = 0; i < significantLoadingsArray.length; i++) {
         var f = evenRound((significantLoadingsArray[i][2]), 8);
         var f2 = evenRound((f * f), 8);
-        var oneMinusF2 = evenRound((1 - f2), 8);
-        var w = evenRound((f / oneMinusF2), 8);
+        var oneMinusF2, w;
+        if (f2 === 1) {
+            oneMinusF2 = f2;
+            w = evenRound((f / oneMinusF2), 8);
+        } else if (f2 > 1) {
+            oneMinusF2 = evenRound((1 - f2), 8);
+            w = evenRound((f / -oneMinusF2), 8);
+        } else {
+            oneMinusF2 = evenRound((1 - f2), 8);
+            w = evenRound((f / oneMinusF2), 8);
+        }
         significantLoadingsArray[i].push(w);
     }
     findLargestFactorWeights(significantLoadingsArray);
@@ -484,6 +493,7 @@ function weightFactorScores(significantLoadingsArray, sigFactorNumbersArray, max
 
 
 function weightRawSorts(significantFactors) {
+
     var respondentNames = JSON.parse(localStorage.getItem("qavRespondentNames"));
     var rawSorts = JSON.parse(localStorage.getItem("positiveShiftedRawSorts"));
 
@@ -703,6 +713,7 @@ function pushCorrelationArray(sheetNames, output) {
     sheetNames.push(newSheet);
 
     var correlationTableArrayFormatted = JSON.parse(localStorage.getItem("correlationTableArrayFormatted"));
+
     output.push(correlationTableArrayFormatted);
     pushCentroidFactorsTableToOutputArray(sheetNames, output);
 }
@@ -748,6 +759,7 @@ function pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, fac
     // todo - move these calculations to quick results section?
 
     var cumulCommMatrix9 = _.cloneDeep(factorMatrixTransposed);
+
     var explnVarRow = cumulCommMatrix9.pop();
 
     // get rid of eigenvalue row
@@ -779,7 +791,8 @@ function pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, fac
             explnVarRow[k] = explnVarRow[k] + explnVarRow[(k - 1)];
         }
     }
-    explnVarRow.unshift(label);
+    explnVarRow.unshift("cum % expl. Var.");
+
     cumulCommMatrix9.push(explnVarRow);
     output.push(cumulCommMatrix9);
     pushFactorScoreCorrelationsToOutputArray(sheetNames, output);
@@ -798,6 +811,7 @@ function pushFactorScoreCorrelationsToOutputArray(sheetNames, output) {
     var userSelectedFactors = JSON.parse(localStorage.getItem("userSelectedFactors"));
 
     var analysisOutput2 = _.cloneDeep(analysisOutput);
+
     var factorScoresCorrelationArray2 = [];
     var temp1, temp2, tempArray;
 

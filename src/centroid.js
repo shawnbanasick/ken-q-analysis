@@ -219,6 +219,7 @@ function fireFactorExtraction() {
         eigen = evenRound((_.reduce(num, function (sum, num2) {
             return sum + num2;
         })), 5);
+
         eigenvalues.push(eigen);
         respondentNames = JSON.parse(localStorage.getItem("qavRespondentNames"));
         totalVariance = evenRound((100 * (eigen / numberSorts)), 0);

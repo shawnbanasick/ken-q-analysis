@@ -96,14 +96,17 @@ function callCentroidFromPQMethod() {
         }
     }).value();
 
+    // to prevent errors in zScore calcs and issues with "." in datatables
+    var names2 = checkUniqueName(names);
+
     // set respondent names for later
-    localStorage.setItem("qavRespondentNames", JSON.stringify(names));
+    localStorage.setItem("qavRespondentNames", JSON.stringify(names2));
 
     // format pasted data
     var sortsAsNumbers = convertSortsTextToNumbers(sorts, originalSortSize);
 
     // get correlations for pasted data
-    var correlationTable = calculateCorrelations(sortsAsNumbers, names);
+    var correlationTable = calculateCorrelations(sortsAsNumbers, names2);
 
     // display the correlation table for the pasted PQMethod data
     createDisplayTableJQUERY(correlationTable, "correlationTable2");

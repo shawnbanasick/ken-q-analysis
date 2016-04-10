@@ -886,5 +886,10 @@ MODAL WINDOW CSS
 }
 
 #accordionDiv {
-    height: 300px;
+    height: 400px;
+}
+
+#factorRotationTable {
+    width: 100%;
+    margin-left: -1%;
 }

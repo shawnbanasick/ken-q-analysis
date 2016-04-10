@@ -74,7 +74,7 @@
             <div>
                 <h1><strong>Ken-Q Analysis</strong></h1>
                 <h2>A Web Application for Q Methodology</h2>
-                <h5><i>Version 0.3.1 (April 3, 2016)</i></h5>
+                <h5><i>Version 0.3.2 (April 10, 2016)</i></h5>
                 <br>
                 <ul>
                     <li>Requires a recent version of Chrome, Firefox, Internet Explorer, or the Microsoft Edge web browser.</li>
@@ -93,8 +93,18 @@
             <div id="accordionDiv">
                 <h5>Change Log</h5>
                 <div id="accordion">
-                    <a href="#one" class="first">Beta Version 0.3.1 Test Release (April 3, 2016)</a>
+                    <a href="#one" class="first">Beta Version 0.3.2 Test Release (April 10, 2016)</a>
                     <div id="one">
+                        <ul>
+                            <li>fixed bug when respondent IDs not unique</li>
+                            <li>fixed bug when respondent ID contains "."</li>
+                            <li>added automatic sorting of factor loading table</li>
+                            <li>moved %Exp Var from table to footer</li>
+                            <li>improved performance of 2 factor rotation chart</li>
+                        </ul>
+                    </div>
+                    <a href="#two">Beta Version 0.3.1 Test Release (April 3, 2016)</a>
+                    <div id="two">
                         <ul>
                             <li>removed eigenvalues row from factor loadings table</li>
                             <li>fixed upload error when PQMethod DAT file has special characters</li>
@@ -103,8 +113,8 @@
                         </ul>
                     </div>
 
-                    <a href="#two">Beta Version 0.3 Test Release (March 30, 2016)</a>
-                    <div id="two">
+                    <a href="#three">Beta Version 0.3 Test Release (March 30, 2016)</a>
+                    <div id="three">
                         Initial beta test release
                     </div>
                 </div>
@@ -1135,17 +1145,17 @@
                 <h4 class="singleLine">Factor Loadings - Flagging</h4>
                 <input type="button" class="blackHover u-pull-right rightMargin" id="autoflagButton" value="Auto Flag Factor Loadings">
                 <div class="row">
-                    <div class="eleven columns" id="factorRotationTable">
-                        <table id="factorRotationTable2" class="display compact nowrap cell-border stripe"></table>
+                    <div id="factorRotationTable">
+                        <table id="factorRotationTable2" class="display compact nowrap cell-border stripe" cellspacing="0" width="100%"> </table>
                     </div>
                 </div>
                 <br>
                 <div class="row" id="splitFactorDiv">
                     <div class="eight columns">
-                        <input type="button" class="blackHover" id="splitFactorButton" value="Split Bipolar Factor">
+                        <input type="button" class="blackHover" id="invertFactorButton" value="Invert Factor">
                     </div>
                     <div class="three columns">
-                        <input type="button" class="blackHover" id="invertFactorButton" value="Invert Factor">
+                        <input type="button" class="blackHover" id="splitFactorButton" value="Split Bipolar Factor">
                     </div>
                 </div>
                 <br>

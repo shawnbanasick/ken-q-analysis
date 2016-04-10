@@ -79,6 +79,7 @@ $(document).ready(function () {
         sessionStorage.setItem("rotationDegreeDisplayValue", rotationDegreeDisplayValue);
 
         saveRotationButtonColor(rotationDegreeDisplayValue);
+
         calculateRotatedFactors(rotationDegree);
     });
 
@@ -156,6 +157,9 @@ function archiveFactorScoreStateMatrixAndDatatable() {
     var table = $('#factorRotationTable2').dataTable();
     var chartData = table.fnGetData();
 
+    // get current footer data and push into table data
+    var footerData = JSON.parse(localStorage.getItem("expVar"));
+    chartData.push(footerData);
 
     // get copy of current state matrix
     var rotFacStateArray = _.cloneDeep(JSON.parse(localStorage.getItem("rotFacStateArray")));
@@ -219,6 +223,13 @@ function undoFactorRotation() {
 
     // pull chart data from retrieved archive array
     var chartData = newData2[1];
+
+    var explVar = chartData.pop();
+    localStorage.setItem("expVar", JSON.stringify(explVar));
+
+    var isUndo = "yes";
+
+    createFooter("factorRotationTable2", explVar, isUndo);
 
     // redraw the rotated factors table
     var table = $('#factorRotationTable2').DataTable();
@@ -747,6 +758,9 @@ function calculatefSigCriterionValues(addFlag) {
 // **********************************************************************************
 
 function calculateRotatedFactors(rotationDegree) {
+
+    var time0 = performance.now();
+
     var rotationFactorA = localStorage.getItem("rotationFactorA");
     var rotationFactorB = localStorage.getItem("rotationFactorB");
     var counterClockwiseRotation = false;
@@ -770,52 +784,83 @@ function calculateRotatedFactors(rotationDegree) {
         return Math.cos(num * (Math.PI / 180));
     }
 
-    // see Brown 1980 page 231
-    function rotateClockwise(element) {
-        var valueA;
-        var valueB;
-        var tempArray;
-        var sinDegreesValue;
-        var cosDegreesValue;
-        var valueA1;
-        var valueB1;
+    function newRotateClockwise(calculateRotationsArray) {
+        var transposedArray = _.zip.apply(_, calculateRotationsArray);
 
-        sinDegreesValue = parseFloat((sinDegrees(rotationDegree)).toFixed(5));
-        cosDegreesValue = parseFloat((cosDegrees(rotationDegree)).toFixed(5));
+        var sinDegreesValue = (sinDegrees(rotationDegree));
+        var cosDegreesValue = (cosDegrees(rotationDegree));
 
-        valueA1 = parseFloat((element[1] * sinDegreesValue).toFixed(5));
-        valueB1 = parseFloat((element[0] * cosDegreesValue).toFixed(5));
+        var valueA, valueB;
+        var len = transposedArray[0].length;
+        var a1Calculations, b1Calculations;
+        var a2Calculations, b2Calculations;
 
-        valueA = parseFloat((valueA1 + valueB1).toFixed(5));
 
-        valueB = parseFloat(((element[1] * cosDegreesValue) - (element[0] * sinDegreesValue)).toFixed(5));
-        tempArray = [];
-        tempArray.push(valueA, valueB);
-        return tempArray;
+        var rotatedFactorsArray = [];
+        for (var k = 0; k < len; k++) {
+
+            a1Calculations = transposedArray[1][k] * sinDegreesValue;
+            b1Calculations = transposedArray[0][k] * cosDegreesValue;
+            valueA = (evenRound((a1Calculations + b1Calculations), 5));
+
+            a2Calculations = transposedArray[0][k] * sinDegreesValue;
+            b2Calculations = transposedArray[1][k] * cosDegreesValue;
+            valueB = (evenRound((-(a2Calculations - b2Calculations)), 5));
+
+            var tempArray = [];
+            tempArray[0] = valueA;
+            tempArray[1] = valueB;
+            rotatedFactorsArray.push(tempArray);
+        }
+        return rotatedFactorsArray;
     }
 
-    function rotateCounterClockwise(element) {
-        var valueA = parseFloat((element[0] * cosDegrees(rotationDegree) - element[1] * sinDegrees(rotationDegree)).toFixed(5));
-        var valueB = parseFloat((element[0] * sinDegrees(rotationDegree) + element[1] * cosDegrees(rotationDegree)).toFixed(5));
-        var tempArray = [];
-        tempArray.push(valueA, valueB);
-        return tempArray;
+    function newRotateCounterClockwise(calculateRotationsArray) {
+        var transposedArray = _.zip.apply(_, calculateRotationsArray);
+
+        var sinDegreesValue = (sinDegrees(rotationDegree));
+        var cosDegreesValue = (cosDegrees(rotationDegree));
+
+        var valueA, valueB;
+        var len = transposedArray[0].length;
+        var a1Calculations, b1Calculations;
+        var a2Calculations, b2Calculations;
+
+
+        var rotatedFactorsArray = [];
+        for (var k = 0; k < len; k++) {
+
+            a1Calculations = transposedArray[1][k] * sinDegreesValue;
+            b1Calculations = transposedArray[0][k] * cosDegreesValue;
+            valueA = (evenRound((-(a1Calculations - b1Calculations)), 5));
+
+            a2Calculations = transposedArray[0][k] * sinDegreesValue;
+            b2Calculations = transposedArray[1][k] * cosDegreesValue;
+            valueB = (evenRound(((a2Calculations + b2Calculations)), 5));
+
+            var tempArray = [];
+            tempArray[0] = valueA;
+            tempArray[1] = valueB;
+            rotatedFactorsArray.push(tempArray);
+        }
+        return rotatedFactorsArray;
     }
 
 
     if (counterClockwiseRotation !== true) {
-        rotatedFactors = _.map(calculateRotationsArray, rotateClockwise);
+        rotatedFactors = newRotateClockwise(calculateRotationsArray);
     } else {
-        rotatedFactors = _.map(calculateRotationsArray, rotateCounterClockwise);
+        rotatedFactors = newRotateCounterClockwise(calculateRotationsArray);
     }
+
+    var time1 = performance.now();
+    console.log("total rotation time - " + (time1 - time0) + " milliseconds");
 
     //insert rotated factors into temp rotational state array
     for (var i = 0; i < looplen; i++) {
         tempRotFacStateArray[i][rotationFactorA - 1] = rotatedFactors[i][0];
         tempRotFacStateArray[i][rotationFactorB - 1] = rotatedFactors[i][1];
     }
-
-    localStorage.setItem("calculateRotationsArray", JSON.stringify(rotatedFactors));
 
     // create obj for two factor table display
     setTwoFactorRotationalArray(tempRotFacStateArray);
@@ -831,10 +876,12 @@ function calculateRotatedFactors(rotationDegree) {
 
     drawD3Chart(d3Prep);
     var prepTwoFactorTable = prepTwoFactorUpdateHandsontable(tempRotFacStateArray);
-    localStorage.setItem("tempRotFacStateArray", JSON.stringify(tempRotFacStateArray));
 
     // re-draw two factor rotation table
     updateDatatable1(prepTwoFactorTable);
+
+    localStorage.setItem("calculateRotationsArray", JSON.stringify(rotatedFactors));
+    localStorage.setItem("tempRotFacStateArray", JSON.stringify(tempRotFacStateArray));
 }
 
 
@@ -1118,10 +1165,12 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
     // format data for table  
     var newData = prepChartDataArray2(chartData);
 
-    var expVar = newData.pop();
-    newData.pop();
+    // pull out explVar
+    var expVar2 = newData.pop();
+    localStorage.setItem("expVar", JSON.stringify(expVar2));
 
-    newData.push(expVar);
+    // pull out eigenvalues data
+    newData.pop();
 
     // var declarations
     var loopLength = chartData[0].length + 1;
@@ -1166,13 +1215,22 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
     }
 
     // if table, remove from DOM and draw table
-
     var table;
+
+    var factorSortedData = rotationTableSortByFactor(newData);
+
+    var isUndo = "no";
+    createFooter("factorRotationTable2", expVar2, isUndo);
+
 
     if (isRotatedFactorsTableUpdate === "yes") {
         table = $('#factorRotationTable2').DataTable();
         table.clear();
-        table.rows.add(newData).draw();
+        
+        createFooter("factorRotationTable2", expVar2, isUndo);
+        
+        table.rows.add(factorSortedData).draw();
+
     } else if (isRotatedFactorsTableUpdate === "destroy") {
         table = $('#factorRotationTable2').DataTable();
         table.destroy();
@@ -1183,11 +1241,11 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
             "searching": false,
             "ordering": false,
             "info": false,
-            "scrollY": 600,
+            // "scrollY": 600,
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            data: newData,
+            data: factorSortedData,
             columns: columnHeadersArray,
             columnDefs: [{
                 'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
@@ -1209,11 +1267,11 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
             "searching": false,
             "ordering": false,
             "info": false,
-            "scrollY": 600,
+            // "scrollY": 600,
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            data: newData,
+            data: factorSortedData,
             columns: columnHeadersArray,
             columnDefs: [{
                 'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
@@ -1231,8 +1289,81 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
         });
     }
 }
-// todo - fix hidden degree symbol when rotations hit 3 digits
-// todo - check to see if 2 factor updates significance checking and auto flagging
+
+
+function rotationTableSortByFactor(newData) {
+    var i, j;
+    var sortingArray = [];
+    var factorSortedData = [];
+    var tempObj;
+
+    var explVar = newData.pop();
+    var newData2 = _.cloneDeep(newData);
+
+    for (i = 0; i < newData.length; i++) {
+        tempObj = {};
+        newData2[i].pop();
+        var pullNumbers = _.pick(newData2[i], _.isNumber);
+        tempObj.maxValue = _.max(pullNumbers);
+        tempObj.minValue = _.min(pullNumbers);
+        tempObj.sortNum = (i + 1);
+        tempObj.compareValue = (Math.abs(tempObj.maxValue) - Math.abs(tempObj.minValue));
+        if (tempObj.compareValue >= 0) {
+            tempObj.indexValue = _.indexOf(newData[i], tempObj.maxValue);
+            tempObj.subSortValue = tempObj.maxValue;
+        } else {
+            tempObj.indexValue = _.indexOf(newData[i], tempObj.minValue);
+            tempObj.subSortValue = Math.abs(tempObj.minValue);
+        }
+        tempObj.sort = newData[i];
+        sortingArray.push(tempObj);
+    }
+
+    var factorSortedArray = alasql('SELECT * FROM ? ORDER BY indexValue ASC, subSortValue DESC', [sortingArray]);
+
+    for (j = 0; j < factorSortedArray.length; j++) {
+        // var factorGroupNumber = "F" + factorSortedArray[j].indexValue + "-" + (j + 1);
+        // factorSortedArray[j].sort.unshift(factorGroupNumber);
+        // factorSortedArray[j].sort.unshift(factorSortedArray[j].sortNum);
+        factorSortedData.push(factorSortedArray[j].sort);
+    }
+    // explVar.splice(1, 0, "", "");
+    factorSortedData.push(explVar);
+
+    return factorSortedData;
+}
+
+function createFooter(element, expVar2, isUndo) {
+
+    var hasFooter = $("#factorRotationTable2 tfoot");
+
+    var checkFooter = ((hasFooter.text()));
+
+    if (checkFooter.length !== 0 || isUndo === "yes") {
+
+        var table = $('#factorRotationTable2').DataTable();
+
+        for (var g = 0; g < expVar2.length; g++) {
+            var column = table.column(g);
+            $(column.footer()).html(expVar2[g]);
+        }
+    } else {
+
+        var footer = document.createElement('tfoot');
+        var tr = document.createElement('tr');
+
+        jQuery.each(expVar2, function (i, value) {
+            var th = document.createElement('th');
+            th.innerHTML = value;
+            tr.appendChild(th);
+        });
+        footer.appendChild(tr);
+        document.getElementById(element).appendChild(footer);
+    }
+}
+
+
+// todo - confirm to see if 2 factor updates significance checking and auto flagging
 
 /*******************************************************************************
  *******************************************************************************

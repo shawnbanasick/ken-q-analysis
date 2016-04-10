@@ -56,7 +56,8 @@ function factorSplitFunction(factorNumber) {
     localStorage.setItem("splitFactorHeadersArchive" + hasSplitFactor, JSON.stringify(archiveHeaders));
 
     var results = [];
-    var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
+    // var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
+    var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length;
     var data = $('#factorRotationTable2').DataTable();
 
     // retrieve column headers
@@ -76,14 +77,9 @@ function factorSplitFunction(factorNumber) {
         results.push(data2);
     }
 
-    // console.log(JSON.stringify(results));
+    // pull the explnVariance 
+    var explnVariance = JSON.parse(localStorage.getItem("expVar"));
 
-    // remove the explnVariance and eigenvalues rows from table data
-    var explnVariance = results.pop();
-    //var eigenvalues = results.pop();
-
-    // console.log(JSON.stringify(explnVariance));
-    // console.log(JSON.stringify(results));
 
     // j loop through sorts
     var listText, j;
@@ -118,6 +114,8 @@ function factorSplitFunction(factorNumber) {
     //eigenvalues.splice(insertionNumber + 2, 0, "");
     //eigenvalues.splice(insertionNumber + 3, 0, "");
 
+    localStorage.setItem("expVar", JSON.stringify(explnVariance));
+    
     // append explnVariance and eigenvalue rows back into table data
     //results.push(eigenvalues);
     results.push(explnVariance);
@@ -176,6 +174,10 @@ function factorSplitFunction(factorNumber) {
 
 function bipolarSplitTableRedraw(headers, results) {
 
+    // var explVar = results.pop();
+    var explVar = results.pop();
+    //results.push(explVar);
+
     // get column ids for table formatting
     var columnTargets = [];
     var targetLoopLen = headers.length;
@@ -192,6 +194,9 @@ function bipolarSplitTableRedraw(headers, results) {
     table.destroy();
     $('#factorRotationTable2').empty();
 
+    var isUndo = "no";
+    createFooter("factorRotationTable2", explVar, isUndo);
+
     // draw new table
     table = $('#factorRotationTable2').DataTable({
         "retrieve": true,
@@ -199,7 +204,7 @@ function bipolarSplitTableRedraw(headers, results) {
         "ordering": false,
         "info": false,
         //"scrollY": 600,
-        "scrollY": "auto",
+        // "scrollY": "auto",
         "scrollCollapse": true,
         "scrollX": true,
         "paging": false,
@@ -237,8 +242,6 @@ function bipolarSplitTableRedraw(headers, results) {
 // **********************************************************************************
 
 function factorInvertFunction(factorNumber, currentRotationTable) {
-
-    // console.log(JSON.stringify(currentRotationTable));
 
     // declare variables
     var listText, newData;
@@ -312,6 +315,9 @@ function undoSplitFactorRotation() {
     // pull chart data from retrieved archive array
     var chartData = newData2[1];
 
+    var explVar = chartData.pop();
+    // chartData.push(explVar);
+
     // pull headers from retrieved archive array
     var columnHeadersArray = newData2[2];
     localStorage.setItem("columnHeadersArray", JSON.stringify(columnHeadersArray));
@@ -334,12 +340,15 @@ function undoSplitFactorRotation() {
     table.destroy();
     $('#factorRotationTable2').empty();
 
+    var isUndo = "no";
+    createFooter("factorRotationTable2", explVar, isUndo);
+
     table = $("#factorRotationTable2").DataTable({
         "retrieve": true,
         "searching": false,
         "ordering": false,
         "info": false,
-        "scrollY": 600,
+        //"scrollY": 600,
         "scrollCollapse": true,
         "scrollX": true,
         "paging": false,

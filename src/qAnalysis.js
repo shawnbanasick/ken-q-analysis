@@ -30,7 +30,8 @@ $(document).ready(function () {
 
         // pull the state data (selected factor loadings - checkboxes) from table
         var results = [];
-        var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
+        // var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
+        var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length;
         var data = $('#factorRotationTable2').DataTable();
 
         for (var i = 0; i < loopLen1; i++) {
@@ -317,16 +318,19 @@ function pullFlaggedFactorLoadings() {
 
     var results = JSON.parse(localStorage.getItem("results"));
 
-    var jLoopLen = (numberFactorsExtracted * 2) + 1;
+
+    var jLoopLen = (numberFactorsExtracted * 2) + 2;
     var significantLoadingsArray = [];
     var i, j;
     var isLoadingSignificant, factorNumber, respondentName, factorLoading;
     // todo check to see if this can be removed see bind dump button function
-    var iLoopLen = results.length - 1;
+    var iLoopLen = results.length;
     var factorLabelsArray = JSON.parse(localStorage.getItem("factorLabelsArray"));
+
 
     var loadingSortCheckArray = [];
     var userSelectedFactors = JSON.parse(localStorage.getItem("userSelectedFactors"));
+
 
     // loop thru results array to find user-selected factor loadings
     for (i = 0; i < iLoopLen; i++) {
@@ -922,7 +926,10 @@ function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
             }
         }
         formattedResults.push(results[i]);
+
     }
+    var expVar = JSON.parse(localStorage.getItem("expVar"));
+    formattedResults.push(expVar);
     output.push(formattedResults);
     pushRotationListToOutputArray(sheetNames, output);
 }

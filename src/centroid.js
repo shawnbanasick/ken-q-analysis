@@ -70,7 +70,16 @@ $(document).ready(function () {
 // called by onclick from html 
 function callCentroidFromLocalDemoData() {
 
-    var namesFromExistingData = JSON.parse(localStorage.getItem("qavRespondentNames"));
+
+    var namesFromExistingData2 = JSON.parse(localStorage.getItem("qavRespondentNames"));
+
+    console.log(JSON.stringify(namesFromExistingData));
+
+    // to prevent errors in zScores and datatable error when "." in name
+    var namesFromExistingData = checkUniqueName(namesFromExistingData2);
+
+    localStorage.setItem("qavRespondentNames", JSON.stringify(namesFromExistingData));
+
 
     if (namesFromExistingData.length > 25) {
 
@@ -807,6 +816,32 @@ function createDisplayTableJQUERY(dataSet, node) {
 //    orderData: [7, 6]
 //}],
 //
+
+
+// helper functions
+// **************************************************************************   model
+// ***** check for unique names and sanitize  ***************************************
+// **********************************************************************************
+function checkUniqueName(namesFromExistingData) {
+    var namesUniqueArrayTest2 = _.cloneDeep(namesFromExistingData);
+    var namesUniqueArrayTest = _.uniq(namesUniqueArrayTest2);
+
+    if (namesFromExistingData.length !== namesUniqueArrayTest.length) {
+        for (var i = 0; i < namesFromExistingData.length; i++) {
+            // stripping out "." because of display error in datatables
+            var ii = i + 1;
+            var currentName = namesFromExistingData[i];
+            var currentName2 = currentName.replace(/\./g, "");
+            namesFromExistingData[i] = ii + "_" + currentName2;
+        }
+    } else {
+        for (var j = 0; j < namesFromExistingData.length; j++) {
+            // stripping out "." because of display error in datatables
+            namesFromExistingData[j] = namesFromExistingData[j].replace(/\./g, " ");
+        }
+    }
+    return namesFromExistingData;
+}
 
 /*******************************************************************************
  *******************************************************************************

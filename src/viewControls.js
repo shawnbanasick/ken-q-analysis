@@ -22,7 +22,7 @@ $(document).ready(function () {
     // *****************************************************************************
 
     $(function () {
-        $('input[type=radio]').each(function () {
+        $('#section2 input[type=radio]').each(function () {
             var state = JSON.parse(localStorage.getItem('radio_' + this.id));
             if (state) this.checked = state.checked;
             var radioValue = $("input[name='radio']:checked").attr("id");
@@ -31,7 +31,7 @@ $(document).ready(function () {
     });
 
     $(window).bind('unload', function () {
-        $('input[type=radio]').each(function () {
+        $('#section2 input[type=radio]').each(function () {
             localStorage.setItem(
                 'radio_' + this.id, JSON.stringify({
                     checked: this.checked
@@ -41,7 +41,7 @@ $(document).ready(function () {
     });
 
 
-    $("input[type='radio']").click(function () {
+    $("#section2 input[type='radio']").click(function () {
         var radioValue = $("input[name='radio']:checked").attr("id");
         inputTypeDisplay(radioValue);
     });

@@ -7,7 +7,7 @@
 //    (at your option) any later version.
 
 
-// JSlint declarations
+// JSlint declarations 
 /* global localStorage: false, evenRound: false, sessionStorage: false, console: false, $: false, _: false, d3: false, Handsontable:false, document: false*/
 
 $(document).ready(function () {

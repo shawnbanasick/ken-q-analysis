@@ -55,31 +55,33 @@ function factorSplitFunction(factorNumber) {
     var archiveHeaders = _.cloneDeep(JSON.parse(localStorage.getItem("factorLabels")));
     localStorage.setItem("splitFactorHeadersArchive" + hasSplitFactor, JSON.stringify(archiveHeaders));
 
+    // get respondent names
     var results = [];
-    // var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
     var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length;
     var data = $('#factorRotationTable2').DataTable();
 
     // retrieve column headers
     var headers = JSON.parse(localStorage.getItem("columnHeadersArray"));
 
+    // reconstruct headers
     var headersIndexLookupArray = [];
     for (var k = 0; k < headers.length; k++) {
         var temp = headers[k].title;
         headersIndexLookupArray.push(temp);
     }
 
+    // construct look-up value 
     var formattedFactorNumber = "Ftr " + factorNumber;
     var insertionNumber = headersIndexLookupArray.indexOf(formattedFactorNumber);
 
+    // push just results into new array
     for (var i = 0; i < loopLen1; i++) {
         var data2 = data.row(i).data();
         results.push(data2);
     }
 
-    // pull the explnVariance 
+    // pull in the explnVariance 
     var explnVariance = JSON.parse(localStorage.getItem("expVar"));
-
 
     // j loop through sorts
     var listText, j;
@@ -111,15 +113,9 @@ function factorSplitFunction(factorNumber) {
     // insert gaps for new split factor in explnVariance and eigenvalue rows
     explnVariance.splice(insertionNumber + 2, 0, "");
     explnVariance.splice(insertionNumber + 3, 0, "");
-    //eigenvalues.splice(insertionNumber + 2, 0, "");
-    //eigenvalues.splice(insertionNumber + 3, 0, "");
-
     localStorage.setItem("expVar", JSON.stringify(explnVariance));
-    
-    // append explnVariance and eigenvalue rows back into table data
-    //results.push(eigenvalues);
-    results.push(explnVariance);
 
+    // append explnVariance and eigenvalue rows back into table data
     var negativeFactorName1 = ("Ftr " + factorNumber + "2");
     var negativeFactorName = negativeFactorName1.toString();
 
@@ -158,7 +154,7 @@ function factorSplitFunction(factorNumber) {
 
 
     // redraw rotated factors dataTable
-    bipolarSplitTableRedraw(headers, results);
+    bipolarSplitTableRedraw(headers, results, explnVariance);
 
     // clear output checkboxes
     removeOutputFactorCheckboxes();
@@ -172,16 +168,16 @@ function factorSplitFunction(factorNumber) {
 // *****  draw bipolar split rotated factors table using jquery dataTables **********
 // **********************************************************************************
 
-function bipolarSplitTableRedraw(headers, results) {
+function bipolarSplitTableRedraw(headers, results, explVar) {
 
-    // var explVar = results.pop();
-    var explVar = results.pop();
+    // var explVar = results.pop(;
+
     //results.push(explVar);
 
     // get column ids for table formatting
     var columnTargets = [];
     var targetLoopLen = headers.length;
-    for (var k = 2; k < targetLoopLen; k += 2) {
+    for (var k = 4; k < targetLoopLen; k += 2) {
         columnTargets.push(k);
     }
     var columnTargets2 = [];
@@ -197,18 +193,29 @@ function bipolarSplitTableRedraw(headers, results) {
     var isUndo = "no";
     createFooter("factorRotationTable2", explVar, isUndo);
 
+    // get row colors
+    var rowColorsGray = getGrayColors();
+    var rowColorsRainbow = getRainbowColors();
+
+    // get rowbackground and order from DOM user input radio
+    var rowBackground = $("#section5 input[name=state2]:checked").val();
+    var orderingColumn = +($("#section5 input[name=state1]:checked").val());
+
+
+
     // draw new table
     table = $('#factorRotationTable2').DataTable({
         "retrieve": true,
         "searching": false,
-        "ordering": false,
+        "ordering": true,
         "info": false,
         //"scrollY": 600,
         // "scrollY": "auto",
         "scrollCollapse": true,
         "scrollX": true,
         "paging": false,
-        data: results,
+        "order": [[orderingColumn, "asc"]],
+        "data": results,
         "columns": headers,
         "columnDefs": [
             {
@@ -232,7 +239,19 @@ function bipolarSplitTableRedraw(headers, results) {
                         return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
                     }
                 }
-            }]
+            }],
+        "createdRow": function (row, data, dataIndex) {
+            var rowGroup;
+            if (rowBackground === "gray") {
+                rowGroup = data[2].slice(0, 2);
+                //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                $('td', row).css('background-color', rowColorsGray[rowGroup]);
+            } else if (rowBackground === "colors") {
+                rowGroup = data[2].slice(0, 2);
+                //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                $('td', row).css('background-color', rowColorsRainbow[rowGroup]);
+            }
+        }
     });
 }
 
@@ -305,6 +324,15 @@ function undoSplitFactorRotation() {
     // adjust counter value
     var retrieveName = getSaveRotationArchiveCounter - 1;
 
+    // get row colors
+    var rowColorsGray = getGrayColors();
+    var rowColorsRainbow = getRainbowColors();
+
+    // get rowbackground and order from DOM user input radio
+    var rowBackground = $("#section5 input[name=state2]:checked").val();
+    var orderingColumn = +($("#section5 input[name=state1]:checked").val());
+
+
     // retrieve archived data using the now adjusted counter
     var newData2 = JSON.parse(localStorage.getItem("rotFacStateArrayArchive" + retrieveName));
 
@@ -315,7 +343,8 @@ function undoSplitFactorRotation() {
     // pull chart data from retrieved archive array
     var chartData = newData2[1];
 
-    var explVar = chartData.pop();
+    var explVar = newData2[3];
+    localStorage.setItem("expVar", JSON.stringify(explVar));
     // chartData.push(explVar);
 
     // pull headers from retrieved archive array
@@ -325,7 +354,7 @@ function undoSplitFactorRotation() {
     // set targets from columnHeadersArray
     var columnTargets = [];
     var targetLoopLen = columnHeadersArray.length;
-    for (var k = 2; k < targetLoopLen; k += 2) {
+    for (var k = 4; k < targetLoopLen; k += 2) {
         columnTargets.push(k);
     }
 
@@ -346,12 +375,13 @@ function undoSplitFactorRotation() {
     table = $("#factorRotationTable2").DataTable({
         "retrieve": true,
         "searching": false,
-        "ordering": false,
+        "ordering": true,
         "info": false,
         //"scrollY": 600,
         "scrollCollapse": true,
         "scrollX": true,
         "paging": false,
+        "order": [[orderingColumn, "asc"]],
         data: chartData,
         columns: columnHeadersArray,
         columnDefs: [{
@@ -367,6 +397,18 @@ function undoSplitFactorRotation() {
                 }
             }
         }],
+        "createdRow": function (row, data, dataIndex) {
+            var rowGroup;
+            if (rowBackground === "gray") {
+                rowGroup = data[2].slice(0, 2);
+                //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                $('td', row).css('background-color', rowColorsGray[rowGroup]);
+            } else if (rowBackground === "colors") {
+                rowGroup = data[2].slice(0, 2);
+                //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                $('td', row).css('background-color', rowColorsRainbow[rowGroup]);
+            }
+        }
     });
 
     // clear out the 2 factor rotation chart and D3 plot

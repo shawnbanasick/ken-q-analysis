@@ -250,8 +250,12 @@ function appendFactorSelectionCheckboxes() {
         var headers = JSON.parse(localStorage.getItem("factorLabels"));
         var i, temp1, temp3;
         factorsToSelect = [];
+
+        headers.shift();
+        headers.shift();
         headers.shift();
         headers.pop();
+
         for (i = 0; i < headers.length; i++) {
             temp1 = headers[i].title;
             if (temp1 !== "flag") {
@@ -318,8 +322,8 @@ function pullFlaggedFactorLoadings() {
 
     var results = JSON.parse(localStorage.getItem("results"));
 
-
-    var jLoopLen = (numberFactorsExtracted * 2) + 2;
+    // var jLoopLen = (numberFactorsExtracted * 2) + 2;
+    var jLoopLen = (numberFactorsExtracted * 2) + 3;
     var significantLoadingsArray = [];
     var i, j;
     var isLoadingSignificant, factorNumber, respondentName, factorLoading;
@@ -337,11 +341,12 @@ function pullFlaggedFactorLoadings() {
         var factorNumberCount = 0;
 
         var tempArray = [];
-        for (j = 2; j < jLoopLen; j += 2) {
+        for (j = 4; j < jLoopLen; j += 2) {
             isLoadingSignificant = results[i][j];
             factorNumber = factorLabelsArray[factorNumberCount];
             factorNumberCount = factorNumberCount + 1;
-            respondentName = results[i][0];
+            // respondentName = results[i][0];
+            respondentName = results[i][1];
             factorLoading = results[i][j - 1];
 
             // if flagged and in a user-selected factor
@@ -394,14 +399,12 @@ function pullFlaggedFactorLoadings() {
             }
             return 0;
         });
-
         computeFactorWeights(significantLoadingsArray);
     }
 }
 
 
 function computeFactorWeights(significantLoadingsArray) {
-
     for (var i = 0; i < significantLoadingsArray.length; i++) {
         var f = evenRound((significantLoadingsArray[i][2]), 8);
         var f2 = evenRound((f * f), 8);
@@ -477,7 +480,7 @@ function findLargestFactorWeights(significantLoadingsArray) {
 
 function weightFactorScores(significantLoadingsArray, sigFactorNumbersArray, maxFactorValuesArray) {
 
-    var sigNumbersAndValuesArray = _.zip(sigFactorNumbersArray, maxFactorValuesArray);
+    // var sigNumbersAndValuesArray = _.zip(sigFactorNumbersArray, maxFactorValuesArray);
 
     // delete non sig factor score information from array
     var significantFactors = [];
@@ -497,12 +500,9 @@ function weightFactorScores(significantLoadingsArray, sigFactorNumbersArray, max
 
 
 function weightRawSorts(significantFactors) {
-
     var respondentNames = JSON.parse(localStorage.getItem("qavRespondentNames"));
     var rawSorts = JSON.parse(localStorage.getItem("positiveShiftedRawSorts"));
-
     var rawSortsPrep = _.zip(respondentNames, rawSorts);
-
     var weightedSorts = [];
     for (var i = 0; i < significantFactors.length; i++) {
         for (var j = 0; j < rawSortsPrep.length; j++) {
@@ -531,11 +531,8 @@ function weightRawSorts(significantFactors) {
 }
 
 function combineWeightedSorts(weightedSorts) {
-
     var sigFactorNumbersArray1 = JSON.parse(localStorage.getItem("sigFactorNumbersArray"));
-
     var sigFactorNumbersArray = sigFactorNumbersArray1.sort();
-
     var tempArray2, summedWeightedSorts;
 
     summedWeightedSorts = [];
@@ -732,6 +729,9 @@ function pushCentroidFactorsTableToOutputArray(sheetNames, output) {
     };
     sheetNames.push(newSheet);
 
+    var expVar = JSON.parse(localStorage.getItem("expVarCentroid"));
+    factorMatrixTransposed.push(expVar);
+
     var centroidsArray = [];
 
     var tempObj;
@@ -747,7 +747,11 @@ function pushCentroidFactorsTableToOutputArray(sheetNames, output) {
         }
         centroidsArray.push(tempObj);
     }
+
     output.push(centroidsArray);
+
+    // factorMatrixTransposed.pop();
+
     pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, factorMatrixTransposed);
 }
 
@@ -901,19 +905,17 @@ function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
 
     var jLoopLen = results[0].length;
 
-    var i, j, k;
+    var i, j;
 
     var iLoopLen = results.length;
-    var temp, temp1, temp2;
-    var kLoopLen = (jLoopLen - 2) / 2;
-    // todo - bipolar fix required here
+    var temp;
     var tempArray = [];
-    tempArray.push("Respondent");
-    for (k = 1; k < kLoopLen + 1; k++) {
-        temp1 = "Factor " + k;
-        temp2 = "Factor " + k + " flag";
-        tempArray.push(temp1, temp2);
-    }
+
+    var headerRowFromCurrentTable = $('#factorRotationTable2 thead tr')[0];
+    $.each(headerRowFromCurrentTable.cells, function (i, v) {
+        var temp5 = v.textContent;
+        tempArray.push(temp5);
+    });
     formattedResults.push(tempArray);
 
     for (i = 0; i < iLoopLen; i++) {
@@ -926,8 +928,8 @@ function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
             }
         }
         formattedResults.push(results[i]);
-
     }
+
     var expVar = JSON.parse(localStorage.getItem("expVar"));
     formattedResults.push(expVar);
     output.push(formattedResults);

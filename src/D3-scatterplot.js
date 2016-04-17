@@ -125,7 +125,15 @@ $(document).ready(function () {
     // INVERT FACTOR BUTTON - event listener
     $("#invertFactorButton").on("click", function (e) {
         e.preventDefault();
-        $('#invertModal').toggleClass('active');
+
+        var rotationHistory = $("#rotationHistoryList li").text();
+
+        if (rotationHistory.indexOf('was split into') >= 0) {
+            window.alert("Factor inversion has to be performed before bipolar factor split.");
+        } else {
+
+            $('#invertModal').toggleClass('active');
+        }
     });
 
     // SPLIT BIPOLAR FACTOR BUTTON
@@ -134,15 +142,71 @@ $(document).ready(function () {
         $('#splitModal').toggleClass('active');
     });
 
-    // todo - try to remember what this event handler does and if needed
+    // click handler for select factor loadings checkboxes
     $('#factorRotationTable2 tbody').on('click', 'tr', function () {
-
         var table = $('#factorRotationTable2').DataTable(); //
         var data = table
             .rows()
             .data();
     });
+
+    // control factor loadings table background 
+    $("#loadingsRadioSelect2 :radio").on('click', function () {
+        $('#loadingsRadioSelect2 input:not(:checked)').parent().removeClass("selected");
+        $(this).parent().addClass("selected");
+        // todo - find out how to prevent need for table destroy 
+        var isRotatedFactorsTableUpdate = "destroy";
+        drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+    });
+
+    $("#loadingsRadioSelect1 :radio").on('click', function () {
+        $('#loadingsRadioSelect1 input:not(:checked)').parent().removeClass("selected");
+        $(this).parent().addClass("selected");
+        var $radioOption = +($(this).val());
+        var table = $('#factorRotationTable2').DataTable();
+
+        if ($radioOption === 0) {
+            table.order([0, 'asc']).draw();
+        } else if ($radioOption === 2) {
+            table.order([2, 'asc']).draw();
+        }
+    });
+
 });
+
+
+// **********************************************************************  Data Model
+// **********  set background colors of factor loading table ************************
+// **********************************************************************************
+
+
+function getRainbowColors() {
+    var rowColorsRainbow = {
+        "F1": "#f7fcf0",
+        "F2": "#e0f3db",
+        "F3": "#ccebc5",
+        "F4": "#a8ddb5",
+        "F5": "#7bccc4",
+        "F6": "#4eb3d3",
+        "F7": "#2b8cbe",
+        "F8": "#9cbbd7"
+    };
+    return rowColorsRainbow;
+}
+
+function getGrayColors() {
+    var rowColorsGray = {
+        "F1": "#ffffff",
+        "F2": "#f0f0f0",
+        "F3": "#d9d9d9",
+        "F4": "#bdbdbd",
+        "F5": "#969696",
+        "F6": "#737373",
+        "F7": "#d9d9d9",
+        "F8": "whitesmoke"
+    };
+    return rowColorsGray;
+}
 
 
 // **********************************************************************  Data Model
@@ -157,9 +221,52 @@ function archiveFactorScoreStateMatrixAndDatatable() {
     var table = $('#factorRotationTable2').dataTable();
     var chartData = table.fnGetData();
 
+
+
+
+
+    //
+    //
+    //
+    //    var hasFooter = $("#factorRotationTable2 tfoot");
+    //
+    //    var checkFooter = ((hasFooter.text()));
+    //
+    //    console.log(JSON.stringify(checkFooter));
+    //    if (checkFooter.length !== 0 || isUndo === "yes") {
+    //
+    //        var table = $('#factorRotationTable2').DataTable();
+    //
+    //        for (var g = 0; g < expVar2.length; g++) {
+    //            var column = table.column(g);
+    //            $(column.footer()).html(expVar2[g]);
+    //        }
+    //    } else {
+    //
+    //        var footer = document.createElement('tfoot');
+    //        var tr = document.createElement('tr');
+    //
+    //        jQuery.each(expVar2, function (i, value) {
+    //            var th = document.createElement('th');
+    //            th.innerHTML = value;
+    //            tr.appendChild(th);
+    //        });
+    //        footer.appendChild(tr);
+    //        document.getElementById(element).appendChild(footer);
+    //    }
+    //    
+
+
+
+
+
+
+
+
+
     // get current footer data and push into table data
     var footerData = JSON.parse(localStorage.getItem("expVar"));
-    chartData.push(footerData);
+    // chartData.push(footerData);
 
     // get copy of current state matrix
     var rotFacStateArray = _.cloneDeep(JSON.parse(localStorage.getItem("rotFacStateArray")));
@@ -171,7 +278,7 @@ function archiveFactorScoreStateMatrixAndDatatable() {
     var archiveArray = [];
 
     // store curr rotation data, chartdata with user flags, and headers in archive array
-    archiveArray.push(rotFacStateArray, chartData, columnHeadersArray);
+    archiveArray.push(rotFacStateArray, chartData, columnHeadersArray, footerData);
 
     // archive both in local storage with key + counter
     localStorage.setItem("rotFacStateArrayArchive" + saveRotationArchiveCounter("get"), JSON.stringify(archiveArray));
@@ -224,7 +331,7 @@ function undoFactorRotation() {
     // pull chart data from retrieved archive array
     var chartData = newData2[1];
 
-    var explVar = chartData.pop();
+    var explVar = newData2[3];
     localStorage.setItem("expVar", JSON.stringify(explVar));
 
     var isUndo = "yes";
@@ -296,7 +403,8 @@ function prepChartDataArray(chartData) {
     var eigenvaluesAndVariance = calculateEigenvaluesAndVariance();
 
     resultsArray.push(eigenvaluesAndVariance[0]);
-    resultsArray.push(eigenvaluesAndVariance[1]);
+
+    localStorage.setItem("expVar", JSON.stringify(eigenvaluesAndVariance[1]));
 
     return resultsArray;
 }
@@ -334,7 +442,6 @@ function prepChartDataArray2(chartData) {
     // calculate eigenvalues and variance and add to results array
     var eigenvaluesAndVariance = calculateEigenvaluesAndVariance2();
     resultsArray.push(eigenvaluesAndVariance[0]);
-    resultsArray.push(eigenvaluesAndVariance[1]);
 
     return resultsArray;
 }
@@ -854,7 +961,6 @@ function calculateRotatedFactors(rotationDegree) {
     }
 
     var time1 = performance.now();
-    console.log("total rotation time - " + (time1 - time0) + " milliseconds");
 
     //insert rotated factors into temp rotational state array
     for (var i = 0; i < looplen; i++) {
@@ -1166,11 +1272,18 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
     var newData = prepChartDataArray2(chartData);
 
     // pull out explVar
-    var expVar2 = newData.pop();
-    localStorage.setItem("expVar", JSON.stringify(expVar2));
+    var expVar2 = JSON.parse(localStorage.getItem("expVar"));
 
     // pull out eigenvalues data
     newData.pop();
+
+    // get row colors
+    var rowColorsGray = getGrayColors();
+    var rowColorsRainbow = getRainbowColors();
+
+    // get rowbackground and order from DOM user input radio
+    var rowBackground = $("#section5 input[name=state2]:checked").val();
+    var orderingColumn = +($("#section5 input[name=state1]:checked").val());
 
     // var declarations
     var loopLength = chartData[0].length + 1;
@@ -1180,7 +1293,13 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
     calculateFactorLoadingSignificanceLevel();
 
     columnHeadersArray.push({
+        title: 'No.',
+        class: "dt-head-center dt-body-center"
+    }, {
         title: 'Respond.',
+        class: 'dt-head-center dt-body-center'
+    }, {
+        title: 'FG',
         class: "dt-head-center dt-body-center"
     });
 
@@ -1205,7 +1324,7 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
 
     var columnTargets = [];
     var targetLoopLen = columnHeadersArray.length;
-    for (var k = 2; k < targetLoopLen; k += 2) {
+    for (var k = 4; k < targetLoopLen; k += 2) {
         columnTargets.push(k);
     }
 
@@ -1224,31 +1343,36 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
 
 
     if (isRotatedFactorsTableUpdate === "yes") {
+
         table = $('#factorRotationTable2').DataTable();
         table.clear();
-        
+
         createFooter("factorRotationTable2", expVar2, isUndo);
-        
+
         table.rows.add(factorSortedData).draw();
 
     } else if (isRotatedFactorsTableUpdate === "destroy") {
+
         table = $('#factorRotationTable2').DataTable();
         table.destroy();
         $('#factorRotationTable2').empty();
 
+        createFooter("factorRotationTable2", expVar2, "no");
+
         table = $("#factorRotationTable2").DataTable({
             "retrieve": true,
             "searching": false,
-            "ordering": false,
+            "ordering": true,
             "info": false,
             // "scrollY": 600,
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            data: factorSortedData,
-            columns: columnHeadersArray,
-            columnDefs: [{
-                'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+            "order": [[orderingColumn, "asc"]],
+            "data": factorSortedData,
+            "columns": columnHeadersArray,
+            "columnDefs": [{
+                'targets': columnTargets, // [ 4, 6, 8, 10, 12, 14, 16],
                 'searchable': false,
                 'orderable': true,
                 'render': function (data) { // (data, type, full, meta) {
@@ -1260,50 +1384,75 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
                     }
                 }
             }],
+            "createdRow": function (row, data, dataIndex) {
+                var rowGroup;
+                if (rowBackground === "gray") {
+                    rowGroup = data[2].slice(0, 2);
+                    //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                    $('td', row).css('background-color', rowColorsGray[rowGroup]);
+                } else if (rowBackground === "colors") {
+                    rowGroup = data[2].slice(0, 2);
+                    //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                    $('td', row).css('background-color', rowColorsRainbow[rowGroup]);
+                }
+            }
         });
     } else {
         table = $("#factorRotationTable2").DataTable({
             "retrieve": true,
             "searching": false,
-            "ordering": false,
+            "ordering": true,
             "info": false,
             // "scrollY": 600,
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            data: factorSortedData,
-            columns: columnHeadersArray,
-            columnDefs: [{
+            "order": [[orderingColumn, "asc"]],
+            "data": factorSortedData,
+            "columns": columnHeadersArray,
+            "columnDefs": [{
                 'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
                 'searchable': false,
                 'orderable': true,
                 'render': function (data) { // (data, type, full, meta) {
-                    if (
-                        data === "") {
+                    if (data === "") {
                         return "";
                     } else {
                         return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
                     }
                 }
-            }],
+                }],
+            "createdRow": function (row, data, dataIndex) {
+                var rowGroup;
+                if (rowBackground === "gray") {
+                    rowGroup = data[2].slice(0, 2);
+                    //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                    $('td', row).css('background-color', rowColorsGray[rowGroup]);
+                } else if (rowBackground === "colors") {
+                    rowGroup = data[2].slice(0, 2);
+                    //var rowGroupColor = (rowColorsGray[rowGroup]).toString();
+                    $('td', row).css('background-color', rowColorsRainbow[rowGroup]);
+                }
+            }
         });
     }
 }
 
 
 function rotationTableSortByFactor(newData) {
+
     var i, j;
     var sortingArray = [];
     var factorSortedData = [];
     var tempObj;
 
-    var explVar = newData.pop();
     var newData2 = _.cloneDeep(newData);
 
     for (i = 0; i < newData.length; i++) {
         tempObj = {};
         newData2[i].pop();
         var pullNumbers = _.pick(newData2[i], _.isNumber);
+
         tempObj.maxValue = _.max(pullNumbers);
         tempObj.minValue = _.min(pullNumbers);
         tempObj.sortNum = (i + 1);
@@ -1321,15 +1470,31 @@ function rotationTableSortByFactor(newData) {
 
     var factorSortedArray = alasql('SELECT * FROM ? ORDER BY indexValue ASC, subSortValue DESC', [sortingArray]);
 
+    var modifiedIndexValue = {
+        1: 1,
+        3: 2,
+        5: 3,
+        7: 4,
+        9: 5,
+        11: 6,
+        13: 7,
+        15: 8
+    };
+
+    var factorGroupNumber, lookUpIndexValue;
+    var subGroupCounter = 0;
     for (j = 0; j < factorSortedArray.length; j++) {
-        // var factorGroupNumber = "F" + factorSortedArray[j].indexValue + "-" + (j + 1);
-        // factorSortedArray[j].sort.unshift(factorGroupNumber);
-        // factorSortedArray[j].sort.unshift(factorSortedArray[j].sortNum);
+        lookUpIndexValue = (factorSortedArray[j].indexValue);
+        if (j === 0 || lookUpIndexValue === factorSortedArray[j - 1].indexValue) {
+            subGroupCounter = subGroupCounter + 1;
+        } else {
+            subGroupCounter = 1;
+        }
+        factorGroupNumber = "F" + modifiedIndexValue[lookUpIndexValue] + "-" + subGroupCounter;
+        factorSortedArray[j].sort.splice(1, 0, factorGroupNumber);
+        factorSortedArray[j].sort.unshift(factorSortedArray[j].sortNum);
         factorSortedData.push(factorSortedArray[j].sort);
     }
-    // explVar.splice(1, 0, "", "");
-    factorSortedData.push(explVar);
-
     return factorSortedData;
 }
 

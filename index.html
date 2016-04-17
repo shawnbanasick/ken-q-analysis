@@ -74,7 +74,7 @@
             <div>
                 <h1><strong>Ken-Q Analysis</strong></h1>
                 <h2>A Web Application for Q Methodology</h2>
-                <h5><i>Version 0.3.2 (April 10, 2016)</i></h5>
+                <h5><i>Version 0.3.3 (April 17, 2016)</i></h5>
                 <br>
                 <ul>
                     <li>Requires a recent version of Chrome, Firefox, Internet Explorer, or the Microsoft Edge web browser.</li>
@@ -93,8 +93,17 @@
             <div id="accordionDiv">
                 <h5>Change Log</h5>
                 <div id="accordion">
-                    <a href="#one" class="first">Beta Version 0.3.2 Test Release (April 10, 2016)</a>
+                    <a href="#one" class="first">Beta Version 0.3.3 Test Release (April 17, 2016)</a>
                     <div id="one">
+                        <ul>
+                            <li>added default sorting option to factor loadings table</li>
+                            <li>fixed bug which added two footer rows to factor loadings table</li>
+                            <li>added row highlighting option to factor loadings table</li>
+                            <li>added highest loading factor column to factor loadings table</li>
+                        </ul>
+                    </div>
+                    <a href="#two" class="first">Beta Version 0.3.2 Test Release (April 10, 2016)</a>
+                    <div id="two">
                         <ul>
                             <li>fixed bug when respondent IDs not unique</li>
                             <li>fixed bug when respondent ID contains "."</li>
@@ -103,8 +112,8 @@
                             <li>improved performance of 2 factor rotation chart</li>
                         </ul>
                     </div>
-                    <a href="#two">Beta Version 0.3.1 Test Release (April 3, 2016)</a>
-                    <div id="two">
+                    <a href="#three">Beta Version 0.3.1 Test Release (April 3, 2016)</a>
+                    <div id="three">
                         <ul>
                             <li>removed eigenvalues row from factor loadings table</li>
                             <li>fixed upload error when PQMethod DAT file has special characters</li>
@@ -112,9 +121,8 @@
                             <li>fixed bug in Excel import function</li>
                         </ul>
                     </div>
-
-                    <a href="#three">Beta Version 0.3 Test Release (March 30, 2016)</a>
-                    <div id="three">
+                    <a href="#four">Beta Version 0.3 Test Release (March 30, 2016)</a>
+                    <div id="four">
                         Initial beta test release
                     </div>
                 </div>
@@ -1144,9 +1152,43 @@
                 </div>
                 <h4 class="singleLine">Factor Loadings - Flagging</h4>
                 <input type="button" class="blackHover u-pull-right rightMargin" id="autoflagButton" value="Auto Flag Factor Loadings">
+
+                <div id="factorLoadingTableRadioDiv" class="row">
+                    <div class="six columns">
+                        <legend>Default Table Ordering</legend>
+                        <div id="loadingsRadioSelect1">
+                            <label for="respondentRadio" class="selected">
+                                RESPONDENT ID
+                                <input id="respondentRadio" name="state1" type="radio" value="0" checked />
+                            </label>
+                            <label for="factorGroupRadio">
+                                HIGHEST LOADING FACTOR
+                                <input id="factorGroupRadio" name="state1" type="radio" value="2" />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="six columns">
+                        <legend>Highest Loading Factor Highlighting</legend>
+                        <div id="loadingsRadioSelect2">
+                            <label for="none" class="selected">
+                                NONE
+                                <input id="none" name="state2" type="radio" value="none" checked />
+                            </label>
+                            <label for="Gray">
+                                GRAY
+                                <input id="Gray" name="state2" type="radio" value="gray" />
+                            </label>
+                            <label for="Color">
+                                COLOR
+                                <input id="Color" name="state2" type="radio" value="colors" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div id="factorRotationTable">
-                        <table id="factorRotationTable2" class="display compact nowrap cell-border stripe" cellspacing="0" width="100%"> </table>
+                        <table id="factorRotationTable2" class="display compact nowrap cell-border" cellspacing="0" width="100%"> </table>
                     </div>
                 </div>
                 <br>

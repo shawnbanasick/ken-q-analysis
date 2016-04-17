@@ -216,9 +216,9 @@ save rotation lists
 }
 
 .deleteButton {
-    border: 0 none;
+    border: 1px solid #bbb;
     border-radius: 2px 2px 2px 2px;
-    color: #FFFFFF;
+    color: #bbb;
     cursor: pointer;
     display: inline-block;
     font-family: Arial, sans-serif;
@@ -241,8 +241,8 @@ save rotation lists
 }
 
 .deleteButton {
-    background: none repeat scroll 0 0 #38acec;
-    color: #FFFFFF;
+    background: none repeat scroll 0 0 transparent;
+    color: #bbb;
 }
 
 li:nth-last-child(n+2) .deleteButton {
@@ -250,9 +250,9 @@ li:nth-last-child(n+2) .deleteButton {
 }
 
 .deleteSplitFactorButton {
-    border: 0 none;
+    border: 1px solid #bbb;
     border-radius: 2px 2px 2px 2px;
-    color: #FFFFFF;
+    color: #bbb;
     cursor: pointer;
     display: inline-block;
     font-family: Arial, sans-serif;
@@ -275,8 +275,8 @@ li:nth-last-child(n+2) .deleteButton {
 }
 
 .deleteSplitFactorButton {
-    background: none repeat scroll 0 0 #38acec;
-    color: #FFFFFF;
+    background: none repeat scroll 0 0 transparent;
+    color: #bbb;
 }
 
 li:nth-last-child(n+2) .deleteSplitFactorButton {
@@ -336,8 +336,8 @@ input[type="button"].deleteHover:hover {
 }
 
 input[type="button"].buttonActionComplete {
-    background: none repeat scroll 0 0 #ccffcc !important;
-    color: black !important;
+    background: none repeat scroll 0 0 #38acec !important;
+    color: white !important;
 }
 
 #respondentListDiv {
@@ -892,4 +892,68 @@ MODAL WINDOW CSS
 #factorRotationTable {
     width: 100%;
     margin-left: -1%;
+}
+
+.evenFactorRow {
+    background-color: pink;
+}
+
+#section5 fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+#section5 legend {
+    padding: 0;
+    margin: 0;
+}
+
+#section5 label {
+    cursor: pointer;
+    display: block;
+    width: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 15px;
+    letter-spacing: .1rem;
+    float: left;
+    background-color: #eeeeee;
+    border: 1px solid #bbb;
+}
+
+#section5 label:first-child {
+    border-left-width: 1px;
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+#section5 label:last-child {
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+}
+
+#section5 label.selected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#section5 label.warning.selected {
+    background-color: red;
+    border-color: darkred;
+}
+
+#section5 input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
+#factorLoadingTableRadioDiv {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }

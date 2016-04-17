@@ -73,8 +73,6 @@ function callCentroidFromLocalDemoData() {
 
     var namesFromExistingData2 = JSON.parse(localStorage.getItem("qavRespondentNames"));
 
-    console.log(JSON.stringify(namesFromExistingData));
-
     // to prevent errors in zScores and datatable error when "." in name
     var namesFromExistingData = checkUniqueName(namesFromExistingData2);
 
@@ -257,6 +255,9 @@ function fireFactorExtraction() {
     factorMatrixTransposed.unshift(factorDisplayNameArray);
 
 
+    var expVar2 = factorMatrixTransposed.pop();
+    localStorage.setItem("expVarCentroid", JSON.stringify(expVar2));
+
     // add to qav - used in results download cumulative commonalities section
     localStorage.setItem("factorMatrixTransposed", JSON.stringify(factorMatrixTransposed));
 
@@ -358,10 +359,10 @@ function calculateEigenvaluesAndVariance() {
     explainedVariance.communality = "";
 
     results.push(eigenvalues);
-    results.push(explainedVariance);
+
+    localStorage.setItem("expVar", JSON.stringify(explainedVariance));
 
     return results;
-
 }
 
 
@@ -408,7 +409,10 @@ function calculateEigenvaluesAndVariance2() {
     explainedVariance.push("");
 
     results.push(eigenvalues);
-    results.push(explainedVariance);
+
+    // results.push(explainedVariance);
+    explainedVariance.splice(1, 0, "", "");
+    localStorage.setItem("expVar", JSON.stringify(explainedVariance));
 
     return results;
 

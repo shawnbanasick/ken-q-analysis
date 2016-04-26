@@ -167,6 +167,8 @@ function showPreliminaryOutput1() {
 // ******  Preliminary Results 2 - draw factor score tables  ******************
 // ****************************************************************************
 
+// todo - use document fragment to get rid of all these appends
+
 function showPreliminaryOutput2() {
 
     var userSelectedFactors = JSON.parse(localStorage.getItem("userSelectedFactors"));
@@ -174,17 +176,120 @@ function showPreliminaryOutput2() {
     //  todo - fix ordering error of factors - use large demo set with 7 factors to see error
 
     var data = JSON.parse(localStorage.getItem("outputSpreadsheetArray"));
+    var s1, s2, s3;
 
-    for (var j = 8; j < userSelectedFactors.length + 8; j++) {
 
-        var factorNumber = j - 7;
+    // START FOR EACH FACTOR LOOP
+    for (var j = 0; j < userSelectedFactors.length; j++) {
 
-        $("#factorTables").append('<div class="resultsLabel1"><h4>Scores and Raw Sorts for ' + userSelectedFactors[factorNumber - 1] + '</h4></div><table id="prelimResults' + factorNumber + '" class="display compact nowrap cell-border stripe"></table>');
+        var factorNumber = j + 1;
 
-        var newData = data[j];
+        var factorH4Label = _.capitalize(userSelectedFactors[j]);
+
+        $("#factorTables").append('<div class="resultsLabel1"><h4>' + factorH4Label + ' - Flagged Q-sort Weights</h4></div><table id="factorWeightResults' + factorNumber + '" class="display compact nowrap cell-border stripe"></table>');
+
+        if (j === 0) {
+            s1 = 8;
+        }
+        var newWeightData = data[s1];
+        newWeightData.shift();
+        var weightColumnHeaders = [
+            {
+                title: "Q-Sort",
+                class: "dt-head-center dt-body-center",
+        },
+            {
+                title: "Weight",
+                class: "dt-head-center dt-body-center",
+        }
+        ];
+
+        $("#factorWeightResults" + factorNumber).DataTable({
+            "retrieve": true,
+            "searching": false,
+            "ordering": false,
+            "info": false,
+            "scrollY": 800,
+            "scrollCollapse": true,
+            "scrollX": true,
+            "paging": false,
+            "data": newWeightData,
+            "columns": weightColumnHeaders,
+            "columnDefs": [{
+                targets: [0],
+                className: 'dt-body-center dt-body-name'
+                }, {
+                targets: '_all',
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    if (cellData < 0) {
+                        $(td).css('color', 'red');
+                    }
+                }
+        }],
+        });
+
+        s1 = s1 + 3;
+
+        $("#factorTables").append('<div class="resultsLabel1"><h4>' + factorH4Label + ' - Flagged Q-sort Correlations</h4></div><table id="factorMiniCorrelResults' + factorNumber + '" class="display compact nowrap cell-border stripe"></table>');
+
+
+        if (j === 0) {
+            s2 = 9;
+        }
+
+
+        var newMiniCorrData = data[s2];
+        var miniCorrColumnHeaders = [
+            {
+                title: "Q-Sort",
+                class: "dt-head-center dt-body-center",
+        }];
+
+        for (var k = 1; k < newMiniCorrData[0].length; k++) {
+            var tempObjMC = {};
+            tempObjMC.title = newMiniCorrData[0][k];
+            tempObjMC.class = "dt-head-center dt-body-center";
+            miniCorrColumnHeaders.push(tempObjMC);
+        }
+
+        newMiniCorrData.shift();
+
+        $("#factorMiniCorrelResults" + factorNumber).DataTable({
+            "retrieve": true,
+            "searching": false,
+            "ordering": false,
+            "info": false,
+            "scrollY": 800,
+            "scrollCollapse": true,
+            "scrollX": true,
+            "paging": false,
+            "data": newMiniCorrData,
+            "columns": miniCorrColumnHeaders,
+            "columnDefs": [{
+                targets: [0],
+                className: 'dt-body-center dt-body-name'
+                }, {
+                targets: '_all',
+                "createdCell": function (td, cellData, rowData, row, col) {
+                    if (cellData < 0) {
+                        $(td).css('color', 'red');
+                    }
+                }
+        }],
+        });
+
+        s2 = s2 + 3;
+
+        $("#factorTables").append('<div class="resultsLabel1"><h4>' + factorH4Label + ' - Z-Scores, Sort Values, and Raw Sorts</h4></div><table id="prelimResults' + factorNumber + '" class="display compact nowrap cell-border stripe"></table>');
+
+        if (j === 0) {
+            s3 = 10;
+        }
+        var newData = data[s3];
 
         var columnHeadersArray = Object.keys(newData[0]);
 
+        // the set leftmost 4 columns
         var columnHeaders = [
             {
                 title: "State. No.",
@@ -206,8 +311,8 @@ function showPreliminaryOutput2() {
                 class: "dt-head-center dt-body-center",
                 "data": "Sort Value"
         }
-    ];
-
+        ];
+        // looping in all of the raw sort column headers
         for (var i = 4; i < columnHeadersArray.length; i++) {
             var tempObj = {};
             tempObj.title = columnHeadersArray[i];
@@ -229,9 +334,11 @@ function showPreliminaryOutput2() {
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            data: newData,
-            columns: columnHeaders
+            "data": newData,
+            "columns": columnHeaders
         });
+
+        s3 = s3 + 3;
     }
 }
 
@@ -421,6 +528,7 @@ function computeFactorWeights(significantLoadingsArray) {
         }
         significantLoadingsArray[i].push(w);
     }
+    localStorage.setItem("sortWeights", JSON.stringify(significantLoadingsArray));
     findLargestFactorWeights(significantLoadingsArray);
 }
 
@@ -495,6 +603,8 @@ function weightFactorScores(significantLoadingsArray, sigFactorNumbersArray, max
             }
         }
     }
+    console.log(JSON.stringify(significantFactors));
+
     weightRawSorts(significantFactors);
 }
 
@@ -522,6 +632,8 @@ function weightRawSorts(significantFactors) {
             }
         }
     }
+    console.log(JSON.stringify(weightedSorts));
+
     combineWeightedSorts(weightedSorts);
 
     function roundNumbers(n) {
@@ -576,6 +688,8 @@ function combineWeightedSorts(weightedSorts) {
         summedWeightedSorts.push(tempArray4);
     }
     localStorage.setItem("sigSortsArray", JSON.stringify(sigSortsArray));
+    console.log(JSON.stringify(sigSortsArray));
+
     calculateZScores(summedWeightedSorts);
 }
 
@@ -889,10 +1003,6 @@ function pushFactorScoreCorrelationsToOutputArray(sheetNames, output) {
 
 function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
 
-    // todo - dry out and refactor this to a loop
-
-    // todo - add rotation history to rotated factors excel tab output
-
     var results = JSON.parse(localStorage.getItem("results"));
 
     var newSheet = {
@@ -964,19 +1074,32 @@ function pushRotationListToOutputArray(sheetNames, output) {
 function pushFactorsToOutputArray(sheetNames, output) {
     var analysisOutput2 = JSON.parse(localStorage.getItem("analysisOutput"));
     var analysisOutput = _.cloneDeep(analysisOutput2);
-
-
     var sigSortsArray = JSON.parse(localStorage.getItem("sigSortsArray"));
     var sortsAsNumbers = JSON.parse(localStorage.getItem("sortsAsNumbers"));
     var qavRespondentNames = JSON.parse(localStorage.getItem("qavRespondentNames"));
+    var correlationTableArrayFormatted = JSON.parse(localStorage.getItem("correlationTableArrayFormatted"));
+    var userSelectedFactors = JSON.parse(localStorage.getItem("userSelectedFactors"));
+    var sortWeights = JSON.parse(localStorage.getItem("sortWeights"));
 
     for (var i = 0; i < analysisOutput.length; i++) {
         var temp1 = {};
+        var temp1a = {};
+        var temp1b = {};
+
+        temp1a.sheetid = sigSortsArray[i]["Factor Number"] + " Sorts Weight";
+        temp1a.header = true;
+        sheetNames.push(temp1a);
+
+        temp1b.sheetid = sigSortsArray[i]["Factor Number"] + " Sorts Corr";
+        temp1b.header = true;
+        sheetNames.push(temp1b);
+
         temp1.sheetid = sigSortsArray[i]["Factor Number"];
         temp1.header = true;
         sheetNames.push(temp1);
     }
 
+    // pull raw sorts for factor tables
     var rawSorts = [];
     for (var p = 0; p < sigSortsArray.length; p++) {
         var tempArray = [];
@@ -988,12 +1111,83 @@ function pushFactorsToOutputArray(sheetNames, output) {
         }
         rawSorts.push(tempArray);
     }
+    // console.log(JSON.stringify(rawSorts));
+
 
     // for each factor check get a sigSort (if another remains)
     // get the raw sort for that specific sigSort
     // read that sigSorts raw sort data into testObj
 
+    //  FOR EACH FACTOR LOOP
     for (var j = 0; j < analysisOutput.length; j++) {
+
+        // FACTOR WEIGHTS TABLES STARTS FROM HERE
+        var factorWeightFactorArray = [["Q-Sort", "Weight"]];
+        var factorWeightName = userSelectedFactors[j];
+        for (var w = 0; w < sortWeights.length; w++) {
+            var factorWeightTempArray = [];
+            if (sortWeights[w][0] === factorWeightName) {
+                factorWeightTempArray.push(sortWeights[w][1], sortWeights[w][3]);
+                factorWeightFactorArray.push(factorWeightTempArray);
+            }
+        }
+        console.log(JSON.stringify(factorWeightFactorArray));
+
+        output.push(factorWeightFactorArray);
+
+        // FACTOR SCORE MINI CORRELATION TABLES STARTS FROM HERE
+
+        // loop through sigSortsArray to get this factor's sig Sorts
+        var miniSortsID = userSelectedFactors[j];
+        var miniCorrelationFactorsArray = [];
+        for (var t = 0; t < sigSortsArray.length; t++) {
+            if (sigSortsArray[t]["Factor Number"] === miniSortsID) {
+                miniCorrelationFactorsArray.push(sigSortsArray[t].SigSorts);
+            }
+        }
+        // console.log(JSON.stringify(miniCorrelationFactorsArray));
+
+        // pull correlations from table
+        var miniCorrelationArray = [];
+        var miniCorrelationHeaderArray = ["Q-Sort"];
+        var miniCorrelationHeaderIndex = correlationTableArrayFormatted[0];
+
+        // loop through all sig Sorts
+        for (var t3 = 0; t3 < miniCorrelationFactorsArray[0].length; t3++) {
+
+            miniCorrelationHeaderArray.push(miniCorrelationFactorsArray[0][t3]);
+
+            // loop through correlation table array
+            for (var t1 = 0; t1 < correlationTableArrayFormatted.length; t1++) {
+
+                var tempArrayT1 = [];
+
+                // find row for  the sig sorts, then push data
+                if (correlationTableArrayFormatted[t1][0] === miniCorrelationFactorsArray[0][t3]) {
+
+                    // push name into left column
+                    tempArrayT1.push(miniCorrelationFactorsArray[0][t3]);
+
+                    // cycle through row to find push data for all sigSorts
+                    for (var t2 = 0; t2 < miniCorrelationFactorsArray[0].length; t2++) {
+                        var index = miniCorrelationHeaderIndex.indexOf(miniCorrelationFactorsArray[0][t2]);
+                        tempArrayT1.push(correlationTableArrayFormatted[t1][index]);
+                    }
+                    miniCorrelationArray.push(tempArrayT1);
+                }
+
+            }
+        }
+        miniCorrelationArray.unshift(miniCorrelationHeaderArray);
+        console.log(JSON.stringify(miniCorrelationArray));
+
+
+
+        output.push(miniCorrelationArray);
+
+
+        // FACTOR OUTPUT STARTS FROM HERE
+        // convert arrays to object
         var synFactorArray = [];
         for (var m = 0; m < analysisOutput[0].length; m++) {
             var tempObj = {};

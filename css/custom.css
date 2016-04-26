@@ -830,14 +830,15 @@ MODAL WINDOW CSS
 }
 
 #judgementalRotationHelperText {
-    width: 45%;
+    margin-top: 15px;
+    width: 90%;
     display: inline-block;
     margin-right: 5%;
-    max-height: 63px;
+    max-height: 93px;
 }
 
 .helperText {
-    border: black 1px solid;
+    border: #38acec 1px solid;
     padding: 5px 5px 5px 5px;
 }
 
@@ -886,7 +887,7 @@ MODAL WINDOW CSS
 }
 
 #accordionDiv {
-    height: 400px;
+    height: 500px;
 }
 
 #factorRotationTable {
@@ -956,4 +957,8 @@ MODAL WINDOW CSS
 #factorLoadingTableRadioDiv {
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+#rotateAxes {
+    border: 0px;
 }

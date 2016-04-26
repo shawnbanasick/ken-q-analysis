@@ -26,7 +26,7 @@
 
     <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link rel="icon" type="image/ico" href="images/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
 
     <!-- load other CSS libraries -->
@@ -74,7 +74,7 @@
             <div>
                 <h1><strong>Ken-Q Analysis</strong></h1>
                 <h2>A Web Application for Q Methodology</h2>
-                <h5><i>Version 0.3.3 (April 17, 2016)</i></h5>
+                <h5><i>Version 0.4.0 (April 26, 2016)</i></h5>
                 <br>
                 <ul>
                     <li>Requires a recent version of Chrome, Firefox, Internet Explorer, or the Microsoft Edge web browser.</li>
@@ -93,8 +93,16 @@
             <div id="accordionDiv">
                 <h5>Change Log</h5>
                 <div id="accordion">
-                    <a href="#one" class="first">Beta Version 0.3.3 Test Release (April 17, 2016)</a>
+                    <a href="#one" class="first">Beta Version 0.4.0 Test Release (April 26, 2016)</a>
                     <div id="one">
+                        <ul>
+                            <li>added flagged Q-sorts weights tables to Preliminary Output and Complete Results</li>
+                            <li>added flagged Q-sorts correlation tables to Preliminary Output and Complete Results</li>
+                            <li>added text to Judgemental Rotation section</li>
+                        </ul>
+                    </div>
+                    <a href="#two">Beta Version 0.3.3 Test Release (April 17, 2016)</a>
+                    <div id="two">
                         <ul>
                             <li>added default sorting option to factor loadings table</li>
                             <li>fixed bug which added two footer rows to factor loadings table</li>
@@ -102,8 +110,8 @@
                             <li>added highest loading factor column to factor loadings table</li>
                         </ul>
                     </div>
-                    <a href="#two" class="first">Beta Version 0.3.2 Test Release (April 10, 2016)</a>
-                    <div id="two">
+                    <a href="#three">Beta Version 0.3.2 Test Release (April 10, 2016)</a>
+                    <div id="three">
                         <ul>
                             <li>fixed bug when respondent IDs not unique</li>
                             <li>fixed bug when respondent ID contains "."</li>
@@ -112,8 +120,8 @@
                             <li>improved performance of 2 factor rotation chart</li>
                         </ul>
                     </div>
-                    <a href="#three">Beta Version 0.3.1 Test Release (April 3, 2016)</a>
-                    <div id="three">
+                    <a href="#four">Beta Version 0.3.1 Test Release (April 3, 2016)</a>
+                    <div id="four">
                         <ul>
                             <li>removed eigenvalues row from factor loadings table</li>
                             <li>fixed upload error when PQMethod DAT file has special characters</li>
@@ -121,8 +129,8 @@
                             <li>fixed bug in Excel import function</li>
                         </ul>
                     </div>
-                    <a href="#four">Beta Version 0.3 Test Release (March 30, 2016)</a>
-                    <div id="four">
+                    <a href="#five">Beta Version 0.3 Test Release (March 30, 2016)</a>
+                    <div id="five">
                         Initial beta test release
                     </div>
                 </div>
@@ -1078,9 +1086,12 @@
                 <p>4b</p>
             </div>
             <h4 class="specialH4">Judgemental Rotation</h4>
-            <p id="judgementalRotationHelperText" class="helperText u-pull-right">Only two factors can be selected. To change the selection, first uncheck a factor and then select the new factor</p>
-            <br>
-            <br>
+            <div class="row">
+                <p id="judgementalRotationHelperText" class="helperText u-pull-right">* Only two factors can be selected. To change the selection first uncheck a factor and then select the new factor
+                    <br>* Yellow highlighting indicates that the loading for Factor A is higher than the p &lt; 0.05 level
+                    <br>* Green highlighting indicates that the loading for Factor B is higher than the p &lt; 0.05 level
+                    <br>* Blue highlighting in the Scatter Plot indicates a Q-sort with a high loading on both Factor A and Factor B</p>
+            </div>
             <form>
                 <div class="row" id="checkboxFrame">
 
@@ -1089,14 +1100,12 @@
                 <!-- end skeleton row div     -->
             </form>
 
-            <input type="button" class="blackHover" id="generateRotationItemsButton" value="Display Selected Factors">
-
-            <br>
-            <br>
-            <br>
+            <div class="row">
+                <input type="button" class="blackHover" id="generateRotationItemsButton" value="Display Selected Factors">
+            </div>
 
             <div id="handRotationDisplayContainer">
-                <label for="rotationDisplayInput">Rotate axes</label>
+                <label id="rotateAxes" for="rotationDisplayInput">Rotate axes</label>
                 <input type="number" min="1" max="180" id="rotationDisplayInput" name="name" value="1">
                 <p>degree(s)</p>
                 <input type="button" class="blackHover rotationButtons" id="clockwiseButton" value="clockwise">
@@ -1367,7 +1376,7 @@
                 <h5 class="eleven columns">Ken-Q Analysis<br> Copyright (C) 2016 Shawn Banasick<br>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
                 </h5>
                 <br>
-                <h5 class="eleven columns"> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</h5>
+                <h5 class="eleven columns"> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS ' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</h5>
                 <br>
                 <br>
                 <h5 class="eleven columns">Libraries:</h5>

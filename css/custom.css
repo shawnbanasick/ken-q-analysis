@@ -22,7 +22,6 @@
 }
 
 #correlationTable {
-    width: 90%;
     height: auto;
 }
 
@@ -128,10 +127,16 @@ Hands on Table settings for Factor Rotation
 */
 
 #factorRotationTable {
-    display: inline-block;
-    margin-left: 20px;
+    display: block;
+    margin-right: 2%;
     vertical-align: top;
     height: auto;
+    /*    margin-left: -1%;
+    */
+}
+
+#factorRotationTable2 {
+    width: 80%;
 }
 
 #twoFactorDisplayTable {
@@ -162,7 +167,7 @@ tooltips for scatterchart
 #tooltip {
     position: absolute;
     margin-left: 50px;
-    margin-bottom: 50px;
+    margin-bottom: 100px;
     width: auto;
     height: auto;
     padding-left: 20px;
@@ -673,6 +678,11 @@ MODAL WINDOW CSS
     background-color: #E0FDE0;
 }
 
+.functionDisabledModal {
+    background-color: lightgoldenrodyellow;
+    height: 250px;
+}
+
 .modal .input-inside {
     padding-left: 16px;
 }
@@ -799,7 +809,7 @@ MODAL WINDOW CSS
     margin-left: 5%;
 }
 
-#section7 ul {
+#section8 ul {
     display: block;
     list-style: square outside none;
     margin-left: 5%;
@@ -807,6 +817,10 @@ MODAL WINDOW CSS
 
 .rightMargin {
     margin-right: 2%;
+}
+
+.leftMargin {
+    margin-left: 8%;
 }
 
 #spinnerText {
@@ -860,7 +874,8 @@ MODAL WINDOW CSS
     background: white;
     height: auto;
     line-height: 20px;
-    width: 500px;
+    width: 80%;
+    max-width: 800px;
     display: none;
     border-bottom: thin solid #cecece;
     padding-left: 15px;
@@ -868,7 +883,8 @@ MODAL WINDOW CSS
 
 #accordion a {
     display: block;
-    width: 500px;
+    width: 80%;
+    max-width: 800px;
     background: #f4f4f4;
     color: #959696;
     padding-left: 15px;
@@ -890,27 +906,22 @@ MODAL WINDOW CSS
     height: 500px;
 }
 
-#factorRotationTable {
-    width: 100%;
-    margin-left: -1%;
-}
-
 .evenFactorRow {
     background-color: pink;
 }
 
-#section5 fieldset {
+#section6 fieldset {
     border: none;
     padding: 0;
     margin: 0;
 }
 
-#section5 legend {
+#section6 legend {
     padding: 0;
     margin: 0;
 }
 
-#section5 label {
+#section6 label {
     cursor: pointer;
     display: block;
     width: auto;
@@ -926,30 +937,30 @@ MODAL WINDOW CSS
     border: 1px solid #bbb;
 }
 
-#section5 label:first-child {
+#section6 label:first-child {
     border-left-width: 1px;
     border-top-left-radius: .2em;
     border-bottom-left-radius: .2em;
 }
 
-#section5 label:last-child {
+#section6 label:last-child {
     border-top-right-radius: .2em;
     border-bottom-right-radius: .2em;
 }
 
-#section5 label.selected {
+#section6 label.selected {
     background-color: #38acec;
     color: white;
     border: 1px solid #38acec;
     /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
 }
 
-#section5 label.warning.selected {
+#section6 label.warning.selected {
     background-color: red;
     border-color: darkred;
 }
 
-#section5 input[type="radio"] {
+#section6 input[type="radio"] {
     position: absolute;
     visibility: hidden;
 }
@@ -962,3 +973,46 @@ MODAL WINDOW CSS
 #rotateAxes {
     border: 0px;
 }
+
+#PcaExtractionButton {
+    margin-left: 50px;
+}
+
+.hidden {
+    display: none;
+}
+
+.errorMessage {
+    width: 500px;
+    margin-left: 5%;
+    padding: 5 5 5 5;
+    border: 1px solid;
+    background-color: #FEEFB3;
+    color: #D8000C;
+}
+
+#section4 tfoot tr th {
+    text-align: right
+}
+
+div.d3Tooltip {
+    position: absolute;
+    min-width: 125px;
+    text-align: left;
+    height: 34px;
+    padding: 2px;
+    padding-left: 10px;
+    font: 12px sans-serif;
+    color: black;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+
+/*
+
+
+
+td.dt-head-right*/

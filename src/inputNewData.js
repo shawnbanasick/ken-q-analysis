@@ -8,7 +8,7 @@
 
 
 // JSlint declarations
-/*global localStorage: false, console: false, $: false, _: false, document: false, clearTimeout: false, setTimeout: false */
+/*global localStorage: false, console: false, QAV, $: false, _: false, document: false, clearTimeout: false, setTimeout: false */
 
 // todo - fix weird tabbing behaviour in safari - jumps over add respondent button
 
@@ -434,6 +434,7 @@ function beginMIAnalysis() {
         qavRespondentNames.push(temp1);
     }
     localStorage.setItem("qavRespondentNames", JSON.stringify(qavRespondentNames));
+    QAV.respondentNames = qavRespondentNames;
     localStorage.setItem("qavRespondentSortsFromDbStored", JSON.stringify(namesAndSorts));
 
     // calculate and set the qavSortTriangleShape values
@@ -449,6 +450,7 @@ function beginMIAnalysis() {
     // pull and set length using array - already checked during input so no check here
     var originalSortSize = namesAndSorts[0].length;
     localStorage.setItem("qavOriginalSortSize", originalSortSize);
+    QAV.originalSortSize = originalSortSize;
 
     // stage sorts for analysis
     for (var j = 0; j < namesAndSorts.length; j++) {

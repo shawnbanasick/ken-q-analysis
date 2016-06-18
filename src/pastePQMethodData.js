@@ -61,7 +61,8 @@ function callCentroidFromPQMethod() {
     var numberSorts = parseInt(projectTitleString.slice(3, 6)); // lipset 9
 
     localStorage.setItem("qavTotalNumberSorts", numberSorts);
-
+    QAV.totalNumberSorts = numberSorts;
+    
     var originalSortSize = parseInt(projectTitleString.slice(7, 9)); // lipset 33
     var qavProjectName3 = (projectTitleString.slice(10, 70));
     var qavProjectName2 = qavProjectName3.trim();
@@ -70,6 +71,7 @@ function callCentroidFromPQMethod() {
 
     localStorage.setItem("qavTotalStatements", originalSortSize);
     localStorage.setItem("qavOriginalSortSize", originalSortSize);
+    QAV.originalSortSize = originalSortSize;
 
     // parsing and coercing second line of PQMethod file
     // warning -array temp1 has an extra "0" entry in position 0
@@ -101,6 +103,8 @@ function callCentroidFromPQMethod() {
 
     // set respondent names for later
     localStorage.setItem("qavRespondentNames", JSON.stringify(names2));
+      QAV.respondentNames = names2;
+
 
     // format pasted data
     var sortsAsNumbers = convertSortsTextToNumbers(sorts, originalSortSize);

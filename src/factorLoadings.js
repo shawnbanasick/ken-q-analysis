@@ -18,21 +18,31 @@ $(document).ready(function () {
     $("#autoflagButton").on("click", function (e) {
         e.preventDefault();
 
-        // get copy of current rotations state matrix
-        var rotFacStateArray = _.cloneDeep(JSON.parse(localStorage.getItem("rotFacStateArray")));
+        var testForSplit = localStorage.getItem("hasSplitFactor");
+        if (testForSplit > 0) {
+            VIEW.showDisabledFunctionsAfterSplitModal();
+        } else {
 
-        // prep for chart
-        calculateCommunalities(rotFacStateArray);
+            // get copy of current rotations state matrix
+            var rotFacStateArray = _.cloneDeep(JSON.parse(localStorage.getItem("rotFacStateArray")));
 
-        /* gets array for fSig testing from LS of calculateCommunalities - sets fSigCriterionResults  --- also "flag" parameter causes display of sig factor loadings in current facor loadings table  */
-        calculatefSigCriterionValues("flag");
+            // prep for chart
+            calculateCommunalities(rotFacStateArray);
 
-        // re-draw rotation table without destroy
-        var isRotatedFactorsTableUpdate = "yes";
-        drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+            /* gets array for fSig testing from LS of calculateCommunalities - sets fSigCriterionResults  --- also "flag" parameter causes display of sig factor loadings in current facor loadings table  */
+            calculatefSigCriterionValues("flag");
+
+
+
+            // re-draw rotation table without destroy
+            var isRotatedFactorsTableUpdate = "destroy";
+            // var isRotatedFactorsTableUpdate = "yes";
+            drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, "flag");
+        }
     });
 
 });
+
 
 
 
@@ -122,7 +132,7 @@ function factorSplitFunction(factorNumber) {
     var positiveFactorName1 = ("Ftr " + factorNumber + "1");
     var positiveFactorName = positiveFactorName1.toString();
 
-    // copy orginal header for spliced factor
+    // copy original header for spliced factor
     var duplicateName = [{
         "title": negativeFactorName,
         class: "dt-head-center dt-body-right"
@@ -150,6 +160,7 @@ function factorSplitFunction(factorNumber) {
 
     // set headers to storage for use by output function cascade (?)
     localStorage.setItem("factorLabels", JSON.stringify(headers));
+    QAV.factorLabels = headers;
     localStorage.setItem("columnHeadersArray", JSON.stringify(headers));
 
 
@@ -198,8 +209,8 @@ function bipolarSplitTableRedraw(headers, results, explVar) {
     var rowColorsRainbow = getRainbowColors();
 
     // get rowbackground and order from DOM user input radio
-    var rowBackground = $("#section5 input[name=state2]:checked").val();
-    var orderingColumn = +($("#section5 input[name=state1]:checked").val());
+    var rowBackground = $("#section6 input[name=state2]:checked").val();
+    var orderingColumn = +($("#section6 input[name=state1]:checked").val());
 
 
 
@@ -218,6 +229,10 @@ function bipolarSplitTableRedraw(headers, results, explVar) {
         "data": results,
         "columns": headers,
         "columnDefs": [
+            {
+                'type': 'highestFactor',
+                'targets': 2
+            },
             {
                 'targets': columnTargets2, // todo - find out why this doesn't work
                 'className': 'dt-body-right',
@@ -282,8 +297,9 @@ function factorInvertFunction(factorNumber, currentRotationTable) {
     newData = prepChartDataArray(currentRotationTable);
 
     // re-draw rotation table from matrix state
-    var isRotatedFactorsTableUpdate = "yes";
-    drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+    // var isRotatedFactorsTableUpdate = "yes";
+    var isRotatedFactorsTableUpdate = "destroy";
+    drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, "noFlag");
 
     // append text to rotation history
     listText = "Factor " + factorNumber + " was inverted";
@@ -307,7 +323,7 @@ function undoSplitFactorRotation() {
     var headers = JSON.parse(localStorage.getItem("splitFactorHeadersArchive" + hasSplitFactor));
 
     localStorage.setItem("factorLabels", JSON.stringify(headers));
-
+    QAV.factorLabels = headers;
     // get counter and data values
     var getSaveRotationArchiveCounter = saveRotationArchiveCounter("get");
 
@@ -329,8 +345,8 @@ function undoSplitFactorRotation() {
     var rowColorsRainbow = getRainbowColors();
 
     // get rowbackground and order from DOM user input radio
-    var rowBackground = $("#section5 input[name=state2]:checked").val();
-    var orderingColumn = +($("#section5 input[name=state1]:checked").val());
+    var rowBackground = $("#section6 input[name=state2]:checked").val();
+    var orderingColumn = +($("#section6 input[name=state1]:checked").val());
 
 
     // retrieve archived data using the now adjusted counter
@@ -370,6 +386,7 @@ function undoSplitFactorRotation() {
     $('#factorRotationTable2').empty();
 
     var isUndo = "no";
+
     createFooter("factorRotationTable2", explVar, isUndo);
 
     table = $("#factorRotationTable2").DataTable({
@@ -382,20 +399,25 @@ function undoSplitFactorRotation() {
         "scrollX": true,
         "paging": false,
         "order": [[orderingColumn, "asc"]],
-        data: chartData,
-        columns: columnHeadersArray,
-        columnDefs: [{
-            'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
-            'searchable': false,
-            'orderable': true,
-            'render': function (data) { // (data, type, full, meta) {
-                if (
-                    data === "") {
-                    return "";
-                } else {
-                    return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+        "data": chartData,
+        "columns": columnHeadersArray,
+        "columnDefs": [
+            {
+                'type': 'highestFactor',
+                'targets': 2
+            },
+            {
+                'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+                'searchable': false,
+                'orderable': true,
+                'render': function (data) { // (data, type, full, meta) {
+                    if (
+                        data === "") {
+                        return "";
+                    } else {
+                        return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+                    }
                 }
-            }
         }],
         "createdRow": function (row, data, dataIndex) {
             var rowGroup;
@@ -412,7 +434,8 @@ function undoSplitFactorRotation() {
     });
 
     // clear out the 2 factor rotation chart and D3 plot
-    reInitializePlotAndChart();
+    // reInitializePlotAndChart();
+    $("#chartAndTableDisplayContainer").hide();
 
     // clear output checkboxes
     removeOutputFactorCheckboxes();

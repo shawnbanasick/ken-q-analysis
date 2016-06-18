@@ -8,7 +8,7 @@
 
 
 // JSlint declarations
-/* global localStorage: false, swal: false, sessionStorage: false, console: false, $: false, _: false, d3: false, Handsontable:false, window: false; evenRound: false, document: false*/
+/* global localStorage: false, QAV, swal: false, sessionStorage: false, console: false, $: false, _: false, d3: false, evenRound:false, window: false; evenRound: false, document: false*/
 
 // todo - remove factor selection from localStorage
 // todo - fix bug - apply varimax twice then undo gives strange results
@@ -16,7 +16,7 @@
 $(document).ready(function () {
 
     // initialize D3 chart and 2 factor rotation chart
-    reInitializePlotAndChart();
+    // reInitializePlotAndChart();
 
     // reset 'has split factor' marker
     var hasSplitFactor = 0;
@@ -36,12 +36,17 @@ $(document).ready(function () {
         // expects bare full array
         var arrayWithCommunalities = calculateCommunalities(rotFacStateArray);
 
+        // prep for D3 chart autoflagging tests
+        // var d3AutoflaggingPrep = d3Autoflagging(arrayWithCommunalities);
+
         // gets array for fSig testing from LS of calculateCommunalities - sets fSigCriterionResults
-        calculatefSigCriterionValues("noFlag");
+        calculatefSigCriterionValues("flag");
 
         // returns dataValuesArray for D3 chart
         // creates arrays for table/D3 (LS) from state
         var d3Prep = doD3ChartDataPrep(arrayWithCommunalities);
+
+        $("#chartAndTableDisplayContainer").show();
 
         drawD3Chart(d3Prep);
         // clone the state array to prevent changes
@@ -62,8 +67,9 @@ $(document).ready(function () {
         saveRotationButtonColor(rotationDegreeDisplayValue);
 
         //draw rotation table for the first time
-        var isRotatedFactorsTableUpdate = "no";
-        drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+        // var isRotatedFactorsTableUpdate = "no";
+        var isRotatedFactorsTableUpdate = "destroy";
+        drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, "noFlag");
     });
 
     // rotation button 1 event listener
@@ -150,13 +156,29 @@ $(document).ready(function () {
             .data();
     });
 
+    // here
     // control factor loadings table background 
     $("#loadingsRadioSelect2 :radio").on('click', function () {
-        $('#loadingsRadioSelect2 input:not(:checked)').parent().removeClass("selected");
-        $(this).parent().addClass("selected");
-        // todo - find out how to prevent need for table destroy 
-        var isRotatedFactorsTableUpdate = "destroy";
-        drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+
+        var testForSplit = localStorage.getItem("hasSplitFactor");
+        if (testForSplit > 0) {
+            VIEW.showDisabledFunctionsAfterSplitModal();
+        } else {
+
+            $('#loadingsRadioSelect2 input:not(:checked)').parent().removeClass("selected");
+            $(this).parent().addClass("selected");
+            // todo - find out how to prevent need for table destroy 
+
+            // keep flags - get current table data including flags and redrawn
+            var table = $('#factorRotationTable2').DataTable();
+            var chartData = table.rows().data();
+
+            QAV.colorButtonChartData = chartData;
+
+            var isRotatedFactorsTableUpdate = "highlighter";
+            var shouldFlag = "flag";
+            drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, shouldFlag);
+        }
     });
 
     $("#loadingsRadioSelect1 :radio").on('click', function () {
@@ -222,48 +244,6 @@ function archiveFactorScoreStateMatrixAndDatatable() {
     var chartData = table.fnGetData();
 
 
-
-
-
-    //
-    //
-    //
-    //    var hasFooter = $("#factorRotationTable2 tfoot");
-    //
-    //    var checkFooter = ((hasFooter.text()));
-    //
-    //    console.log(JSON.stringify(checkFooter));
-    //    if (checkFooter.length !== 0 || isUndo === "yes") {
-    //
-    //        var table = $('#factorRotationTable2').DataTable();
-    //
-    //        for (var g = 0; g < expVar2.length; g++) {
-    //            var column = table.column(g);
-    //            $(column.footer()).html(expVar2[g]);
-    //        }
-    //    } else {
-    //
-    //        var footer = document.createElement('tfoot');
-    //        var tr = document.createElement('tr');
-    //
-    //        jQuery.each(expVar2, function (i, value) {
-    //            var th = document.createElement('th');
-    //            th.innerHTML = value;
-    //            tr.appendChild(th);
-    //        });
-    //        footer.appendChild(tr);
-    //        document.getElementById(element).appendChild(footer);
-    //    }
-    //    
-
-
-
-
-
-
-
-
-
     // get current footer data and push into table data
     var footerData = JSON.parse(localStorage.getItem("expVar"));
     // chartData.push(footerData);
@@ -294,14 +274,19 @@ function archiveFactorScoreStateMatrixAndDatatable() {
 
 function reInitializePlotAndChart() {
     // data to initialize D3 chart
-    var emptyArray = [{
-        "respondent": "",
-        "factor1": 0,
-        "factor2": 0
-}];
-    var emptyArray2 = [];
-    drawD3Chart(emptyArray);
-    updateDatatable1(emptyArray2);
+
+    var testVar = $.fn.dataTable.isDataTable('#twoFactorDisplayTable');
+
+    if (testVar) {
+        var emptyArray = [{
+            "respondent": "",
+            "factor1": 0,
+            "factor2": 0
+        }];
+        var emptyArray2 = [];
+        drawD3Chart(emptyArray);
+        updateDatatable1(emptyArray2);
+    }
 }
 
 // **********************************************************************  DATA MODEL
@@ -605,6 +590,14 @@ function drawD3Chart(dataValuesArray) {
         }, // data -> display
         yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(2).tickSize(-width, 0, 0);
 
+    //    var xAxisScale = d3.scale.linear()
+    //        .domain([0, width])
+    //        .range([0, width]);
+    //
+    //    var yAxisScale = d3.scale.linear()
+    //        .domain([0, height])
+    //        .range([height, 0]);
+
     // todo - remove setup fill color?
     //        var cValue = function (d) {
     //                return d.respondent;
@@ -617,6 +610,22 @@ function drawD3Chart(dataValuesArray) {
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    //    var svg = d3.select("#d3_scatterchart").append("svg")
+    //        .attr("width", width + margin.left + margin.right)
+    //        .attr("height", height + margin.top + margin.bottom)
+    //        .call(d3.behavior.zoom().on("zoom", function () {
+    //            svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+    //            // svg.select(".x").scale(xAxisScale);
+    //            // svg.select(".y").scale(yAxisScale);
+    //            //.y(yAxisScale);
+    //            // scaling the axis will be complex due to max-min axis setup
+    //            // svg.select(".x.axis").scaleExtent(xAxisScale);
+    //            // svg.select(".y.axis").scaleExtent(yAxisScale);
+    //        }))
+    //        .append("g")
+    //        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
     // confirm number format
@@ -650,6 +659,11 @@ function drawD3Chart(dataValuesArray) {
 
     xScale.domain([-axisMax, +axisMax]);
     yScale.domain([-axisMax, +axisMax]);
+
+    // define the div for the tooltip
+    var div = d3.select("body").append("div")
+        .attr("class", "d3Tooltip")
+        .style("opacity", 0);
 
     // x-axis
     svg.append("g")
@@ -714,29 +728,25 @@ function drawD3Chart(dataValuesArray) {
         .attr("class", "dot")
         .style("fill", "#83cafe")
         .style("fill", function (d) {
-            // return color(cValue(d));
-            if ((d.factor1 > significanceLevel || d.factor1 < -significanceLevel) && (d.factor2 > significanceLevel || d.factor2 < -significanceLevel)) {
-                return "#83cafe";
-            } else if (d.factor1 > significanceLevel || d.factor1 < -significanceLevel) {
+            if (d.factor1Sig === "true") {
                 return "#ffe4b2";
-            } else if (d.factor2 > significanceLevel || d.factor2 < -significanceLevel) {
+            } else if (d.factor2Sig === "true") {
                 return "aquamarine";
             } else {
                 return "#d8d8d8";
             }
         })
         .on("mouseover", function (d) {
-            d3.select("#tooltip")
-                //.style("left", d3.event.pageX + "px")
-                //.style("top", d3.event.pageY + "px")
-                .style("opacity", 1)
-                .select("#factorLoadingValue")
-                .html("<strong>" + d.respondent + "</strong>&nbsp;&nbsp;" + yValue(d) + ", " + xValue(d));
-            // .text(d.value);
+            div.transition()
+                .duration(100)
+                .style("opacity", 1);
+            div.html("<strong>" + d.respondent + "</strong><br>" + yValue(d) + ", 　" + xValue(d))
+                .style("left", (d3.event.pageX + 10) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
         })
         .on("mouseout", function () {
-            // Hide the tooltip
-            d3.select("#tooltip")
+            div.transition()
+                .duration(500)
                 .style("opacity", 0);
         });
 
@@ -749,14 +759,16 @@ function drawD3Chart(dataValuesArray) {
             return d.num;
         })
         .on("mouseover", function (d) {
-            d3.select("#tooltip")
-                .style("opacity", 1)
-                .select("#factorLoadingValue")
-                .html("<strong>" + d.respondent + "</strong>&nbsp;&nbsp;" + yValue(d) + ", " + xValue(d));
+            div.transition()
+                .duration(100)
+                .style("opacity", 1);
+            div.html("<strong>" + d.respondent + "</strong><br>" + yValue(d) + ", 　" + xValue(d))
+                .style("left", (d3.event.pageX + 10) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
         })
         .on("mouseout", function () {
-            // Hide the tooltip
-            d3.select("#tooltip")
+            div.transition()
+                .duration(500)
                 .style("opacity", 0);
         });
 
@@ -771,6 +783,10 @@ function drawD3Chart(dataValuesArray) {
 //2. Q-sorts which square loading is higher than the sum of square loadings of the same Q-sort in
 //    all other factors.
 
+// C Flag Item I on Factor J if A^2/H^2 > .5 (Fuerntratt-Criterion) preliminary flagging method
+// C *and* a > 1.96/sqrt(nitems)
+
+
 
 // ******************************************************************* data analysis
 // **********  calc significance Levels  *******************************************
@@ -778,7 +794,7 @@ function drawD3Chart(dataValuesArray) {
 
 function calculateFactorLoadingSignificanceLevel() {
     var totalStatements = localStorage.getItem("qavOriginalSortSize");
-    var significanceLevel = 2.58 * (1 / Math.sqrt(totalStatements));
+    var significanceLevel = evenRound((1.96 * (1 / Math.sqrt(totalStatements))), 5);
     return significanceLevel;
 }
 
@@ -795,29 +811,33 @@ function calculateCommunalities(currentFactorData) {
         return m * m;
     }
 
-    var temp, temp2, temp3, chartDataLength;
+    var temp, temp2, temp3, temp4, i, k, roundedValue, chartDataLength;
     var communalitiesArray = [];
     var fSigCriterion = [];
 
     _.forEach(calculateCommunalityArray, function (n) {
-        temp = _.map(n, square);
+        temp = (_.map(n, square));
         temp2 = temp.reduce(function (a, b) {
             return a + b;
         }, 0);
-        temp3 = parseFloat(temp2.toFixed(5));
+        temp3 = evenRound((temp2), 5);
         communalitiesArray.push(temp3);
-        fSigCriterion.push(temp);
+
+        temp4 = [];
+        for (k = 0; k < temp.length; k++) {
+            roundedValue = evenRound((temp[k]), 5);
+            temp4.push(roundedValue);
+        }
+        fSigCriterion.push(temp4);
     });
 
     localStorage.setItem("fSigCriterion", JSON.stringify(fSigCriterion));
     localStorage.setItem("rowH2", JSON.stringify(communalitiesArray));
 
-
     chartDataLength = calculateCommunalityArray.length;
-    for (var i = 0; i < chartDataLength; i++) {
+    for (i = 0; i < chartDataLength; i++) {
         calculateCommunalityArray[i].push(communalitiesArray[i]);
     }
-
     return calculateCommunalityArray;
 }
 
@@ -832,10 +852,11 @@ function calculateCommunalities(currentFactorData) {
 function calculatefSigCriterionValues(addFlag) {
 
     var fSigCriterionArray = JSON.parse(localStorage.getItem("fSigCriterion"));
-
+    var sigLevel2 = calculateFactorLoadingSignificanceLevel();
+    var sigLevel = sigLevel2 * sigLevel2;
     var arrayLength = fSigCriterionArray.length;
     var arrayLength2 = fSigCriterionArray[0].length;
-    var temp1, testValue, others, array, significant;
+    var temp1, testValue, others, others2, array, significant;
     var i, j, tempArray;
     var fSigCriterionResults = [];
 
@@ -845,17 +866,25 @@ function calculatefSigCriterionValues(addFlag) {
         for (j = 0; j < arrayLength2; j++) {
             array = _.clone(temp1);
             testValue = _.pullAt(array, j);
-            others = array.reduce(function (a, b) {
+            others2 = array.reduce(function (a, b) {
                 return a + b;
             }, 0);
-            if (addFlag === "flag" && testValue > others) {
-                significant = 'true';
+            others = evenRound((others2), 5);
+
+            if (addFlag === "flag") {
+                if (testValue > others && testValue > sigLevel) {
+                    significant = 'true';
+                } else {
+                    significant = "false";
+                }
             } else {
                 significant = 'false';
             }
             tempArray.push(significant);
         }
         fSigCriterionResults.push(tempArray);
+
+
     }
     localStorage.setItem("fSigCriterionResults", JSON.stringify(fSigCriterionResults));
 }
@@ -975,7 +1004,7 @@ function calculateRotatedFactors(rotationDegree) {
     var arrayWithCommunalities = calculateCommunalities(tempRotFacStateArray);
 
     // gets array for fSig testing from LS of calculateCommunalities - sets fSigCriterionResults
-    calculatefSigCriterionValues("noFlag");
+    calculatefSigCriterionValues("flag");
 
     // returns dataValuesArray for D3 chart
     var d3Prep = doD3ChartDataPrep(arrayWithCommunalities); // creates arrays for table/D3 (LS) from state
@@ -1052,12 +1081,14 @@ function updateDatatable1(newData) {
 
     // todo - fix error on baselinedata setting after displaying factors once
 
+
     var i, baseLineData, tempArray1, temp1, temp1a, temp2, temp2b, temp2a;
     var new2FactorDataArray = [];
-    var temp3, temp4, temp5, temp6a, temp6b, table;
+    var temp4, temp6a, temp6b, table;
+    var temp7, temp8, testVar;
 
     // check to see if datatabel already exists - returns boolean
-    var testVar = $.fn.dataTable.isDataTable('#twoFactorDisplayTable');
+    testVar = $.fn.dataTable.isDataTable('#twoFactorDisplayTable');
 
     if (testVar === true) {
 
@@ -1067,21 +1098,33 @@ function updateDatatable1(newData) {
         for (i = 0; i < newData.length; i++) {
             tempArray1 = [];
             temp1a = i + 1;
+            // adds resp. number
             tempArray1.push(temp1a);
             temp1 = newData[i].respondent;
+            // adds respondent name
             tempArray1.push(temp1);
 
             temp2 = newData[i].factor1;
+            // adds factor 1 calced value
             tempArray1.push(temp2);
             temp2b = baseLineData[i].factor1;
             temp2a = evenRound((temp2 - temp2b), 5);
+            // adds diff 
             tempArray1.push(temp2a);
 
             temp4 = newData[i].factor2;
+            // adds factor 2 calced value
             tempArray1.push(temp4);
             temp6b = baseLineData[i].factor2;
             temp6a = evenRound((temp4 - temp6b), 5);
+            // adds diff 
             tempArray1.push(temp6a);
+
+            temp7 = newData[i].factor1Sig;
+            temp8 = newData[i].factor2Sig;
+            tempArray1.push(temp7, temp8);
+
+
 
             new2FactorDataArray.push(tempArray1);
         }
@@ -1116,6 +1159,10 @@ function updateDatatable1(newData) {
             temp6b = baseLineData[i].factor2;
             temp6a = evenRound((temp4 - temp6b), 5);
             tempArray1.push(temp6a);
+
+            temp7 = newData[i].factor1Sig;
+            temp8 = newData[i].factor2Sig;
+            tempArray1.push(temp7, temp8);
 
             new2FactorDataArray.push(tempArray1);
         }
@@ -1154,18 +1201,24 @@ function updateDatatable1(newData) {
             }, {
                     targets: [5],
                     orderData: [5]
-            },
-                {
+            }, {
+                    targets: [6],
+                    "visible": false
+            }, {
+                    targets: [7],
+                    "visible": false
+            }, {
                     'targets': [2],
                     "createdCell": function (td, cellData, rowData, row, col) {
-                        if (cellData > significanceLevel || cellData < -significanceLevel) {
+
+                        if (rowData[6] === "true") {
                             $(td).css('background', '#ffe4b2');
                         }
                     }
             }, {
                     'targets': [4],
                     "createdCell": function (td, cellData, rowData, row, col) {
-                        if (cellData > significanceLevel || cellData < -significanceLevel) {
+                        if (rowData[7] === "true") {
                             $(td).css('background', 'aquamarine');
                         }
                     }
@@ -1242,8 +1295,9 @@ function saveRotation() {
     localStorage.setItem("rotFacStateArray", JSON.stringify(tempRotFacStateArray));
 
     // re-draw factor table
-    var isRotatedFactorsTableUpdate = "yes";
-    drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+    // var isRotatedFactorsTableUpdate = "yes";
+    var isRotatedFactorsTableUpdate = "destroy";
+    drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, "noFlag");
 
     // clear out the 2 factor rotation chart and plot
     reInitializePlotAndChart();
@@ -1263,7 +1317,7 @@ function saveRotation() {
 // **********  draw rotated factors table using jquery dataTables   *****************
 // **********************************************************************************
 
-function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
+function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, shouldFlag) {
 
     // pull current table state from global variable
     var chartData = _.cloneDeep(JSON.parse(localStorage.getItem("rotFacStateArray")));
@@ -1282,8 +1336,8 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
     var rowColorsRainbow = getRainbowColors();
 
     // get rowbackground and order from DOM user input radio
-    var rowBackground = $("#section5 input[name=state2]:checked").val();
-    var orderingColumn = +($("#section5 input[name=state1]:checked").val());
+    var rowBackground = $("#section6 input[name=state2]:checked").val();
+    var orderingColumn = +($("#section6 input[name=state1]:checked").val());
 
     // var declarations
     var loopLength = chartData[0].length + 1;
@@ -1334,15 +1388,23 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
     }
 
     // if table, remove from DOM and draw table
-    var table;
+    var table, factorSortedData;
 
-    var factorSortedData = rotationTableSortByFactor(newData);
+    if (isRotatedFactorsTableUpdate === "highlighter") {
+        factorSortedData = QAV.colorButtonChartData;
+        // unload that heavy property
+        QAV.colorButtonChartData = "";
+    } else {
+        factorSortedData = rotationTableSortByFactor(newData);
+    }
 
     var isUndo = "no";
     createFooter("factorRotationTable2", expVar2, isUndo);
 
 
+    // todo - temporarily disabled update because autoflagging issues    
     if (isRotatedFactorsTableUpdate === "yes") {
+
 
         table = $('#factorRotationTable2').DataTable();
         table.clear();
@@ -1356,6 +1418,8 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
         table = $('#factorRotationTable2').DataTable();
         table.destroy();
         $('#factorRotationTable2').empty();
+
+        // columnHeadersArray = QAV.factorLabels;
 
         createFooter("factorRotationTable2", expVar2, "no");
 
@@ -1371,18 +1435,30 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
             "order": [[orderingColumn, "asc"]],
             "data": factorSortedData,
             "columns": columnHeadersArray,
-            "columnDefs": [{
-                'targets': columnTargets, // [ 4, 6, 8, 10, 12, 14, 16],
-                'searchable': false,
-                'orderable': true,
-                'render': function (data) { // (data, type, full, meta) {
-                    if (
-                        data === "") {
-                        return "";
-                    } else {
-                        return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+            "columnDefs": [
+                {
+                    'type': 'highestFactor',
+                    'targets': 2
+                },
+                {
+                    'targets': columnTargets, // [ 4, 6, 8, 10, 12, 14, 16],
+                    'searchable': false,
+                    'orderable': true,
+                    'render': function (data) { // (data, type, full, meta) {
+                        if (
+                            data === "") {
+                            return "";
+                        } else if (shouldFlag === "flag") {
+
+                            return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+
+
+                        } else {
+
+                            return '<input type="checkbox" class="sigCheckbox" />';
+
+                        }
                     }
-                }
             }],
             "createdRow": function (row, data, dataIndex) {
                 var rowGroup;
@@ -1398,6 +1474,16 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
             }
         });
     } else {
+
+        // added for color button     
+
+        if (isRotatedFactorsTableUpdate === "highlighter") {
+            table = $('#factorRotationTable2').DataTable();
+            table.destroy();
+            $('#factorRotationTable2').empty();
+            createFooter("factorRotationTable2", expVar2, "no");
+        }
+
         table = $("#factorRotationTable2").DataTable({
             "retrieve": true,
             "searching": false,
@@ -1410,17 +1496,21 @@ function drawRotatedFactorsTable2(isRotatedFactorsTableUpdate) {
             "order": [[orderingColumn, "asc"]],
             "data": factorSortedData,
             "columns": columnHeadersArray,
-            "columnDefs": [{
-                'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
-                'searchable': false,
-                'orderable': true,
-                'render': function (data) { // (data, type, full, meta) {
-                    if (data === "") {
-                        return "";
-                    } else {
-                        return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+            "columnDefs": [
+                {
+                    'type': 'highestFactor',
+                    'targets': 2
+                }, {
+                    'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+                    'searchable': false,
+                    'orderable': true,
+                    'render': function (data) { // (data, type, full, meta) {
+                        if (data === "") {
+                            return "";
+                        } else {
+                            return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+                        }
                     }
-                }
                 }],
             "createdRow": function (row, data, dataIndex) {
                 var rowGroup;
@@ -1503,6 +1593,7 @@ function createFooter(element, expVar2, isUndo) {
     var hasFooter = $("#factorRotationTable2 tfoot");
 
     var checkFooter = ((hasFooter.text()));
+
 
     if (checkFooter.length !== 0 || isUndo === "yes") {
 

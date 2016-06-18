@@ -8,18 +8,46 @@
 
 
 // JSlint declarations 
-/* global localStorage: false, evenRound: false, sessionStorage: false, console: false, $: false, _: false, d3: false, Handsontable:false, document: false*/
+/* global localStorage: false, QAV, evenRound: false, sessionStorage: false, console: false, $: false, _: false, d3: false, Handsontable:false, document: false*/
 
 $(document).ready(function () {
     $("#factorVarimaxButton").on("click", function () {
-        var button = $(this)
-        button.removeClass("blackHover");
-        button.addClass("buttonActionComplete");
-        button.prop('value', 'Varimax Applied');
-        button.prop('disabled', true);
-        fireVarimaxRotation();
+
+        var testForSplit = localStorage.getItem("hasSplitFactor");
+        if (testForSplit > 0) {
+            VIEW.showDisabledFunctionsAfterSplitModal();
+        } else {
+
+            QAV.typeOfRotation = "varimax";
+
+            var button = $(this);
+            button.removeClass("blackHover");
+            button.addClass("buttonActionComplete");
+            button.prop('value', 'Varimax Rotation Applied');
+            button.prop('disabled', true);
+
+            //        var centroidButton = $("#factorJudgementRotButton");
+            //        if (centroidButton.hasClass("buttonActionComplete")) {
+            //            centroidButton.removeClass("buttonActionComplete");
+            //            centroidButton.addClass("blackHover");
+            //            centroidButton.prop('value', 'Use Judgemental Rotation');
+            //            centroidButton.prop('disabled', false);
+            //            $("#judgementalRotationContainer").hide();
+            //            $("#judgementFactorSelectText").hide();
+            // }
+
+            // avoid problem with reinitialization and display of 2 factor table
+            var tableCheck = $("#judgementalRotationContainer").is(":visible");
+            if (tableCheck) {
+                reInitializePlotAndChart();
+            }
+            fireVarimaxRotation();
+
+        }
+
     });
 });
+
 
 // *******************************************************  controller
 // ***** rotation start **********************************************
@@ -27,15 +55,16 @@ $(document).ready(function () {
 //
 function fireVarimaxRotation() {
 
-    archiveFactorScoreStateMatrixAndDatatable();
+    // archiveFactorScoreStateMatrixAndDatatable();
 
     var getFactorsForRotation = JSON.parse(localStorage.getItem("centroidFactors"));
+    // var testVar = _.cloneDeep(QAV.centroidFactors);
 
     // rotation routine
     standardizeMatrix(getFactorsForRotation);
 
     // clear out two factor rotation chart and D3 plot
-    reInitializePlotAndChart();
+    // reInitializePlotAndChart();
 }
 
 // ***********************************************************  model
@@ -78,6 +107,7 @@ function standardizeMatrix(factorMatrix) {
         arrayFrag1 = factorMatrix[m];
         temp5 = [];
         len2 = factorMatrix[m].length;
+
         for (k = 0; k < len2; k++) {
             sqrtSumSquares = evenRound(Math.sqrt(sumSquares[k]), 8);
 
@@ -139,6 +169,7 @@ function calculateVarianceForFactorMatrix(factorMatrix, sumSquares) {
             temp3 = 0;
             arrayFrag = factorMatrix[i];
             var jLoopLen = arrayFrag.length;
+
             for (j = 0; j < jLoopLen; j++) {
                 temp = evenRound((arrayFrag[j] * arrayFrag[j]), 8);
                 temp1 = temp1 + temp;
@@ -474,6 +505,7 @@ function unStandardize(standardizedResults, sumSquares) {
         if (crit < 0) {
             var q;
             var qLoopLen = newArrayFrag.length;
+
             for (q = 0; q < qLoopLen; q++) {
                 newArrayFrag[q] = -newArrayFrag[q];
             }
@@ -496,8 +528,9 @@ function unStandardize(standardizedResults, sumSquares) {
     calculatefSigCriterionValues("noFlag");
 
     // re-draw rotation table
-    var isRotatedFactorsTableUpdate = "yes";
-    drawRotatedFactorsTable2(isRotatedFactorsTableUpdate);
+    // var isRotatedFactorsTableUpdate = "yes";
+    var isRotatedFactorsTableUpdate = "destroy";
+    drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, "noFlag");
 
     return resultsTransposed;
 }

@@ -118,6 +118,7 @@ function formatUploadForDisplay(data) {
     localStorage.setItem("qavOriginalSortSize", JSON.stringify(qavOriginalSortSize));
     // todo - fix qavOriginalSortSize and qavTotalStatements are same - symmetry check functions
     localStorage.setItem("qavTotalStatements", JSON.stringify(qavOriginalSortSize));
+    QAV.originalSortSize = qavOriginalSortSize;
 
     // QAV PREP
     var sortData = [];
@@ -164,10 +165,12 @@ function formatUploadForDisplay(data) {
     }
 
     localStorage.setItem("qavRespondentNames", JSON.stringify(qavRespondentNames));
+    QAV.respondentNames = qavRespondentNames;
 
     // QAV #5
     var qavTotalNumberSorts = qavRespondentNames.length;
     localStorage.setItem("qavTotalNumberSorts", JSON.stringify(qavTotalNumberSorts));
+    QAV.totalNumberSorts = qavTotalNumberSorts;
 
     // QAV #6   respondent sorts
     var sortDataTransposed = _.zip.apply(_, sortData);
@@ -426,6 +429,7 @@ function formatKenqUploadForDisplay(data) {
     localStorage.setItem("qavOriginalSortSize", JSON.stringify(qavOriginalSortSize));
     // todo - fix qavOriginalSortSize and qavTotalStatements are same - symmetry check functions
     localStorage.setItem("qavTotalStatements", JSON.stringify(qavOriginalSortSize));
+    QAV.originalSortSize = qavOriginalSortSize;
 
     // QAV #4
     var qavRespondentNames = [];
@@ -436,10 +440,11 @@ function formatKenqUploadForDisplay(data) {
         }
     }
     localStorage.setItem("qavRespondentNames", JSON.stringify(qavRespondentNames));
-
+    QAV.respondentNames = qavRespondentNames;
     // QAV #5
     var qavTotalNumberSorts = qavRespondentNames.length;
     localStorage.setItem("qavTotalNumberSorts", JSON.stringify(qavTotalNumberSorts));
+    QAV.totalNumberSorts = qavTotalNumberSorts;
 
     // QAV #6
     var qavRespondentSortsFromDbStored = [];

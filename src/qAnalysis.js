@@ -8,7 +8,7 @@
 
 
 // JSlint declarations
-/* global localStorage: false, evenRound: false, console: false, $: false, _: false, Handsontable:false, document: false, alasql: false*/
+/* global localStorage: false, evenRound: false, console: false, QAV, $: false, _: false, Handsontable:false, document: false, alasql: false*/
 
 $(document).ready(function () {
 
@@ -30,15 +30,12 @@ $(document).ready(function () {
 
         // pull the state data (selected factor loadings - checkboxes) from table
         var results = [];
-        // var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length + 1;
         var loopLen1 = JSON.parse(localStorage.getItem("qavRespondentNames")).length;
         var data = $('#factorRotationTable2').DataTable();
-
         for (var i = 0; i < loopLen1; i++) {
             var data2 = data.row(i).data();
             results.push(data2);
         }
-
         localStorage.setItem("results", JSON.stringify(results));
 
         // get selected factors information
@@ -143,8 +140,8 @@ function showPreliminaryOutput1() {
         "scrollCollapse": false,
         "scrollX": false,
         "paging": false,
-        data: newData,
-        columns: columnHeaders
+        "data": newData,
+        "columns": columnHeaders
     });
 
     var table = $('#factorCorrelationTable').DataTable();
@@ -349,9 +346,11 @@ function showPreliminaryOutput2() {
 function appendFactorSelectionCheckboxes() {
 
     var hasSplitFactor = localStorage.getItem("hasSplitFactor");
-
+    var j, len, k, temp5, pcaFactorLabels = [];
     // read in factor labels to generate checkboxes (and checking for split factor)
     var factorsToSelect;
+
+    var loopLen;
 
     if (hasSplitFactor > 0) {
         var headers = JSON.parse(localStorage.getItem("factorLabels"));
@@ -370,16 +369,35 @@ function appendFactorSelectionCheckboxes() {
                 factorsToSelect.push(temp3);
             }
         }
+
+        loopLen = factorsToSelect.length;
+
     } else {
-        factorsToSelect = JSON.parse(localStorage.getItem("factorLabels"));
+
+        if (QAV.typeOfFactor === "PCA") {
+            for (k = 0, len = QAV.numFactorsRetained; k < len; k++) {
+                temp5 = "factor " + (k + 1);
+                pcaFactorLabels.push(temp5);
+            }
+
+            factorsToSelect = pcaFactorLabels;
+        } else {
+
+            factorsToSelect = JSON.parse(localStorage.getItem("factorLabels"));
+        }
     }
     localStorage.setItem("factorLabelsArray", JSON.stringify(factorsToSelect));
+    QAV.factorLabelsArray = factorsToSelect;
+
+    // get state number of factors
+    loopLen = QAV.numFactorsRetained;
 
     // check to see if checkboxes are already appended, and if so remove them
     removeOutputFactorCheckboxes();
 
     //  generate and append checkboxes
-    for (var j = 0; j < factorsToSelect.length; j++) {
+    for (j = 0; j < loopLen; j++) {
+        // for (var j = 0; j < factorsToSelect.length; j++) {
         var checkbox = document.createElement('input');
         checkbox.type = "checkbox";
         checkbox.name = "analysisFactors";
@@ -603,8 +621,6 @@ function weightFactorScores(significantLoadingsArray, sigFactorNumbersArray, max
             }
         }
     }
-    console.log(JSON.stringify(significantFactors));
-
     weightRawSorts(significantFactors);
 }
 
@@ -632,8 +648,6 @@ function weightRawSorts(significantFactors) {
             }
         }
     }
-    console.log(JSON.stringify(weightedSorts));
-
     combineWeightedSorts(weightedSorts);
 
     function roundNumbers(n) {
@@ -688,7 +702,6 @@ function combineWeightedSorts(weightedSorts) {
         summedWeightedSorts.push(tempArray4);
     }
     localStorage.setItem("sigSortsArray", JSON.stringify(sigSortsArray));
-    console.log(JSON.stringify(sigSortsArray));
 
     calculateZScores(summedWeightedSorts);
 }
@@ -822,7 +835,7 @@ function pushSortsToOutputArray(sheetNames, output) {
 
 function pushCorrelationArray(sheetNames, output) {
     var newSheet = {
-        sheetid: "Correlation Table",
+        sheetid: "Correlation Matrix",
         headers: false,
     };
     sheetNames.push(newSheet);
@@ -835,44 +848,63 @@ function pushCorrelationArray(sheetNames, output) {
 
 function pushCentroidFactorsTableToOutputArray(sheetNames, output) {
 
-    var factorMatrixTransposed = JSON.parse(localStorage.getItem("factorMatrixTransposed", factorMatrixTransposed));
+    var factorMatrixTransposed, i, j, k, m, temp, temp1, temp2;
+    var newSheet, expVar, centroidsArray, tempObj, respondentNames;
 
-    var newSheet = {
-        sheetid: "Unrotated Centroid Factors",
+    if (QAV.typeOfFactor === "PCA") {
+        // conform PCA to legacy centroid data structure
+
+        factorMatrixTransposed = _.cloneDeep(QAV.eigenVecs);
+        respondentNames = QAV.respondentNames;
+        for (m = 0; m < (respondentNames.length - 1); m++) {
+            factorMatrixTransposed[m].unshift(respondentNames[m + 1]);
+        }
+        temp1 = QAV.factorLabels;
+        temp1.unshift("");
+        factorMatrixTransposed.unshift(temp1);
+
+        // add eigenvals to match data structure
+        temp = QAV.eigenValuesSorted;
+        temp.unshift("Eigenvalues");
+        factorMatrixTransposed.push([], temp);
+        temp2 = QAV.eigenValuesAsPercents;
+        temp2.unshift("");
+        factorMatrixTransposed.push(temp2);
+    } else {
+        factorMatrixTransposed = JSON.parse(localStorage.getItem("factorMatrixTransposed", factorMatrixTransposed));
+        expVar = JSON.parse(localStorage.getItem("expVarCentroid"));
+        factorMatrixTransposed.push(expVar);
+    }
+
+    newSheet = {
+        sheetid: "Unrotated Factor Matrix",
         headers: true,
     };
     sheetNames.push(newSheet);
 
-    var expVar = JSON.parse(localStorage.getItem("expVarCentroid"));
-    factorMatrixTransposed.push(expVar);
-
-    var centroidsArray = [];
-
-    var tempObj;
-
-    for (var i = 1; i < factorMatrixTransposed.length; i++) {
+    // convert array to object
+    centroidsArray = [];
+    for (i = 1; i < factorMatrixTransposed.length; i++) {
         tempObj = {};
 
         tempObj.Respondent = factorMatrixTransposed[i][0];
 
-        for (var j = 0; j < (factorMatrixTransposed[i].length - 1); j++) {
-            var k = j + 1;
+        for (j = 0; j < (factorMatrixTransposed[i].length - 1); j++) {
+            k = j + 1;
             tempObj["Factor " + k] = factorMatrixTransposed[i][k];
         }
         centroidsArray.push(tempObj);
     }
-
     output.push(centroidsArray);
-
-    // factorMatrixTransposed.pop();
-
     pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, factorMatrixTransposed);
 }
 
 
 
 function pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, factorMatrixTransposed) {
-    var newSheet = {
+    var newSheet, cumulCommMatrix9, explnVarRow, responderHeadersRow;
+    var i, j, k, temp1, temp2, respondentName;
+    newSheet = {
         sheetid: "Cumul Comm Matrix",
         headers: false,
     };
@@ -880,19 +912,18 @@ function pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, fac
 
     // todo - move these calculations to quick results section?
 
-    var cumulCommMatrix9 = _.cloneDeep(factorMatrixTransposed);
+    cumulCommMatrix9 = _.cloneDeep(factorMatrixTransposed);
 
-    var explnVarRow = cumulCommMatrix9.pop();
+    explnVarRow = cumulCommMatrix9.pop();
 
     // get rid of eigenvalue row
     cumulCommMatrix9.pop();
-    var responderHeadersRow = cumulCommMatrix9.shift();
+    responderHeadersRow = cumulCommMatrix9.shift();
 
-    var temp1;
-    for (var i = 0; i < cumulCommMatrix9.length; i++) {
+    for (i = 0; i < cumulCommMatrix9.length; i++) {
 
-        var respondentName = cumulCommMatrix9[i].shift();
-        for (var j = 0; j < cumulCommMatrix9[i].length; j++) {
+        respondentName = cumulCommMatrix9[i].shift();
+        for (j = 0; j < cumulCommMatrix9[i].length; j++) {
             if (j === 0) {
                 temp1 = cumulCommMatrix9[i][j];
                 cumulCommMatrix9[i][j] = evenRound((temp1 * temp1), 4);
@@ -905,9 +936,8 @@ function pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, fac
     }
     cumulCommMatrix9.unshift(responderHeadersRow);
 
-    var temp2;
-    var label = explnVarRow.shift();
-    for (var k = 0; k < explnVarRow.length; k++) {
+    explnVarRow.shift();
+    for (k = 0; k < explnVarRow.length; k++) {
         if (k === 0) {} else {
             temp2 = explnVarRow[k];
             explnVarRow[k] = explnVarRow[k] + explnVarRow[(k - 1)];
@@ -972,6 +1002,7 @@ function pushFactorScoreCorrelationsToOutputArray(sheetNames, output) {
     }
 
     function factorScoresCorrelationsHelper(factorScoresCorrelationArray, pullX) {
+
         var correlationHolder, correlationHolder2;
         var correlationTableArrayFragment = [];
 
@@ -997,6 +1028,7 @@ function pushFactorScoreCorrelationsToOutputArray(sheetNames, output) {
     }
     correlationTableArray.unshift(tempArray3);
     output.push(correlationTableArray);
+
     pushRotatedFactorsArrayToOutputArray(sheetNames, output);
 }
 
@@ -1006,7 +1038,7 @@ function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
     var results = JSON.parse(localStorage.getItem("results"));
 
     var newSheet = {
-        sheetid: "Rotated Factors",
+        sheetid: "Loadings",
         headers: false,
     };
     sheetNames.push(newSheet);
@@ -1028,6 +1060,11 @@ function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
     });
     formattedResults.push(tempArray);
 
+    // resort the array
+    results.sort(function (a, b) {
+        return a[0] - b[0];
+    });
+
     for (i = 0; i < iLoopLen; i++) {
         for (j = 0; j < jLoopLen; j++) {
             temp = results[i][j];
@@ -1043,12 +1080,14 @@ function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
     var expVar = JSON.parse(localStorage.getItem("expVar"));
     formattedResults.push(expVar);
     output.push(formattedResults);
+
     pushRotationListToOutputArray(sheetNames, output);
 }
 
+
 function pushRotationListToOutputArray(sheetNames, output) {
     var newSheet = {
-        sheetid: "Rotation History",
+        sheetid: "Project History",
         headers: false,
     };
     sheetNames.push(newSheet);
@@ -1058,14 +1097,19 @@ function pushRotationListToOutputArray(sheetNames, output) {
     var items = list.childNodes;
     var temp, temp1, temp2;
 
-    // pull list items and push to array for output
-    for (var i = 0; i < items.length; i++) {
-        var listArray1 = [];
-        temp = i + 1;
-        temp1 = items[i].textContent;
-        temp2 = temp1.replace("undo", "");
-        listArray1.push(temp, temp2);
-        listArray.push(listArray1);
+    if (items.length === 0) {
+        listArray.push(["no rotations"]);
+    } else {
+
+        // pull list items and push to array for output
+        for (var i = 0; i < items.length; i++) {
+            var listArray1 = [];
+            temp = i + 1;
+            temp1 = items[i].textContent;
+            temp2 = temp1.replace("undo", "");
+            listArray1.push(temp, temp2);
+            listArray.push(listArray1);
+        }
     }
     output.push(listArray);
     pushFactorsToOutputArray(sheetNames, output);
@@ -1111,8 +1155,6 @@ function pushFactorsToOutputArray(sheetNames, output) {
         }
         rawSorts.push(tempArray);
     }
-    // console.log(JSON.stringify(rawSorts));
-
 
     // for each factor check get a sigSort (if another remains)
     // get the raw sort for that specific sigSort
@@ -1131,8 +1173,6 @@ function pushFactorsToOutputArray(sheetNames, output) {
                 factorWeightFactorArray.push(factorWeightTempArray);
             }
         }
-        console.log(JSON.stringify(factorWeightFactorArray));
-
         output.push(factorWeightFactorArray);
 
         // FACTOR SCORE MINI CORRELATION TABLES STARTS FROM HERE
@@ -1145,7 +1185,6 @@ function pushFactorsToOutputArray(sheetNames, output) {
                 miniCorrelationFactorsArray.push(sigSortsArray[t].SigSorts);
             }
         }
-        // console.log(JSON.stringify(miniCorrelationFactorsArray));
 
         // pull correlations from table
         var miniCorrelationArray = [];
@@ -1179,10 +1218,6 @@ function pushFactorsToOutputArray(sheetNames, output) {
             }
         }
         miniCorrelationArray.unshift(miniCorrelationHeaderArray);
-        console.log(JSON.stringify(miniCorrelationArray));
-
-
-
         output.push(miniCorrelationArray);
 
 
@@ -1436,7 +1471,7 @@ function pushDistinguishingStatementsToOutput(sheetNames, output, sigSortsArray,
                 // factor m
                 // check to avoid comparison with self
                 if (analysisOutput[j][k].factor === analysisOutput[m][k].factor) {
-                    // console.log(JSON.stringify(analysisOutput[j][k].factor + " + " + analysisOutput[m][k].factor + " skipped"));
+
                 } else {
                     // loop through SED array to find comparison value
                     sedComparisonValue = null;
@@ -1804,6 +1839,7 @@ function downloadOutput() {
         output =
             JSON.parse(localStorage.getItem("outputSpreadsheetArray"));
         timeStamp = currentDate1() + "_" + currentTime1();
+
         projectName = JSON.parse(localStorage.getItem("qavProjectName"));
         fileName = 'SELECT INTO XLSX("KenQ_output_' + projectName + '_' + timeStamp + '.xlsx", ?) FROM ?';
         download = alasql(fileName, [sheetNames, output]);
@@ -1813,6 +1849,7 @@ function downloadOutput() {
             JSON.parse(localStorage.getItem("outputSpreadsheetSheetNamesArray"));
         output =
             JSON.parse(localStorage.getItem("outputSpreadsheetArray"));
+
         timeStamp = currentDate1() + "_" + currentTime1();
         projectName = JSON.parse(localStorage.getItem("qavProjectName"));
         fileName = 'SELECT INTO XLSX("KenQ_output_' + projectName + '_' + timeStamp + '.xlsx", ?) FROM ?';

@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Test - specD3-scatterplot.js</title>
+  <link rel="stylesheet" type="text/css" href="jasmine.css">
+  <script type="text/javascript" src="jasmine.js"></script>
+  <script type="text/javascript" src="jasmine-html.js"></script>
+  <script type="text/javascript" src="jasmineCompleteReporter.js"></script>
+  <script src="jquery.js"></script>
+  
+  
+</head>
+<body>
+<script type="text/javascript">
+    // JSlint declarations
+/* global localStorage: false, sessionStorage: false, console: false, $: false, _: false, d3: false, Handsontable:false, document: false, describe: false, expect: false, it:false,  
+ */
+
+xdescribe("D3-scatterplot - factorInvertFunction", function () {
+    var preInversion = [[-0.19189, 0.14943, 0.7365, 0.10804, 0.14642, -0.09173, 0.08338], [-0.05372, -0.06391, 0.76151, -0.0645, -0.08673, 0.1028, -0.05765], [0.02376, 0.62294, 0.04614, 0.15479, 0.10355, -0.13553, 0.02324], [0.19102, 0.65784, 0.19716, -0.03825, 0.00926, 0.12121, 0.03393], [0.00392, -0.88053, 0.1782, 0.01171, 0.12502, -0.02394, 0.04956], [0.88664, 0.05929, -0.04079, -0.10891, 0.16065, 0.04584, -0.00356], [0.68398, 0.1239, -0.17745, -0.05539, -0.17438, -0.04901, 0.00188], [-0.41132, 0.0018, 0.35324, -0.41508, 0.0112, 0.27728, -0.00579], [-0.0961, 0.05073, 0.03439, 0.51942, 0.00697, 0.00059, 0.00178]];
+
+    var factorToInvert = 1;
+
+    var test = factorInvertFunction(factorToInvert, preInversion);
+
+    var postInversion = [[0.19189, 0.14943, 0.7365, 0.10804, 0.14642, -0.09173, 0.08338], [0.05372, -0.06391, 0.76151, -0.0645, -0.08673, 0.1028, -0.05765], [-0.02376, 0.62294, 0.04614, 0.15479, 0.10355, -0.13553, 0.02324], [-0.19102, 0.65784, 0.19716, -0.03825, 0.00926, 0.12121, 0.03393], [-0.00392, -0.88053, 0.1782, 0.01171, 0.12502, -0.02394, 0.04956], [-0.88664, 0.05929, -0.04079, -0.10891, 0.16065, 0.04584, -0.00356], [-0.68398, 0.1239, -0.17745, -0.05539, -0.17438, -0.04901, 0.00188], [0.41132, 0.0018, 0.35324, -0.41508, 0.0112, 0.27728, -0.00579], [0.0961, 0.05073, 0.03439, 0.51942, 0.00697, 0.00059, 0.00178]];
+
+    it("should invert the values for the selected factor in the state Matrix", function () {
+        expect(test).toEqual(postInversion);
+    });
+
+});
+
+    
+    
+    
+    
+    var myParent = window.parent;
+    var jasmineEnv = jasmine.getEnv();
+    jasmineEnv.updateInterval = 1000;
+
+    var htmlReporter = new jasmine.HtmlReporter();
+    var reportRunnerResults = htmlReporter.reportRunnerResults;
+
+    htmlReporter.reportRunnerResults = function(runner) {
+        reportRunnerResults(runner);
+
+        var specs = runner.specs();
+        var specResults;
+        var assertionCount = {total: 0, passed: 0, failed: 0};
+        var result = {};
+        for (var i = 0; i < specs.length; ++i) {
+            if (this.specFilter(specs[i])) {
+                specResults = specs[i].results();
+                assertionCount.total += specResults.totalCount;
+                assertionCount.passed += specResults.passedCount;
+                assertionCount.failed += specResults.failedCount;
+            }
+        }
+    
+        if (console && console.log) {
+            console.log('Total: ' + assertionCount.total);
+            console.log('Passed: ' + assertionCount.passed);
+            console.log('Failed: ' + assertionCount.failed);
+        }
+        
+        
+        if (assertionCount.failed) {
+            result.status = "failed";
+            result.message = assertionCount.failed + " failures";
+        } else {
+            result.status = "passed";
+            result.message = "Success! " + assertionCount.passed + " passed";
+        }
+        
+        if(myParent.reportComplete) {
+            console.log("myParent.reportComplete", result);
+            myParent.reportComplete(result);
+        }
+        
+        var totals = document.querySelectorAll(".grand-total .rs");
+        if(myParent.coverageComplete) {
+            myParent.coverageComplete({
+                message: totals && totals[0] ? totals[0].innerHTML + " coverage" : "No coverage"
+            });
+        }
+        
+    };
+   
+    jasmineEnv.addReporter(htmlReporter);
+    
+    jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+    };
+
+    var currentWindowOnload = window.onload;
+                                                      
+    window.onload = function() {
+        if (currentWindowOnload) {
+            currentWindowOnload();
+        }
+        execJasmine();
+    };
+
+    function execJasmine() {
+        var oldCallback = jasmineEnv.currentRunner().finishCallback;
+        jasmineEnv.currentRunner().finishCallback = function () {
+            oldCallback.apply(this, arguments);
+            console.log(this, arguments);
+            
+            htmlReporter.reportRunnerResults();
+           
+        };
+        jasmineEnv.execute();
+    }
+</script>
+</body>
+</html>

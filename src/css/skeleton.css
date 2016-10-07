@@ -1,0 +1,1152 @@
+/*
+* Skeleton V2.0.1
+* Copyright 2014, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 12/11/2014
+*/
+
+
+/* Table of contents
+––––––––––––––––––––––––––––––––––––––––––––––––––
+- Grid
+- Base Styles
+- Typography
+- Links
+- Buttons
+- Forms
+- Lists
+- Code
+- Tables
+- Spacing
+- Utilities
+- Clearing
+- Media Queries
+*/
+
+
+/* Grid
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+@media (min-width: 750px) {
+    .container {
+        position: relative;
+        /*
+        width: 100%;
+        max-width: 1024px;
+*/
+        margin: 0 auto;
+        padding: 0;
+    }
+    .single-page-nav {
+        height: 20px;
+    }
+}
+
+
+/* Larger than desktop */
+
+@media (min-width: 1030px) {
+    .container {
+        position: relative;
+        /*
+        width: 100%;
+        max-width: 1024px;
+*/
+        margin: 0 auto;
+        padding: 0;
+    }
+    .single-page-nav {
+        height: 20px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        position: relative;
+        /*
+        width: 100%;
+        max-width: 1366px;
+*/
+        margin: 0 auto;
+        padding: 0;
+    }
+    .single-page-nav {
+        height: 20px;
+    }
+}
+
+@media (min-width: 1800px) {
+    .container {
+        position: relative;
+        /*
+        width: 100%;
+        max-width: 1366px;
+*/
+        margin: 0 auto;
+        padding: 0;
+    }
+    .single-page-nav {
+        height: 20px;
+    }
+}
+
+
+/* retina screens */
+
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    .container {
+        position: relative;
+        /*
+        width: 100%;
+max-width: 1200px;
+*/
+        margin: 0 auto;
+        padding: 0;
+    }
+    .single-page-nav {
+        height: 20px;
+    }
+}
+
+.container .column,
+.container .columns {
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.row {
+    /*
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+*/
+}
+
+.row .column:first-child,
+.row .columns:first-child {
+    margin-left: 0;
+}
+
+
+/* For devices larger than 550px */
+
+@media (min-width: 550px) {
+    .container .column,
+    .container .columns {
+        margin-left: 4%;
+    }
+    .container .one.column,
+    .container .one.columns {
+        width: 8.66666666667%;
+    }
+    .container .two.columns {
+        width: 13.3333333333%;
+    }
+    .container .three.columns {
+        width: 22%;
+    }
+    .container .four.columns {
+        width: 30.6666666667%;
+    }
+    .container .five.columns {
+        width: 39.3333333333%;
+    }
+    .container .six.columns {
+        width: 48%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    .container .seven.columns {
+        width: 56.6666666667%;
+    }
+    .container .eight.columns {
+        width: 65.3333333333%;
+    }
+    .container .nine.columns {
+        width: 74.0%;
+    }
+    .container .ten.columns {
+        width: 82.6666666667%;
+    }
+    .container .eleven.columns {
+        width: 91.3333333333%;
+    }
+    .container .twelve.columns {
+        width: 100%;
+        margin-left: 0;
+    }
+    .container .one-third.column {
+        width: 30.6666666667%;
+    }
+    .container .two-thirds.column {
+        width: 65.3333333333%;
+    }
+    .container .one-half.column {
+        width: 48%;
+    }
+    /* Offsets */
+    .container .row .offset-by-one {
+        margin-left: 8.66666666667%;
+    }
+    .container .row .offset-by-two {
+        margin-left: 17.3333333333%;
+    }
+    .container .row .offset-by-three {
+        margin-left: 26%;
+    }
+    .container .row .offset-by-four {
+        margin-left: 34.6666666667%;
+    }
+    .container .row .offset-by-five {
+        margin-left: 43.3333333333%;
+    }
+    .container .row .offset-by-six {
+        margin-left: 52%;
+    }
+    .container .row .offset-by-seven {
+        margin-left: 60.6666666667%;
+    }
+    .container .row .offset-by-eight {
+        margin-left: 69.3333333333%;
+    }
+    .container .row .offset-by-nine {
+        margin-left: 78.0%;
+    }
+    .container .row .offset-by-ten {
+        margin-left: 86.6666666667%;
+    }
+    .container .row .offset-by-eleven {
+        margin-left: 95.3333333333%;
+    }
+    .container .row .offset-by-one-third {
+        margin-left: 34.6666666667%;
+    }
+    .container .row .offset-by-two-thirds {
+        margin-left: 69.3333333333%;
+    }
+    .container .row .offset-by-one-half {
+        margin-left: 52%;
+    }
+}
+
+
+/* Base Styles
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
+/* NOTE
+html is set to 62.5% so that all the REM measurements throughout Skeleton
+are based on 10px sizing. So basically 1.5rem = 15px :) */
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.5em;
+    /* currently ems cause chrome bug misinterpreting rems on body element */
+    line-height: 1.6;
+    font-weight: 400;
+    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #222;
+}
+
+body > .container {
+    width: 90%;
+}
+
+
+/* Typography
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 300;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    margin-left: 5px;
+}
+
+h1 {
+    font-size: 4.0rem;
+    line-height: 1.2;
+    letter-spacing: -.1rem;
+}
+
+h2 {
+    font-size: 3.6rem;
+    line-height: 1.25;
+    letter-spacing: -.1rem;
+}
+
+h3 {
+    font-size: 3.0rem;
+    line-height: 1.3;
+    letter-spacing: -.1rem;
+}
+
+h4 {
+    font-size: 2.4rem;
+    line-height: 1.35;
+    letter-spacing: -.08rem;
+}
+
+h5 {
+    font-size: 1.8rem;
+    line-height: 1.5;
+    letter-spacing: -.05rem;
+}
+
+h6 {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    letter-spacing: 0;
+}
+
+
+/* Larger than phablet */
+
+@media (min-width: 550px) {
+    h1 {
+        font-size: 5.0rem;
+    }
+    h2 {
+        font-size: 4.2rem;
+    }
+    h3 {
+        font-size: 3.6rem;
+    }
+    h4 {
+        font-size: 3.0rem;
+    }
+    h5 {
+        font-size: 2.4rem;
+    }
+    h6 {
+        font-size: 1.5rem;
+    }
+}
+
+p {
+    margin-top: 0;
+}
+
+
+/* Links
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+a {
+    color: "black";
+}
+
+a:hover {
+    color: #0FA0CE;
+}
+
+
+/* Buttons
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+.button,
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+    display: inline-block;
+    background-color: transparent;
+    border-radius: 4px;
+    color: #555;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid #bbb;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 30px;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.button:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+.button:focus,
+button:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+input[type="button"]:focus {
+    border-color: #888;
+    color: #333;
+    outline: 0;
+}
+
+.button.button-primary,
+button.button-primary,
+input[type="submit"].button-primary,
+input[type="reset"].button-primary,
+input[type="button"].button-primary {
+    color: #FFF;
+    border-color: #38acec;
+    background-color: #38acec;
+}
+
+.button.button-primary:hover,
+button.button-primary:hover,
+input[type="submit"].button-primary:hover,
+input[type="reset"].button-primary:hover,
+input[type="button"].button-primary:hover,
+.button.button-primary:focus,
+button.button-primary:focus,
+input[type="submit"].button-primary:focus,
+input[type="reset"].button-primary:focus,
+input[type="button"].button-primary:focus {
+    background-color: #38acec;
+    border-color: #38acec;
+    color: #FFF;
+}
+
+
+/* Forms
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+input[type="email"],
+input[type="search"],
+input[type="password"],
+textarea,
+select {
+    border: 1px solid #D1D1D1;
+    height: 36px;
+    padding: 6px 10px;
+    /* The 6px vertically centers text on FF, ignored by Webkit */
+    border-radius: 4px;
+    box-shadow: none;
+    background: #fff;
+}
+
+input[type="text"] {
+    border: 1px solid #D1D1D1;
+    height: 14px;
+    width: 200px;
+    margin-left: 5px;
+    padding: 3px 5px;
+    border-radius: 4px;
+    box-shadow: none;
+    background: #fff;
+}
+
+
+/* Removes awkard default styles on some inputs */
+
+input[type="email"],
+input[type="search"],
+input[type="text"],
+textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+textarea {
+    min-height: 250px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-family: "Lucida Console", Monaco, monospace;
+}
+
+input[type="email"]:focus,
+input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+    border: 1px solid #33C3F0;
+    outline: 0;
+}
+
+label,
+legend {
+    display: inline-block;
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+fieldset {
+    border-width: 0;
+    padding: 0;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    display: inline-block;
+}
+
+label > .label-body {
+    display: inline-block;
+    font-weight: normal;
+    margin-left: .5rem;
+}
+
+.radioButtons {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.statementSelectorDiv {
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+
+/* Lists
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+ul {
+    list-style: circle inside;
+    list-style: none;
+    margin-left: 10px;
+}
+
+ol {
+    list-style: decimal inside;
+    margin-left: 10px;
+}
+
+ol,
+ul {
+    margin-top: 0;
+    padding-left: 0;
+}
+
+ul ul,
+ul ol,
+ol ol,
+ol ul {
+    margin: 1.5rem 0 1.5rem 3rem;
+    font-size: 90%;
+}
+
+li {
+    margin-bottom: 1rem;
+}
+
+
+/* Code
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+code {
+    padding: .2rem .5rem;
+    margin: 0 .2rem;
+    font-size: 90%;
+    background: #F1F1F1;
+    border: 1px solid #E1E1E1;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+pre > code {
+    display: block;
+    padding: 1rem 1.5rem;
+    white-space: pre;
+}
+
+
+/* Tables
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+th,
+td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #E1E1E1;
+}
+
+th:first-child,
+td:first-child {
+    padding-left: 0;
+}
+
+th:last-child,
+td:last-child {
+    padding-right: 0;
+}
+
+
+/* Spacing
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+button,
+.button {
+    margin-bottom: 1rem;
+}
+
+input,
+textarea,
+select,
+fieldset {
+    margin-bottom: 1.5rem;
+}
+
+pre,
+blockquote,
+form,
+dl,
+figure,
+table,
+p,
+ul,
+ol,
+form {
+    margin-bottom: 2.5rem;
+}
+
+p {
+    margin-top: 0;
+}
+
+
+/* Utilities
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+.u-full-width {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.u-max-full-width {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.u-pull-right {
+    float: right;
+}
+
+.u-pull-left {
+    float: left;
+}
+
+
+/* Misc
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+hr {
+    margin-top: 3rem;
+    margin-bottom: 3.5rem;
+    border-width: 0;
+    border-top: 1px solid #E1E1E1;
+}
+
+
+/* Clearing
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
+/* Self Clearing Goodness */
+
+.container:after,
+.row:after,
+.u-cf {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+/* Media Queries
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
+/*
+Note: The best way to structure the use of media queries is to create the queries
+near the relevant code. For example, if you wanted to change the styles for buttons
+on small devices, paste the mobile query code up in the buttons secion and style it
+there.
+*/
+
+
+/* Larger than mobile */
+
+
+/*
+@media (min-width: 400px) {}
+/* Larger than phablet (also point when grid becomes active) */
+
+
+/*@media (min-width: 550px) {}*/
+
+
+/* Larger than tablet */
+
+
+/*@media (min-width: 1000px) {}*/
+
+
+/* Larger than Desktop HD */
+
+
+/*@media (min-width: 1200px) {}*/
+
+
+/*
+
+/* Flexbox css for manual sort boxes
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+#pyramidContainer {
+    position: relative;
+    margin: 10px;
+}
+
+.flex-container {
+    height: auto;
+    padding: 0;
+    margin: 0;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+#stack1 {
+    position: absolute;
+    top: 1px;
+    left: 75px;
+}
+
+#stack2 {
+    position: absolute;
+    top: 1px;
+    left: 111px;
+}
+
+#stack3 {
+    position: absolute;
+    top: 1px;
+    left: 147px;
+}
+
+#stack4 {
+    position: absolute;
+    top: 1px;
+    left: 183px;
+}
+
+#stack5 {
+    position: absolute;
+    top: 1px;
+    left: 219px;
+}
+
+#stack6 {
+    position: absolute;
+    top: 1px;
+    left: 255px;
+}
+
+#stack7 {
+    position: absolute;
+    top: 1px;
+    left: 291px;
+}
+
+#stack8 {
+    position: absolute;
+    top: 1px;
+    left: 327px;
+}
+
+#stack9 {
+    position: absolute;
+    top: 1px;
+    left: 363px;
+}
+
+#stack10 {
+    position: absolute;
+    top: 1px;
+    left: 399px;
+}
+
+#stack11 {
+    position: absolute;
+    top: 1px;
+    left: 435px;
+}
+
+#stack12 {
+    position: absolute;
+    top: 1px;
+    left: 471px;
+}
+
+#stack13 {
+    position: absolute;
+    top: 1px;
+    left: 507px;
+}
+
+#stack14 {
+    position: absolute;
+    top: 1px;
+    left: 543px;
+}
+
+#stack15 {
+    position: absolute;
+    top: 1px;
+    left: 579px;
+}
+
+#stack16 {
+    position: absolute;
+    top: 1px;
+    left: 579px;
+}
+
+#stack17 {
+    position: absolute;
+    top: 1px;
+    left: 615px;
+}
+
+#stack18 {
+    position: absolute;
+    top: 1px;
+    left: 651px;
+}
+
+#stack19 {
+    position: absolute;
+    top: 1px;
+    left: 687px;
+}
+
+#stack20 {
+    position: absolute;
+    top: 1px;
+    left: 723px;
+}
+
+.flex-item {
+    background-color: #d3d3d3;
+    padding: 5px;
+    width: 20px;
+    height: 20px;
+    margin: 5px;
+    line-height: 20px;
+    color: black;
+    font-weight: bold;
+    font-size: 1.25em;
+    text-align: center;
+}
+
+#manualInputErrorMessagesDiv {
+    float: left;
+    width: 500px;
+    min-height: 150px;
+    background-color: #fdfcd5;
+    margin-top: 10px;
+    margin-left: 1.5rem;
+    padding-left: 25px;
+    padding-top: 20px;
+    border-color: black;
+    border-width: 3px;
+    border-style: solid;
+    display: none;
+    margin-right: 0px;
+}
+
+#manualInputSuccessDiv {
+    display: none;
+    float: left;
+    width: 250px;
+    height: 55px;
+    background-color: limegreen;
+    margin-top: 10px;
+    margin-left: 1.5rem;
+    padding-left: 25px;
+    padding-top: 20px;
+    margin-right: 50px;
+}
+
+#respondentNameInput {
+    width: 350px;
+}
+
+#sortInputSubmit {
+    display: block;
+    float: left;
+    margin-top: 10px;
+    font-size: 1em;
+}
+
+#submitButtonDiv {
+    float: left;
+}
+
+a {
+    outline: 0;
+}
+
+.single-page-nav {
+    font-size: 13px;
+    background: #000;
+    padding: .40em 0;
+    padding-left: 5%;
+    padding-bottom: .65em;
+    position: fixed;
+    text-align: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /*    height: 13px;*/
+    z-index: 9999;
+}
+
+.single-page-nav ul {
+    list-style: none;
+    padding-left: 2%;
+    /*    margin: 0 auto;*/
+    width: 100%;
+    overflow: hidden;
+}
+
+.single-page-nav li {
+    float: left;
+    margin-left: 4%;
+    width: auto;
+    text-align: center;
+}
+
+.single-page-nav a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    /*  font-size: 1.25em;*/
+    font-weight: 700;
+}
+
+.single-page-nav a:hover,
+.single-page-nav .current {
+    color: #38acec;
+}
+
+.section {
+    width: 100%;
+    padding: 1.25em 0;
+    margin: 0 auto;
+    background: #eee;
+    /* section background color */
+    border-top: 1px solid #bbb;
+    margin-bottom: 50px;
+}
+
+#section0 {
+    padding-top: 5em;
+    min-height: 500px;
+    padding-left: 20px;
+}
+
+#section1 {
+    padding-top: 5em;
+    height: 1350px;
+    padding-left: 20px;
+}
+
+#section2 {
+    min-height: 500px;
+    padding-left: 20px;
+}
+
+#section3 {
+    min-height: 500px;
+    padding-left: 20px;
+}
+
+#section4 {
+    min-height: 300px;
+    padding-left: 20px;
+}
+
+#section5 {
+    min-height: 500px;
+    padding-left: 20px;
+}
+
+#section6 {
+    min-height: 500px;
+    padding-left: 20px;
+}
+
+#section7 {
+    min-height: 700px;
+    padding-left: 20px;
+}
+
+
+/*1024px */
+
+@media all and (max-width: 64em) {
+    /*
+  body {
+    font-size: 90%;
+  }
+*/
+    .single-page-nav a {
+        font-size: 1.0em;
+    }
+    /*
+  .section {
+    width: 90%;
+  }
+*/
+}
+
+
+/*600px*/
+
+
+/*
+
+@media all and (max-width : 37.5em) {
+
+  .single-page-nav a {
+    font-size: 125%;
+  }
+
+  .single-page-nav ul {
+    width: 95%;
+  }
+
+  .single-page-nav li {
+    width: 50%;
+    padding: 0.5em 0;
+  }
+
+  .section {
+    width: 95%;
+  }
+
+  #section1 {
+    padding-top: 7.5em;
+  }
+}
+*/
+
+
+/* ********  CUSTOM RADIO BUTTONS ***************  */
+
+label {
+    width: 215px;
+    border-radius: 3px;
+    border: 1px solid #D1D3D4
+}
+
+.checkboxLabel {
+    padding-left: 5px;
+    width: 73px;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+input[type="checkbox"] {}
+
+
+/* hide input */
+
+input.radio:empty {
+    margin-left: -9999px;
+}
+
+
+/* style label */
+
+input.radio:empty ~ label {
+    position: relative;
+    float: left;
+    line-height: 2.5em;
+    text-indent: 3.25em;
+    margin-top: 2em;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+input.radio:empty ~ label:before {
+    position: absolute;
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    content: '';
+    width: 2.8em;
+    background: #D1D3D4;
+    border-radius: 3px 0 0 3px;
+}
+
+
+/* toggle hover */
+
+input.radio:hover:not(:checked) ~ label:before {
+    content: '\2714';
+    text-indent: .9em;
+    color: #C2C2C2;
+}
+
+input.radio:hover:not(:checked) ~ label {
+    color: #888;
+}
+
+
+/* toggle on */
+
+input.radio:checked ~ label:before {
+    content: '\2714';
+    text-indent: .9em;
+    color: #eee;
+    background-color: #38acec;
+}
+
+input.radio:checked ~ label {
+    color: #777;
+}
+
+
+/* radio focus */
+
+input.radio:focus ~ label:before {
+    box-shadow: 0 0 0 3px #999;
+}
+
+.radioButtonDiv {
+    clear: both;
+    margin: 0 0px;
+    text-align: center;
+}
+
+.radioButtonDiv label {
+    width: 88%;
+    padding-right: 8px;
+}

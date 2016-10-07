@@ -1,0 +1,1158 @@
+/*Custom CSS */
+
+#manualInputContainer {
+    display: none;
+}
+
+#rawSorts {
+    display: none;
+}
+
+.statementSelectorDiv {
+    border: 3px solid #38acec;
+}
+
+.statementSelectorDiv p {
+    font-size: 24px;
+    padding-left: 15px;
+}
+
+#statementsInputBox {
+    display: block;
+}
+
+#correlationTable {
+    height: auto;
+}
+
+div.two.columns {
+    width: 115px;
+}
+
+
+/*D3 styling*/
+
+
+/*D3 styling*/
+
+
+/*D3 styling*/
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.checkboxDiv {
+    width: 110px;
+    height: 30px;
+}
+
+.dot {
+    stroke: #000;
+}
+
+.dotText {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+.dot2 {
+    fill: white;
+    stroke: black;
+    stroke-width: 1.5px;
+}
+
+
+/*
+rotation chart labels
+*/
+
+#handRotationDisplayContainer {
+    margin-left: -10px;
+    height: 75px;
+    padding-right: 30px;
+    width: 100%;
+}
+
+#handRotationDisplayContainer label {
+    text-align: right;
+    width: 95px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-left: 0px;
+}
+
+#handRotationDisplayContainer input[type="number"] {
+    width: 30px;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+#handRotationDisplayContainer p {
+    display: inline-block;
+}
+
+#handRotationDisplayContainer div {
+    height: 40px;
+    width: 30px;
+    line-height: 1.2;
+    font-size: 40px;
+    display: inline-block;
+    margin-left: 50px;
+    margin-top: 0px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    vertical-align: top;
+}
+
+#saveRotationButton {
+    /*    float: right;*/
+    margin-left: 60px;
+    margin-top: 2px;
+    height: 40px;
+    width: 125px;
+    padding-left: 10px;
+    display: inline-block;
+}
+
+.saveRotationButtonYellow {
+    background-color: #ffffb2 !important;
+}
+
+.saveRotationButtonGray {
+    background-color: #eeeeee !important;
+}
+
+.saveRotation:hover {
+    color: #333 !important;
+}
+
+
+/*
+Hands on Table settings for Factor Rotation
+*/
+
+#factorRotationTable {
+    display: block;
+    margin-right: 2%;
+    vertical-align: top;
+    height: auto;
+    /*    margin-left: -1%;
+    */
+}
+
+#factorRotationTable2 {
+    width: 80%;
+}
+
+#twoFactorDisplayTable {
+    display: inline-block;
+    margin-top: 17px;
+    margin-left: 2px;
+    vertical-align: top;
+    height: auto;
+}
+
+
+/*
+scatterchart for Factor Rotation
+*/
+
+#d3_scatterchart {
+    display: inline-block;
+    margin-right: 3px;
+    vertical-align: top;
+    width: 50%;
+}
+
+
+/*
+tooltips for scatterchart
+*/
+
+#tooltip {
+    position: absolute;
+    margin-left: 50px;
+    margin-bottom: 100px;
+    width: auto;
+    height: auto;
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    background-color: white;
+    border-radius: 10px;
+    -mox-box-shadow: 4px 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rbga(0, 0, 0, 0.4);
+    pointer-events: none;
+}
+
+#tooltip.hidden {
+    opacity: 0;
+}
+
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+
+/* custom formating for
+save rotation lists
+*/
+
+.custom-counter {
+    margin-left: 0;
+    padding-right: 0;
+    list-style-type: none;
+}
+
+.custom-counter li {
+    counter-increment: step-counter;
+    margin-bottom: 7px !important;
+}
+
+.custom-counter li::before {
+    content: counter(step-counter);
+    margin-right: 5px;
+    margin-left: 5px;
+    font-size: 80%;
+    background-color: rgb(96, 96, 96);
+    color: white;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 3px;
+}
+
+.deleteButton {
+    border: 1px solid #bbb;
+    border-radius: 2px 2px 2px 2px;
+    color: #bbb;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 15px;
+    margin-bottom: 5px;
+    margin-top: 0px;
+    margin-left: 5px;
+    padding: 3px 3px;
+    text-transform: none;
+    transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s ease 0s;
+    width: 10.5%;
+    height: 3%;
+    /* auto */
+    text-align: center;
+    /* DELETE WHEN WIDTH AUTO */
+}
+
+.deleteButton {
+    background: none repeat scroll 0 0 transparent;
+    color: #bbb;
+}
+
+li:nth-last-child(n+2) .deleteButton {
+    display: none;
+}
+
+.deleteSplitFactorButton {
+    border: 1px solid #bbb;
+    border-radius: 2px 2px 2px 2px;
+    color: #bbb;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 15px;
+    margin-bottom: 5px;
+    margin-top: 0px;
+    margin-left: 5px;
+    padding: 3px 3px;
+    text-transform: none;
+    transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s ease 0s;
+    width: 10.5%;
+    height: 3%;
+    /* auto */
+    text-align: center;
+    /* DELETE WHEN WIDTH AUTO */
+}
+
+.deleteSplitFactorButton {
+    background: none repeat scroll 0 0 transparent;
+    color: #bbb;
+}
+
+li:nth-last-child(n+2) .deleteSplitFactorButton {
+    display: none;
+}
+
+.deleteButtonSort {
+    border: 0 none;
+    border-radius: 2px 2px 2px 2px;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 15px;
+    margin-bottom: 5px;
+    margin-top: 0px;
+    margin-left: 5px;
+    padding: 3px 3px;
+    text-transform: none;
+    transition: all 0.3s ease 0s;
+    -moz-transition: all 0.3s ease 0s;
+    -webkit-transition: all 0.3s ease 0s;
+    width: 10.5%;
+    height: 3%;
+    /* auto */
+    text-align: center;
+    /* DELETE WHEN WIDTH AUTO */
+}
+
+.deleteButtonSort {
+    /*    background: none repeat scroll 0 0 #38acec;*/
+    background: none repeat scroll 0 0 #d3d3d3;
+    color: #FFFFFF;
+}
+
+.deleteButtonSort:hover {
+    /*    background: none repeat scroll 0 0 #38acec;*/
+    background: none repeat scroll 0 0 #38acec;
+    color: #FFFFFF;
+}
+
+input[type="button"]:active {
+    position: relative;
+    top: 1px;
+}
+
+input[type="button"].blackHover:hover {
+    background: none repeat scroll 0 0 #38acec !important;
+    color: #FFFFFF !important;
+}
+
+input[type="button"].deleteHover:hover {
+    background: none repeat scroll 0 0 red !important;
+    color: #FFFFFF !important;
+}
+
+input[type="button"].buttonActionComplete {
+    background: none repeat scroll 0 0 #38acec !important;
+    color: white !important;
+}
+
+#respondentListDiv {
+    display: inline-block;
+    margin-right: 15px;
+    height: 50px;
+    padding-top: 35px;
+}
+
+#sortExportButtonDiv {
+    display: inline-block;
+    padding-top: -25px;
+}
+
+input[type="button"].downloadHover {
+    /*    background: none repeat scroll 0 0 #adff2f;*/
+    color: black !important;
+    background-color: #ffffb2;
+    border-color: black;
+}
+
+input[type="button"].downloadHover:hover {
+    /*    background: none repeat scroll 0 0 #adff2f;*/
+    color: black !important;
+    background-color: #ccffcc;
+    border-color: black;
+}
+
+
+/*
+
+.button.button-primary,
+input:hover {
+    background: none repeat scroll 0 0 #444444;
+    color: #FFFFFF !important;
+}
+
+
+
+.button-primary:hover {
+    background: none repeat scroll 0 0 #444444;
+    color: #FFFFFF;
+}
+*/
+
+#splitFactorDiv {
+    float: left;
+    margin-top: 15px;
+    margin-left: 20px;
+}
+
+.handsontable.resultsTable {
+    margin-left: 20px;
+    margin-bottom: 50px;
+}
+
+.resultsLabel1 {
+    margin-left: 0px;
+    margin-top: 70px;
+    margin-bottom: 5px;
+    font-size: 30px;
+    margin-bottom: -20px;
+}
+
+#sortExportBox {
+    display: none;
+}
+
+#excelSortExportBox {
+    display: none;
+}
+
+.singleLine {
+    display: inline-block;
+}
+
+.vertical {
+    vertical-align: middle;
+}
+
+#factorVarimaxButton {
+    margin-left: 20px;
+}
+
+#twoFactorDisplayTableDiv {
+    /*    display: inline-block;*/
+    /*    border: 1px solid red;*/
+    /*    margin-left: 2px;*/
+    width: 50%;
+    /*    margin: 0 auto;
+*/
+}
+
+#chartAndTableContainerDiv {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-wrap: nowrap;
+    flex-wrap: nowrap;
+    -webkit-box-align: stretch;
+    -ms-flex-align: stretch;
+    align-items: stretch;
+    /*
+    width: 95%;
+    margin: 10px auto 10px auto;
+    border: 1px solid black;
+    padding: 10px;
+*/
+}
+
+#chartTable {
+    /*    display: inline-block;*/
+}
+
+
+/* dataTable highlighting  */
+
+td.highlight {
+    background-color: #ffffcc !important;
+}
+
+.row_selected td {
+    background-color: #ffffcc !important;
+    /* Add !important to make sure override datables base styles */
+}
+
+.dropzone {
+    width: 60%;
+    margin-left: 20%;
+    margin-top: 50px;
+}
+
+#excelTable {
+    margin-top: 50px;
+    margin-left: 10%;
+}
+
+#excelDump {
+    margin-top: 20px;
+    margin-left: 10%;
+}
+
+.choose_file {
+    margin-bottom: -15px;
+    position: relative;
+    display: inline-block;
+    border-radius: 5px;
+    border: #ebebeb solid 1px;
+    width: 200px;
+    height: 28px;
+    padding: 6px 6px 2px 8px;
+    color: black;
+    background: #eeeeee;
+    border-color: #38acec;
+    border-width: 2px;
+    width: 250px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.choose_file span {
+    display: inline-block;
+    margin: 0px 10px 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.choose_file input[type="file"] {
+    display: inline-block;
+    -webkit-appearance: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+.choose_file:hover {
+    /*    background: none repeat scroll 0 0 #adff2f;*/
+    color: #FFFFFF !important;
+    background: #38acec;
+    border-color: #38acec;
+}
+
+.choose_file:active {
+    position: relative;
+    top: 1px;
+}
+
+#excelActionButtonsDiv {
+    height: 30px;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+#excelActionButtonsContainerDiv {
+    padding-top: 5px;
+}
+
+#excelUploadErrorDiv {
+    background: #ff9999;
+    width: 50%;
+    margin-left: 20%;
+}
+
+#excelUploadErrorDiv h3 {
+    margin-left: 35%;
+}
+
+#excelUploadErrorDiv li {
+    margin-left: 15%;
+    font: normal 20px Myriad Pro, Verdana, Geneva, sans-serif;
+}
+
+.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    /* half width of the spinner gif */
+    margin-top: -50px;
+    /* half height of the spinner gif */
+    text-align: center;
+    z-index: 1234;
+    overflow: auto;
+    width: 100px;
+    /* width of the spinner gif */
+    height: 102px;
+    /*hight of the spinner gif +2px to fix IE8 issue */
+}
+
+td.negativeHighlight {
+    font-weight: bold;
+    color: red;
+}
+
+#factorCorrelationTableDiv {
+    margin-right: 20px;
+}
+
+#factorTables {
+    margin-right: 20px;
+}
+
+.spacer {
+    min-height: 550px;
+}
+
+
+/*
+MODAL WINDOW CSS
+*/
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: auto;
+    margin-left: -200px;
+    margin-top: -150px;
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 5px;
+    z-index: 10;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.modal.active {
+    display: block;
+}
+
+.modal header {
+    height: 55px;
+    position: relative;
+    width: 350px;
+    margin-bottom: 5px;
+}
+
+.modal h2 {
+    text-align: center;
+    position: relative;
+    width: 350px;
+}
+
+.modal .close {
+    position: absolute;
+    top: 3px;
+    right: 0;
+    margin: 0;
+}
+
+.modal p {
+    line-height: 1.4;
+    margin-bottom: 35px;
+    width: 380px;
+    display: inline-block;
+    font-size: 20px;
+}
+
+.modal .wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+
+/*
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+*/
+
+.modal > div > input[type="number"] {
+    display: inline-block;
+    width: 55px;
+    /*    margin-bottom: 25px;*/
+    font-size: 20px;
+}
+
+.successModal {
+    background-color: #E0FDE0;
+}
+
+.functionDisabledModal {
+    background-color: lightgoldenrodyellow;
+    height: 250px;
+}
+
+.modal .input-inside {
+    padding-left: 16px;
+}
+
+#existingDatabaseRespondentList li {
+    width: 95%;
+    word-wrap: break-word;
+}
+
+#factorTables .dataTable tbody td:nth-child(2) {
+    word-wrap: normal !important;
+}
+
+#noFactorLoadingModal p {
+    width: auto
+}
+
+#noFactorLoadingModal button {
+    margin-left: 117px
+}
+
+.manualInputModal {
+    background-color: #E0FDE0;
+}
+
+.analysisDataDiv {
+    margin-top: 150px;
+    border: 2px solid black;
+    width: 98%;
+    height: auto;
+}
+
+.pastePQM {
+    display: inline-block;
+}
+
+.choose_filePQM {
+    margin-bottom: -10px;
+    margin-left: 5px;
+    position: relative;
+    display: inline-block;
+    border-radius: 5px;
+    border: #ebebeb solid 1px;
+    width: 150px;
+    height: 28px;
+    padding: 6px 6px 2px 8px;
+    color: black;
+    background: #eeeeee;
+    border-color: #38acec;
+    border-width: 2px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.choose_filePQM span {
+    display: inline-block;
+    margin: 0px 10px 0 10px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.choose_filePQM input[type="file"] {
+    display: inline-block;
+    -webkit-appearance: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+.choose_filePQM:hover {
+    /*    background: none repeat scroll 0 0 #adff2f;*/
+    color: #FFFFFF !important;
+    background: #38acec;
+    border-color: #38acec;
+}
+
+.choose_filePQM:active {
+    position: relative;
+    top: 1px;
+}
+
+.bigNumberDiv {
+    display: inline-block;
+    height: 75px;
+    width: 75px;
+    background-color: #38acec;
+}
+
+.bigNumberDiv p {
+    text-align: center;
+    font-size: 44px;
+    color: white;
+}
+
+.specialH4 {
+    display: inline-block;
+}
+
+.rotationButtons {
+    display: inline-block;
+}
+
+.checkboxLabel {
+    width: 65px;
+}
+
+.navigationBar {
+    width: 90%;
+    margin-left: -25px;
+}
+
+#autoflagButton {
+    margin-top: 23px;
+}
+
+#section1 h1 {
+    font-family: ‘Arial Narrow’, sans-serif;
+}
+
+#section1 ul {
+    list-style: square outside none;
+    margin-left: 5%;
+}
+
+#section8 ul {
+    display: block;
+    list-style: square outside none;
+    margin-left: 5%;
+}
+
+.rightMargin {
+    margin-right: 2%;
+}
+
+.leftMargin {
+    margin-left: 8%;
+}
+
+#spinnerText {
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-left: 20px;
+    font-size: 36px;
+    color: white;
+    background-color: black;
+}
+
+#clearStorageButton {
+    display: none;
+}
+
+#databaseSelectDiv p {
+    width: 40%;
+    display: inline-block;
+    margin-right: 3%;
+    margin-left: 20px;
+}
+
+#judgementalRotationHelperText {
+    margin-top: 15px;
+    width: 90%;
+    display: inline-block;
+    margin-right: 5%;
+    max-height: 93px;
+}
+
+.helperText {
+    border: #38acec 1px solid;
+    padding: 5px 5px 5px 5px;
+}
+
+.inputBoxAutoWidth {
+    width: 95%;
+}
+
+#accordion {
+    margin-top: 10px;
+    margin-left: 10%;
+    border: thin solid #cecece;
+    border-top: none;
+    border-bottom: none;
+}
+
+#accordion div {
+    padding-top: 20px;
+    padding-bottom: 3px;
+    background: white;
+    height: auto;
+    line-height: 20px;
+    width: 80%;
+    max-width: 800px;
+    display: none;
+    border-bottom: thin solid #cecece;
+    padding-left: 15px;
+}
+
+#accordion a {
+    display: block;
+    width: 80%;
+    max-width: 800px;
+    background: #f4f4f4;
+    color: #959696;
+    padding-left: 15px;
+    height: 40px;
+    line-height: 40px;
+    text-decoration: none;
+    border-bottom: thin solid #cecece;
+    font-family: Arial;
+    font-size: 13px;
+    font-weight: bold;
+    text-shadow: 0px 1px 1px white;
+}
+
+#accordion .first {
+    border-top: thin solid #cecece;
+}
+
+#accordionDiv {
+    height: 500px;
+}
+
+.evenFactorRow {
+    background-color: pink;
+}
+
+#section6 fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+#section6 legend {
+    padding: 0;
+    margin: 0;
+}
+
+#section6 label {
+    cursor: pointer;
+    display: block;
+    width: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 15px;
+    letter-spacing: .1rem;
+    float: left;
+    background-color: #eeeeee;
+    border: 1px solid #bbb;
+}
+
+#section6 label:first-child {
+    border-left-width: 1px;
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+#section6 label:last-child {
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+}
+
+#section6 label.selected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#section6 label.warning.selected {
+    background-color: red;
+    border-color: darkred;
+}
+
+#section6 input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
+#factorLoadingTableRadioDiv {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#rotateAxes {
+    border: 0px;
+}
+
+#PcaExtractionButton {
+    margin-left: 50px;
+}
+
+.hidden {
+    display: none;
+}
+
+.errorMessage {
+    width: 500px;
+    margin-left: 5%;
+    padding: 5 5 5 5;
+    border: 1px solid;
+    background-color: #FEEFB3;
+    color: #D8000C;
+}
+
+#section4 tfoot tr th {
+    text-align: right
+}
+
+div.d3Tooltip {
+    position: absolute;
+    min-width: 125px;
+    text-align: left;
+    height: 34px;
+    padding: 2px;
+    padding-left: 10px;
+    font: 12px sans-serif;
+    color: black;
+    background: white;
+    border: 2px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.radvizContainer1 .panel {
+    stroke: black;
+    fill: white;
+}
+
+.radvizContainer1 .bg {
+    fill: #eee;
+}
+
+.radvizContainer1 .link {
+    stroke: silver;
+    stroke-opacity: 0.05
+}
+
+.radvizContainer1 .dot {
+    fill-opacity: 0.5;
+}
+
+.radvizContainer1 .label-node {
+    fill: black;
+}
+
+.radvizContainer1 .active {
+    stroke: black;
+}
+
+.radvizContainer1 .label {
+    fill: black;
+    pointer-events: none;
+}
+
+#radviz-tooltip {
+    font-size: 12px;
+    margin-top: 22px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+}
+
+#radviz-tooltip h1 {
+    font-size: 14px;
+    margin: 0;
+}
+
+.radvizTooltip {
+    position: absolute;
+    min-width: 50px;
+    text-align: left;
+    height: 34px;
+    padding: 2px;
+    padding-left: 10px;
+    font: 22px sans-serif;
+    color: black;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+#zoomFactorRadioSelect label {
+    cursor: pointer;
+    display: block;
+    width: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 15px;
+    letter-spacing: .1rem;
+    float: left;
+    background-color: #eeeeee;
+    border: 1px solid #bbb;
+}
+
+#zoomFactorRadioSelect label:first-child {
+    border-left-width: 1px;
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+#zoomFactorRadioSelect label:last-child {
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+}
+
+#zoomFactorRadioSelect label.selected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#zoomFactorRadioSelect label.warning.selected {
+    background-color: red;
+    border-color: darkred;
+}
+
+#zoomFactorRadioSelect input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
+.linkUnderline:link {
+    border-bottom: 3px solid #38acec;
+    opacity: 0.6;
+    box-shadow: 0px -4px 0px #38acec inset;
+    color: black !important;
+    text-decoration: none !important;
+}
+
+.linkUnderline:hover {
+    background-color: #38acec;
+    opacity: 0.6;
+}
+
+#section4 path {
+    stroke: black;
+    stroke-width: 2;
+    fill: none;
+}
+
+#section4 .axis path,
+#section4 .axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+
+/*
+
+td.dt-head-right*/

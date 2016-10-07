@@ -343,7 +343,7 @@ p {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 a {
-    color: #1EAEDB;
+    color: "black";
 }
 
 a:hover {
@@ -718,14 +718,11 @@ there.
     margin: 0;
     display: -webkit-box;
     display: -ms-flexbox;
-    display: -webkit-flex;
     display: flex;
     -webkit-box-align: center;
-    -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
     -webkit-box-pack: center;
-    -webkit-justify-content: center;
     -ms-flex-pack: center;
     justify-content: center;
 }
@@ -972,7 +969,7 @@ a {
 
 #section1 {
     padding-top: 5em;
-    min-height: 500px;
+    height: 1350px;
     padding-left: 20px;
 }
 

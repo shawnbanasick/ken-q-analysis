@@ -54,6 +54,20 @@ div.two.columns {
     stroke: #000;
 }
 
+.dotText {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+.dot2 {
+    fill: white;
+    stroke: black;
+    stroke-width: 1.5px;
+}
+
 
 /*
 rotation chart labels
@@ -438,19 +452,15 @@ input:hover {
 
 #chartAndTableContainerDiv {
     display: -webkit-box;
-    display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
     -ms-flex-direction: row;
     flex-direction: row;
-    -webkit-flex-wrap: nowrap;
     -ms-flex-wrap: nowrap;
     flex-wrap: nowrap;
     -webkit-box-align: stretch;
-    -webkit-align-items: stretch;
     -ms-flex-align: stretch;
     align-items: stretch;
     /*
@@ -1005,14 +1015,144 @@ div.d3Tooltip {
     font: 12px sans-serif;
     color: black;
     background: white;
+    border: 2px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.radvizContainer1 .panel {
+    stroke: black;
+    fill: white;
+}
+
+.radvizContainer1 .bg {
+    fill: #eee;
+}
+
+.radvizContainer1 .link {
+    stroke: silver;
+    stroke-opacity: 0.05
+}
+
+.radvizContainer1 .dot {
+    fill-opacity: 0.5;
+}
+
+.radvizContainer1 .label-node {
+    fill: black;
+}
+
+.radvizContainer1 .active {
+    stroke: black;
+}
+
+.radvizContainer1 .label {
+    fill: black;
+    pointer-events: none;
+}
+
+#radviz-tooltip {
+    font-size: 12px;
+    margin-top: 22px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+}
+
+#radviz-tooltip h1 {
+    font-size: 14px;
+    margin: 0;
+}
+
+.radvizTooltip {
+    position: absolute;
+    min-width: 50px;
+    text-align: left;
+    height: 34px;
+    padding: 2px;
+    padding-left: 10px;
+    font: 22px sans-serif;
+    color: black;
+    background: white;
     border: 0px;
     border-radius: 8px;
     pointer-events: none;
 }
 
+#zoomFactorRadioSelect label {
+    cursor: pointer;
+    display: block;
+    width: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 15px;
+    letter-spacing: .1rem;
+    float: left;
+    background-color: #eeeeee;
+    border: 1px solid #bbb;
+}
+
+#zoomFactorRadioSelect label:first-child {
+    border-left-width: 1px;
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+#zoomFactorRadioSelect label:last-child {
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+}
+
+#zoomFactorRadioSelect label.selected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#zoomFactorRadioSelect label.warning.selected {
+    background-color: red;
+    border-color: darkred;
+}
+
+#zoomFactorRadioSelect input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
+.linkUnderline:link {
+    border-bottom: 3px solid #38acec;
+    opacity: 0.6;
+    box-shadow: 0px -4px 0px #38acec inset;
+    color: black !important;
+    text-decoration: none !important;
+}
+
+.linkUnderline:hover {
+    background-color: #38acec;
+    opacity: 0.6;
+}
+
+#section4 path {
+    stroke: black;
+    stroke-width: 2;
+    fill: none;
+}
+
+#section4 .axis path,
+#section4 .axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
 
 /*
-
-
 
 td.dt-head-right*/

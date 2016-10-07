@@ -11,4 +11,19 @@
 /* global window, $, localStorage, _, document, CENTROID, VIEW, PCA, QAV, UTIL, performance*/
 
 // QAV is the global state data store
-(function (QAV, undefined) {}(window.QAV = window.QAV || {}));
+(function (QAV, undefined) {
+
+    // set default language
+    QAV.language = "en-us";
+
+    QAV.setState = function (key, value) {
+        var value2 = _.cloneDeep(value);
+        QAV[key] = value2;
+    };
+
+    QAV.getState = function (key) {
+        var value = _.cloneDeep(QAV[key]);
+        return value;
+    };
+
+}(window.QAV = window.QAV || {}));

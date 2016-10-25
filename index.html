@@ -33,6 +33,7 @@
     <link rel="stylesheet" type="text/css" href="css/custom.css">
     <link rel="stylesheet" type="text/css" href="css/datatables.min.css">
     <link rel="stylesheet" type="text/css" href="css/fixedColumns.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="css/synSortSvg.css">
 
 
 </head>
@@ -94,7 +95,7 @@
                 </div>
                 <h1 class="singleLine vertical"><strong>Ken-Q Analysis</strong></h1>
                 <h2 data-i18n="A Web Application for Q Methodology"></h2>
-                <h5><i>Beta Version 0.6.0 Test Release (October 8, 2016)</i></h5>
+                <h5><i>Beta Version 0.7.0 Test Release (October 26, 2016)</i></h5>
                 <br>
                 <ul>
                     <li>Ken-Q Analysis requires an up-to-date browser - Tested on:
@@ -103,7 +104,8 @@
                             <li>Mac OSX El Capitan --&gt Chrome (version 50), Firefox (version 46)</li>
                             <li>Linux (Lubuntu 14.04) --&gt Chromium (version 50), Firefox (version 46)</li>
                         </ul>
-                        older Chrome and Firefox versions are not tested and <strong>not recommended</strong>. Principal Component Analysis takes substantially more time to calculate on Firefox (about 2 minutes for large datasets) compared to Chrome (about 10 seconds). Firefox will give "unresponsive script" error messages while calculating Principal Components. Click "continue" to finish the calculations.
+                        older Chrome and Firefox versions are not tested and <strong>not recommended</strong>. Principal Component Analysis takes substantially more time to calculate on Firefox (about 2 minutes for large datasets) compared to Chrome (about
+                        10 seconds). Firefox will give "unresponsive script" error messages while calculating Principal Components. Click "continue" to finish the calculations.
                     </li>
                     <li>CAUTION - Ken-Q Analysis saves data locally inside the browser. If you are using a shared computer in a computer lab or internet cafe you should delete all locally-stored data after you download the results of your analysis</li>
                     <li>Ken-Q Analysis is open source - you can <a class="linkUnderline" href="https://github.com/shawnbanasick/ken-q-analysis/tree/gh-pages">download and view the source files.</a></li>
@@ -113,13 +115,24 @@
                         <li>Analysis of Free-distribution Q-sorts</li>
                         <li>Factor loading adjustment for Heywood case (communality equal to or greater than 1.0)</li>
                     </ul>
-                    <li>Worried about data privacy? Want to work offline? <a class="linkUnderline" href="https://github.com/shawnbanasick/ken-q-analysis/archive/gh-pages.zip">Download Ken-Q Analysis </a> and run it locally from your computer. (after downloading the file, unzip it and double-click on the "index.html" file to start the web app.)</li>
+                    <li>Worried about data privacy? Want to work offline? <a class="linkUnderline" href="https://github.com/shawnbanasick/ken-q-analysis/archive/gh-pages.zip">Download Ken-Q Analysis </a> and run it locally from your computer. (after downloading
+                        the file, unzip it and double-click on the "index.html" file to start the web app.)</li>
                 </ul>
             </div>
             <div id="accordionDiv">
                 <h5>Change Log</h5>
                 <div id="accordion">
-                    <a href="#seven" class="first">Beta Version 0.6.0 Test Release (October 8, 2016)</a>
+
+                    <a href="#eight" class="first">Beta Version 0.7.0 Test Release (October 26, 2016)</a>
+                    <div id="eight">
+                        <ul>
+                            <li>Added synthetic Q-sort images</li>
+                            <li>Added SVG download function for all images</li>
+                            <li>Added control panel for synthetic Q-sort display options</li>
+                            <li>Improved judgemental rotation scatter plot factor listing</li>
+                        </ul>
+                    </div>
+                    <a href="#seven">Beta Version 0.6.0 Test Release (October 8, 2016)</a>
                     <div id="seven">
                         <ul>
                             <li>Added Scree Plot to factor extraction process</li>
@@ -129,7 +142,8 @@
                             <li>Fixed problem with factor listing after bipolar split</li>
                             <li>Fixed Z-score sorting for factors in output file</li>
                         </ul>
-                    </div><a href="#six">Beta Version 0.5.0 Test Release (June 18, 2016)</a>
+                    </div>
+                    <a href="#six">Beta Version 0.5.0 Test Release (June 18, 2016)</a>
                     <div id="six">
                         <ul>
                             <li>added Principal Components to factor extraction options</li>
@@ -1058,7 +1072,9 @@
             </div>
 
             <div class="analysisDataDiv">
-                <h4 data-i18n="Analysis data"></h4>
+                <div class="factorVizOptionsDivHeader">
+                    <h4 data-i18n="Analysis data"></h4>
+                </div>
                 <ol id="existingDatabaseStatementList"></ol>
                 <br>
                 <ul id="existingDatabaseRespondentList"></ul>
@@ -1135,6 +1151,7 @@
                 <div id="screePlotDiv" class="rightMargin">
                 </div>
             </div>
+            <input class="screePlotDownloadButton blackHover" name="downloadScreePlotButton" type="button" data-i18n="[value]Download Scree Plot" />
             <br>
             <br>
         </div>
@@ -1240,6 +1257,8 @@
                         </table>
                     </div>
                 </div>
+
+                <input class="rotationChartDownloadButton blackHover" name="downloadRotationChartButton" type="button" data-i18n="[value]Download Rotation Chart" />
 
             </div>
         </div>
@@ -1387,8 +1406,6 @@
             <br>
             <br>
             <div id="outputResultsButtonsDiv">
-                <input type="button" name="dump" id="displayQuickResultsButton" class="blackHover" data-dump="#factorRotationTable" autocomplete="off" data-i18n="[value]Display preliminary output">
-
                 <input type="button" class="downloadHover" name="outputResults" id="downloadResultsButton" autocomplete="off" data-i18n="[value]Download complete output">
 
                 <input type="button" class="deleteHover u-pull-right" name="clearStorage" autocomplete="off" id="clearStorageButton" data-i18n="[value]Permanently delete all locally-stored data">
@@ -1451,10 +1468,201 @@
 
             </div>
 
-            <br>
-            <br>
+            <div id="factorVizOptionsDiv" >
+                <div class="row factorVizOptionsDivHeader">
+                    <div class="factorVizOptions">
+                        <p class="six columns factorVizOptionsHeaderDivText" data-i18n="Synthetic Q-Sort Display Options"></p>
+                    </div>
+                    <div class="two columns vertical factorVizOptions">
+                        <input type="button" class="blackHover" name="showVizPanel" id="showDisplayPanelButton" value="view" />
+                    </div>
+                </div>
+
+                <div id="vizPanelHideContainer">
+                <br />
+                <div class="panelIntroTextSpanDiv">
+                <span class="displayPanelIntroText" data-i18n="panelText1"></span><span class="displayPanelIntroText" data-i18n="panelText2"></span><span class="displayPanelIntroText" data-i18n="panelText3"></span><span class="displayPanelIntroText" data-i18n="panelText4"></span>
+                </div>
+                <br />
+                <p class="factorVizOptionsHeaderText" data-i18n="General"></p>
+                <hr />
+                <div class="row" id="includeLegendDiv">
+                    <p class="factorVizOptionsText" data-i18n="Include legend with image?"></p>
+                    <label for="includeLegendYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="includeLegendYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="includeLegendNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="includeLegendNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+
+                <div class="row" id="prependStateNoDiv">
+                    <p class="factorVizOptionsText" data-i18n="Prepend statement numbers?"></p>
+                    <label for="appendStatementNumbersYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="appendStatementNumbersYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="appendStatementNumbersNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="appendStatementNumbersNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+
+                <p class="factorVizOptionsHeaderText" data-i18n="Card Characteristics"></p>
+                <hr />
+                <div class="row" id="setCardHeightDiv">
+                    <p class="factorVizOptionsText" data-i18n="Adjust card height?"></p>
+                    <label for="setCardHeightYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="setCardHeightYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="setCardHeightNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="setCardHeightNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" id="cardHeightInputBox" name="cardHeightInput" class="vizInput" placeholder="110">
+                </div>
+                <div class="row" id="setCardWidthDiv">
+                    <p class="factorVizOptionsText" data-i18n="Adjust card width?"></p>
+                    <label for="setCardWidthYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="setCardWidthYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="setCardWidthNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="setCardWidthNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" name="cardWidthInput" id="cardWidthInputBox" class="vizInput" placeholder="120">
+                </div>
+
+                <div class="row" id="setFontSizeDiv">
+                    <p class="factorVizOptionsText" data-i18n="Adjust font size?"></p>
+                    <label for="setFontSizeYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="setFontSizeYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="setFontSizeNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="setFontSizeNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" name="fontSizeInput" id="fontSizeInputBox" class="vizInput" placeholder="12">
+                </div>
+
+                <p class="factorVizOptionsHeaderText" data-i18n="Statements"></p>
+                <hr />
+
+                <div class="row" id="adjustLineSpacingDiv">
+                    <p class="factorVizOptionsText" data-i18n="Adjust line spacing?"></p>
+                    <label for="adjustLineSpacingYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="adjustLineSpacingYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="adjustLineSpacingNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="adjustLineSpacingNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" name="lineSpacingInput" id="lineSpacingInputBox" class="vizInput" placeholder="15">
+                </div>
+
+                <div class="row" id="trimStatementsDiv">
+                    <p class="factorVizOptionsText" data-i18n="Trim statements to prevent overflow?"></p>
+                    <label for="trimStatementsYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="trimStatementsYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="trimStatementsNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="trimStatementsNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" class="vizInput" name="trimState" id="trimStatementsInputBox" placeholder="60">
+                </div>
+
+                <div class="row" id="setAsianStatementsLengthDiv">
+                    <p class="factorVizOptionsText" data-i18n="(Asian languages only) Adjust width of statement rows?"></p>
+                    <label for="setAsianLengthYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="setAsianLengthYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="setAsianLengthNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="setAsianLengthNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" class="vizInput" name="setAsianLength" id="setAsianLengthInputBox" placeholder="12">
+                </div>
+
+                <p class="factorVizOptionsHeaderText" data-i18n="Distinguishing Statements"></p>
+                <hr />
+                <div class="row" id="showSignificanceSymbolsDiv">
+                    <p class="factorVizOptionsText" data-i18n="Indicate distinguishing statements?"></p>
+                    <label for="showSignificanceYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="showSignificanceYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="showSignificanceNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="showSignificanceNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+                <div class="row" id="useUnicodeSymbolsDiv">
+                    <p class="factorVizOptionsText" data-i18n="Change distinguishing statement indicator?"></p>
+                    <label for="useUnicodeYes" class="radioHighlight2 vertical" data-i18n="UNICODE"></label>
+                    <input id="useUnicodeYes" name="legend" type="radio" autocomplete="off" value="unicode" checked />
+                    <label for="useUnicodeNo" class="radioHighlight2 vertical" data-i18n="ASCII"></label>
+                    <input id="useUnicodeNo" name="legend" type="radio" autocomplete="off" value="ascii" />
+                </div>
 
 
+                <div class="row" id="setSymbolFontSizeDiv">
+                    <p class="factorVizOptionsText" data-i18n="Adjust distinguishing statement indicator font size?"></p>
+                    <label for="setSymbolFontSizeYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="setSymbolFontSizeYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="setSymbolFontSizeNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="setSymbolFontSizeNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" name="symbolFontSizeInput" id="symbolFontSizeInputBox" class="vizInput" placeholder="12">
+                </div>
+
+
+                <div class="row" id="zscoreArrowDirectionDiv">
+                    <p class="factorVizOptionsText" data-i18n="Display distinguishing statement comparison symbols?"></p>
+                    <label for="showdirectionSymbolsYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="showdirectionSymbolsYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="showdirectionSymbolsNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="showdirectionSymbolsNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+
+                <div class="row">
+                    <p class="factorVizOptionsHeaderText" data-i18n="Raw Q-Sort Value Match Counts"></p>
+                    <!-- <div class="helpImageDiv vertical">
+                        <p class="helpImageDivText">
+                            ?
+                        </p>
+                    </div> -->
+                </div>
+                <hr />
+                <div class="row" id="useMatchCountDiv">
+                    <p class="factorVizOptionsText" data-i18n="Include matching count of raw Q-sort values?"></p>
+                    <label for="includeFactorMatchYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                    <input id="includeFactorMatchYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="includeFactorMatchNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                    <input id="includeFactorMatchNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+
+
+                <div class="row">
+                    <div id="indicateMatchCountAsBackgroundDiv">
+                        <p class="factorVizOptionsText" data-i18n="Display matching count caution color?"></p>
+                        <label for="indicateMatchCountAsBackgroudYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                        <input id="indicateMatchCountAsBackgroudYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                        <label for="indicateMatchCountAsBackgroudNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                        <input id="indicateMatchCountAsBackgroudNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+                <div class="row">
+                        <p class="factorVizOptionsText" data-i18n="Set caution cutoff level at &lt; ="></p>
+                        <input type="text" name="backgroundColorCutoffInput" id="backgroundColorCutoffInputBox" class="vizInput" placeholder="0">
+                    </div>
+
+                </div>
+                <p class="factorVizOptionsHeaderText" data-i18n="Downloads"></p>
+                <hr />
+                    <div class="row">
+                    <div id="addCustomNameDiv">
+                        <p class="factorVizOptionsText" data-i18n="Add custom name to image downloads?"></p>
+                        <label for="addCustomNameYes" class="radioHighlight2 vertical" data-i18n="YES"></label>
+                        <input id="addCustomNameYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                        <label for="addCustomNameNo" class="radioHighlight2 vertical" data-i18n="NO"></label>
+                        <input id="addCustomNameNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    </div>
+
+                    <div class="row" id="customNameDiv">
+                            <p class="factorVizOptionsText" data-i18n="Name&#58;"></p>
+                            <input type="text" name="customName" id="customNameInputBox" class="vizInput3 customNameBox">
+                    </div>
+
+                    <div class="row" id="customNameLocationDiv">
+                        <p class="factorVizOptionsText" data-i18n="Custom name position?"></p>
+                        <label for="customNameLocationPrepend" class="radioHighlight2 vertical" data-i18n="PREPEND"></label>
+                        <input id="customNameLocationPrepend" name="legend" type="radio" autocomplete="off" value="prepend" checked />
+                        <label for="customNameLocationAppend" class="radioHighlight2 vertical" data-i18n="APPEND"></label>
+                        <input id="customNameLocationAppend" name="legend" type="radio" autocomplete="off" value="append" />
+                        <label for="customNameLocationReplace" class="radioHighlight2 vertical" data-i18n="REPLACE"></label>
+                        <input id="customNameLocationReplace" name="legend" type="radio" autocomplete="off" value="replace" />
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <input type="button" name="dump" id="displayQuickResultsButton" class="blackHover" data-dump="#factorRotationTable" autocomplete="off" data-i18n="[value]Display preliminary output">
+            <br>
+            <br>
+            <div id="synFactorVizTitle"></div>
+            <div id="synFactorVizDiv"></div>
             <br>
             <br>
             <div id="factorCorrelationTableTitle"></div>
@@ -1512,7 +1720,7 @@
     <script type="text/javascript" src="lib/dataTables.fixedColumns.js"></script>
     <script type="text/javascript" src="lib/numeric-1.2.6.min.js"></script>
     <script type="text/javascript" src="lib/i18next-1.6.3.min.js"></script>
-
+    <script type="text/javascript" src="lib/d3-save-svg.min.js"></script>
 
     <!-- load custom JS -->
     <script type="text/javascript" src="src/STATE.js"></script>
@@ -1533,9 +1741,9 @@
     <script type="text/javascript" src="src/CONTROLERS.js"></script>
 
     <script>
-        (function (i, s, o, g, r, a, m) {
+        (function(i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
+            i[r] = i[r] || function() {
                 (i[r].q = i[r].q || []).push(arguments)
             }, i[r].l = 1 * new Date();
             a = s.createElement(o),

@@ -10,41 +10,41 @@
 // JSlint declarations
 /* global numeric, ROTA, jQuery, alasql, CENTROID, VIEW, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
 
-(function (LOAD, QAV, undefined) {
+(function(LOAD, QAV, undefined) {
 
     // custom sorting function for rotation table to get factor grouping in right order
-    (function () {
+    (function() {
         $.extend($.fn.dataTableExt.oSort, {
-            "highestFactor-pre": function (a) {
+            "highestFactor-pre": function(a) {
 
                 var front = a.slice(0, 2);
                 var back = a.slice(3, a.length);
 
                 switch (front) {
-                case "F1":
-                    return (parseInt(back));
-                case "F2":
-                    return (parseInt(back) + 300);
-                case "F3":
-                    return (parseInt(back) + 600);
-                case "F4":
-                    return (parseInt(back) + 900);
-                case "F5":
-                    return (parseInt(back) + 1200);
-                case "F6":
-                    return (parseInt(back) + 1500);
-                case "F7":
-                    return (parseInt(back) + 1800);
-                default:
-                    return (parseInt(back) + 2100);
+                    case "F1":
+                        return (parseInt(back));
+                    case "F2":
+                        return (parseInt(back) + 300);
+                    case "F3":
+                        return (parseInt(back) + 600);
+                    case "F4":
+                        return (parseInt(back) + 900);
+                    case "F5":
+                        return (parseInt(back) + 1200);
+                    case "F6":
+                        return (parseInt(back) + 1500);
+                    case "F7":
+                        return (parseInt(back) + 1800);
+                    default:
+                        return (parseInt(back) + 2100);
                 }
             },
 
-            "highestFactor-asc": function (a, b) {
+            "highestFactor-asc": function(a, b) {
                 return ((a < b) ? -1 : ((a > b) ? 1 : 0));
             },
 
-            "highestFactor-desc": function (a, b) {
+            "highestFactor-desc": function(a, b) {
                 return ((a < b) ? 1 : ((a > b) ? -1 : 0));
             }
         });
@@ -56,7 +56,7 @@
 
     // todo - is bipolar split keeping user-inserted flags for table re-draw????
 
-    LOAD.factorSplitFunction = function (factorNumber) {
+    LOAD.factorSplitFunction = function(factorNumber) {
 
         // archive current state to undo split if called
         UTIL.archiveFactorScoreStateMatrixAndDatatable();
@@ -65,7 +65,7 @@
         var hasSplitFactor = (+(QAV.getState("hasSplitFactor")) + 1);
         QAV.setState("hasSplitFactor", hasSplitFactor);
 
-        // archive headers for undo function chart redraw 
+        // archive headers for undo function chart redraw
         var archiveHeaders = QAV.getState("factorLabels");
         localStorage.setItem("splitFactorHeadersArchive" + hasSplitFactor, JSON.stringify(archiveHeaders));
 
@@ -84,7 +84,7 @@
             headersIndexLookupArray.push(temp);
         }
 
-        // construct look-up value 
+        // construct look-up value
         var formattedFactorNumber = "Ftr " + factorNumber;
         var insertionNumber = headersIndexLookupArray.indexOf(formattedFactorNumber);
 
@@ -94,7 +94,7 @@
             results.push(data2);
         }
 
-        // pull in the explnVariance 
+        // pull in the explnVariance
         var explnVariance = QAV.getState("expVar");
 
         // j loop through sorts
@@ -175,11 +175,11 @@
 
         // append bipolar split to the rotation history list
         var language = QAV.getState("language");
-        var appendText = resources[language]["translation"]["Factor"];
-        var appendText2 = resources[language]["translation"]["was split into Factor"];
-        var appendText3 = resources[language]["translation"]["_1p and Factor"];
-        var appendText4 = resources[language]["translation"]["_2n"];
-        var appendText5 = resources[language]["translation"]["Undo"];
+        var appendText = resources[language].translation.Factor;
+        var appendText2 = resources[language].translation["was split into Factor"];
+        var appendText3 = resources[language].translation["_1p and Factor"];
+        var appendText4 = resources[language].translation._2n;
+        var appendText5 = resources[language].translation.Undo;
 
         listText = appendText + factorNumber + appendText2 + factorNumber + appendText3 + factorNumber + appendText4;
         $("#rotationHistoryList").append('<li>' + listText + '<button class="deleteSplitFactorButton">' + appendText5 + '</button></li>');
@@ -191,7 +191,7 @@
     // *****  invert factor loadings ****************************************
     // **********************************************************************
 
-    LOAD.factorInvertFunction = function (factorNumber, currentRotationTable) {
+    LOAD.factorInvertFunction = function(factorNumber, currentRotationTable) {
 
         // declare variables
         var listText, newData;
@@ -218,9 +218,9 @@
 
 
         var language = QAV.getState("language");
-        var appendText = resources[language]["translation"]["Factor"];
-        var appendText2 = resources[language]["translation"]["was inverted"];
-        var appendText3 = resources[language]["translation"]["Undo"];
+        var appendText = resources[language].translation.Factor;
+        var appendText2 = resources[language].translation["was inverted"];
+        var appendText3 = resources[language].translation.Undo;
 
 
         // append text to rotation history
@@ -238,7 +238,7 @@
     // **********  undo split factor rotation insertion *************************
     // **************************************************************************
 
-    LOAD.undoSplitFactorRotation = function () {
+    LOAD.undoSplitFactorRotation = function() {
         var hasSplitFactor = (+(QAV.getState("hasSplitFactor")));
 
         // reset headers array
@@ -318,28 +318,28 @@
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            "order": [[orderingColumn, "asc"]],
+            "order": [
+                [orderingColumn, "asc"]
+            ],
             "data": chartData,
             "columns": columnHeadersArray,
-            "columnDefs": [
-                {
-                    'type': 'highestFactor',
-                    'targets': 2
-                },
-                {
-                    'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
-                    'searchable': false,
-                    'orderable': true,
-                    'render': function (data) { // (data, type, full, meta) {
-                        if (
-                            data === "") {
-                            return "";
-                        } else {
-                            return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
-                        }
+            "columnDefs": [{
+                'type': 'highestFactor',
+                'targets': 2
+            }, {
+                'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+                'searchable': false,
+                'orderable': true,
+                'render': function(data) { // (data, type, full, meta) {
+                    if (
+                        data === "") {
+                        return "";
+                    } else {
+                        return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
                     }
-                }],
-            "createdRow": function (row, data, dataIndex) {
+                }
+            }],
+            "createdRow": function(row, data, dataIndex) {
                 var rowGroup;
                 if (rowBackground === "gray") {
                     rowGroup = data[2].slice(0, 2);
@@ -367,12 +367,12 @@
     // **********  draw rotated factors table using jquery dataTables   *******
     // ************************************************************************
 
-    LOAD.drawRotatedFactorsTable2 = function (isRotatedFactorsTableUpdate, shouldFlag) {
+    LOAD.drawRotatedFactorsTable2 = function(isRotatedFactorsTableUpdate, shouldFlag) {
 
         // pull current table state from global variable
         var chartData = QAV.getState("rotFacStateArray");
 
-        // format data for table  
+        // format data for table
         var newData = prepChartDataArray2(chartData);
 
         // pull out explVar
@@ -452,7 +452,7 @@
         LOAD.createFooter("factorRotationTable2", expVar2, isUndo);
 
 
-        // todo - temporarily disabled update because autoflagging issues    
+        // todo - temporarily disabled update because autoflagging issues
         if (isRotatedFactorsTableUpdate === "yes") {
 
 
@@ -480,31 +480,31 @@
                 "scrollCollapse": true,
                 "scrollX": true,
                 "paging": false,
-                "order": [[orderingColumn, "asc"]],
+                "order": [
+                    [orderingColumn, "asc"]
+                ],
                 "data": factorSortedData,
                 "columns": columnHeadersArray,
-                "columnDefs": [
-                    {
-                        'type': 'highestFactor',
-                        'targets': 2
-                    },
-                    {
-                        'targets': columnTargets, // [ 4, 6, 8, 10, 12, 14, 16],
-                        'searchable': false,
-                        'orderable': true,
-                        'render': function (data) { // (data, type, full, meta) {
-                            if (
-                                data === "") {
-                                return "";
-                            } else if (shouldFlag === "flag") {
+                "columnDefs": [{
+                    'type': 'highestFactor',
+                    'targets': 2
+                }, {
+                    'targets': columnTargets, // [ 4, 6, 8, 10, 12, 14, 16],
+                    'searchable': false,
+                    'orderable': true,
+                    'render': function(data) { // (data, type, full, meta) {
+                        if (
+                            data === "") {
+                            return "";
+                        } else if (shouldFlag === "flag") {
 
-                                return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
-                            } else {
-                                return '<input type="checkbox" class="sigCheckbox" />';
-                            }
+                            return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
+                        } else {
+                            return '<input type="checkbox" class="sigCheckbox" />';
                         }
-                    }],
-                "createdRow": function (row, data, dataIndex) {
+                    }
+                }],
+                "createdRow": function(row, data, dataIndex) {
                     var rowGroup;
                     if (rowBackground === "gray") {
                         rowGroup = data[2].slice(0, 2);
@@ -519,7 +519,7 @@
             });
         } else {
 
-            // added for color button     
+            // added for color button
             if (isRotatedFactorsTableUpdate === "highlighter") {
                 table = $('#factorRotationTable2').DataTable();
                 table.destroy();
@@ -535,26 +535,27 @@
                 "scrollCollapse": true,
                 "scrollX": true,
                 "paging": false,
-                "order": [[orderingColumn, "asc"]],
+                "order": [
+                    [orderingColumn, "asc"]
+                ],
                 "data": factorSortedData,
                 "columns": columnHeadersArray,
-                "columnDefs": [
-                    {
-                        'type': 'highestFactor',
-                        'targets': 2
-                    }, {
-                        'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
-                        'searchable': false,
-                        'orderable': true,
-                        'render': function (data) { // (data, type, full, meta) {
-                            if (data === "") {
-                                return "";
-                            } else {
-                                return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
-                            }
+                "columnDefs": [{
+                    'type': 'highestFactor',
+                    'targets': 2
+                }, {
+                    'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+                    'searchable': false,
+                    'orderable': true,
+                    'render': function(data) { // (data, type, full, meta) {
+                        if (data === "") {
+                            return "";
+                        } else {
+                            return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
                         }
-                    }],
-                "createdRow": function (row, data, dataIndex) {
+                    }
+                }],
+                "createdRow": function(row, data, dataIndex) {
                     var rowGroup;
                     if (rowBackground === "gray") {
                         rowGroup = data[2].slice(0, 2);
@@ -572,7 +573,7 @@
 
 
 
-    LOAD.createFooter = function (element, expVar2, isUndo) {
+    LOAD.createFooter = function(element, expVar2, isUndo) {
         var hasFooter = $("#factorRotationTable2 tfoot");
         var checkFooter = ((hasFooter.text()));
 
@@ -588,7 +589,7 @@
             var footer = document.createElement('tfoot');
             var tr = document.createElement('tr');
 
-            jQuery.each(expVar2, function (i, value) {
+            jQuery.each(expVar2, function(i, value) {
                 var th = document.createElement('th');
                 th.innerHTML = value;
                 tr.appendChild(th);
@@ -602,7 +603,7 @@
     // ************************************************************  DATA MODEL
     // **********  undo factor rotation insertion ****************************
     // ***********************************************************************
-    LOAD.undoFactorRotation = function () {
+    LOAD.undoFactorRotation = function() {
 
         // get counter and data values
         var getSaveRotationArchiveCounter = ROTA.saveRotationArchiveCounter("get");
@@ -837,37 +838,37 @@
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            "order": [[orderingColumn, "asc"]],
+            "order": [
+                [orderingColumn, "asc"]
+            ],
             "data": results,
             "columns": headers,
-            "columnDefs": [
-                {
-                    'type': 'highestFactor',
-                    'targets': 2
-                },
-                {
-                    'targets': columnTargets2, // todo - find out if this is working properly
-                    'className': 'dt-body-right',
-                    'orderable': true,
-                }, {
-                    'targets': [0],
-                    'className': 'dt-body-center dt-body-name',
-                    'orderable': true
-                }, {
-                    'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
-                    'searchable': false,
-                    'orderable': true,
-                    'className': 'dt-body-right',
-                    'render': function (data) { // (data, type, full, meta) {
-                        if (
-                            data === "") {
-                            return "";
-                        } else {
-                            return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
-                        }
+            "columnDefs": [{
+                'type': 'highestFactor',
+                'targets': 2
+            }, {
+                'targets': columnTargets2, // todo - find out if this is working properly
+                'className': 'dt-body-right',
+                'orderable': true,
+            }, {
+                'targets': [0],
+                'className': 'dt-body-center dt-body-name',
+                'orderable': true
+            }, {
+                'targets': columnTargets, // [2, 4, 6, 8, 10, 12, 14],
+                'searchable': false,
+                'orderable': true,
+                'className': 'dt-body-right',
+                'render': function(data) { // (data, type, full, meta) {
+                    if (
+                        data === "") {
+                        return "";
+                    } else {
+                        return '<input type="checkbox" class="sigCheckbox" name="d' + data + '" value="' + data + '" defaultChecked="' + (data === 'true' ? 'checked' : '') + '"' + (data === 'true' ? 'checked="checked"' : '') + ' />';
                     }
-                }],
-            "createdRow": function (row, data, dataIndex) {
+                }
+            }],
+            "createdRow": function(row, data, dataIndex) {
                 var rowGroup;
                 if (rowBackground === "gray") {
                     rowGroup = data[2].slice(0, 2);

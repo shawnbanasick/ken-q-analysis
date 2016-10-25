@@ -1,4 +1,4 @@
-//Ken-Q Analysis 
+//Ken-Q Analysis
 //Copyright (C) 2016 Shawn Banasick
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -37,15 +37,16 @@
         var respondentNames, totalVariance;
 
         // determine if is this is a rotation table re-draw or not
+        var isRotatedFactorsTableUpdate;
         var table = $('#factorRotationTable2 tr').length; //
         if (table > 0) {
-            var isRotatedFactorsTableUpdate = "destroy";
+            isRotatedFactorsTableUpdate = "destroy";
         } else {
             isRotatedFactorsTableUpdate = "no";
         }
 
         var language = QAV.getState("language");
-        var facText = resources[language]["translation"]["Factor"];
+        var facText = resources[language].translation.Factor;
 
         // used for section 6 text labels
         for (var i = 1; i < (loopLength + 1); i++) {
@@ -103,9 +104,9 @@
 
         var factorMatrixTransposed = _.zip.apply(_, factorMatrixToFixed5);
 
-        var language = QAV.getState("language");
-        var varText = resources[language]["translation"]["% explained variance"];
-        var eigenText = resources[language]["translation"]["Eigenvalues"];
+        // var language = QAV.getState("language");
+        var varText = resources[language].translation["% explained variance"];
+        var eigenText = resources[language].translation.Eigenvalues;
 
 
         eigenvalues.unshift(eigenText);
@@ -172,9 +173,9 @@
         }
 
         var language = QAV.getState("language");
-        var facText = resources[language]["translation"]["Factor"];
-        var respondText = resources[language]["translation"]["Respondent"];
-        var appendText = resources[language]["translation"]["Centroid Factors Extracted"];
+        var facText = resources[language].translation.Factor;
+        var respondText = resources[language].translation.Respondent;
+        var appendText = resources[language].translation["Centroid Factors Extracted"];
 
         headers = [{
             title: "Num."
@@ -243,7 +244,7 @@
         }
 
         var language = QAV.getState("language");
-        var cumVarText = resources[language]["translation"]["Cum % Expln Var"];
+        var cumVarText = resources[language].translation["Cum % Expln Var"];
         tempArray.unshift("", cumVarText);
 
         data.push(eigenValues, percentExplainedVariance, tempArray);

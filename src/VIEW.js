@@ -11,30 +11,30 @@
 /* global window, LOAD, $, localStorage, QAV, setTimeout, PCA, document, performance*/
 
 
-(function (VIEW, QAV, undefined) {
+(function(VIEW, QAV, undefined) {
 
 
     // ************************************************************  view
     // ******* SECTION 1 - intro   ******+++++++++++++++*****************
     // ******************************************************************
 
-    $(function () {
+    $(function() {
         // Single Page navigation
         $('.single-page-nav').singlePageNav({
             offset: $('.single-page-nav').outerHeight(),
             filter: ':not(.external)',
             updateHash: true,
-            beforeStart: function () {},
-            onComplete: function () {}
+            beforeStart: function() {},
+            onComplete: function() {}
         });
     });
 
     // auto scroll to top of page on reload
-    $(function () {
+    $(function() {
         $("#heroSection")[0].click();
     });
 
-    $(function () {
+    $(function() {
         // display the first div by default.
         $("#accordion div").first().css('display', 'block');
 
@@ -42,7 +42,7 @@
         var link = $("#accordion a");
 
         // On clicking of the links open / close.
-        link.on('click', function (e) {
+        link.on('click', function(e) {
             e.preventDefault();
             var a = $(this).attr("href");
             $(a).slideDown('fast');
@@ -57,8 +57,8 @@
     // ******* SECTION 2 - persist radio button selections     **********
     // ******************************************************************
 
-    $(function () {
-        $('#section2 input[type=radio]').each(function () {
+    $(function() {
+        $('#section2 input[type=radio]').each(function() {
             var state = JSON.parse(localStorage.getItem('radio_' + this.id));
             if (state) {
                 this.checked = state.checked;
@@ -67,8 +67,8 @@
             }
         });
 
-        $(window).bind('unload', function () {
-            $('#section2 input[type=radio]').each(function () {
+        $(window).bind('unload', function() {
+            $('#section2 input[type=radio]').each(function() {
                 localStorage.setItem(
                     'radio_' + this.id, JSON.stringify({
                         checked: this.checked
@@ -77,7 +77,7 @@
             });
         });
 
-        $("#section2 input[type='radio']").click(function () {
+        $("#section2 input[type='radio']").click(function() {
             var radioValue = $("input[name='radio']:checked").attr("id");
             $("#existingDatabaseStatementList").empty();
             $("#existingDatabaseRespondentList").empty();
@@ -92,11 +92,11 @@
     });
 
     // **** SECTION 3 **** //
-    VIEW.destroyExtractionTables = function () {
+    VIEW.destroyExtractionTables = function() {
 
         var language = QAV.getState("language");
-        var centFacButText = resources[language]["translation"]["Extract centroid factors"];
-        var PcaButText = resources[language]["translation"]["Extract principal components"];
+        var centFacButText = resources[language].translation["Extract centroid factors"];
+        var PcaButText = resources[language].translation["Extract principal components"];
 
         var table = $('#factorRotationTable1').DataTable();
         if (table) {
@@ -131,8 +131,8 @@
     // ******* control D3 checkboxes       *****************************************
     // *****************************************************************************
 
-    $(function () {
-        $("input[name=radioCheck]").change(function () {
+    $(function() {
+        $("input[name=radioCheck]").change(function() {
             var max = 2;
             if ($("input[name=radioCheck]:checked").length == max) {
                 $("input[name=radioCheck]").attr('disabled', 'disabled');
@@ -142,7 +142,7 @@
             }
 
             var tempArrayChartFactors = [];
-            $('input[name="radioCheck"]:checked').each(function () {
+            $('input[name="radioCheck"]:checked').each(function() {
                 var numberify = parseInt((this.value), 10);
                 tempArrayChartFactors.push(numberify);
                 localStorage.chartSelectedFactors = JSON.stringify(tempArrayChartFactors);
@@ -150,7 +150,7 @@
         });
     });
 
-    VIEW.clearSections_4_5_6 = function () {
+    VIEW.clearSections_4_5_6 = function() {
 
         $("#judgementalRotationContainer").hide();
 
@@ -196,9 +196,9 @@
         $("#clearStorageButton").hide();
     };
 
-    VIEW.showDisabledFunctionsAfterSplitModal = function () {
+    VIEW.showDisabledFunctionsAfterSplitModal = function() {
         $('.functionDisabledModal').toggleClass('active');
-        setTimeout(function () {
+        setTimeout(function() {
             $('.functionDisabledModal').toggleClass('active');
         }, 1500);
     };
@@ -207,32 +207,32 @@
 
     function inputTypeDisplay(inputType) {
         switch (inputType) {
-        case "radio4":
-            $("#manualInputContainer").hide(300);
-            $("#databaseSelectDiv").hide(300);
-            $("#rawSorts").hide(300);
-            $("#pasteExcelDataDiv").show(300);
-            $(".analysisDataDiv").show(300);
-            break;
-        case "radio3": // pqmethod pasted data
-            $("#manualInputContainer").hide(300);
-            $("#databaseSelectDiv").hide(300);
-            $("#pasteExcelDataDiv").hide(300);
-            $("#rawSorts").show(300);
-            $(".analysisDataDiv").show(300);
-            break;
-        case "radio2":
-            $("#databaseSelectDiv").hide(300);
-            $("#rawSorts").hide(300);
-            $("#pasteExcelDataDiv").hide(300);
-            $("#manualInputContainer").show(300);
-            $(".analysisDataDiv").show(300);
-            break;
-        default:
-            $("#manualInputContainer").hide(300);
-            $("#rawSorts").hide(300);
-            $("#pasteExcelDataDiv").hide(300);
-            $("#databaseSelectDiv").show(300);
+            case "radio4":
+                $("#manualInputContainer").hide(300);
+                $("#databaseSelectDiv").hide(300);
+                $("#rawSorts").hide(300);
+                $("#pasteExcelDataDiv").show(300);
+                $(".analysisDataDiv").show(300);
+                break;
+            case "radio3": // pqmethod pasted data
+                $("#manualInputContainer").hide(300);
+                $("#databaseSelectDiv").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $("#rawSorts").show(300);
+                $(".analysisDataDiv").show(300);
+                break;
+            case "radio2":
+                $("#databaseSelectDiv").hide(300);
+                $("#rawSorts").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $("#manualInputContainer").show(300);
+                $(".analysisDataDiv").show(300);
+                break;
+            default:
+                $("#manualInputContainer").hide(300);
+                $("#rawSorts").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $("#databaseSelectDiv").show(300);
         }
     }
 
@@ -245,8 +245,8 @@
     // ******* modal boxes *********************************************************
     // *****************************************************************************
 
-    $(function () {
-        $('#invertModal .button-submit').on('click', function (e) {
+    $(function() {
+        $('#invertModal .button-submit').on('click', function(e) {
             e.preventDefault();
             var inputValue = $("#invertModal input").val();
             if (inputValue === false || inputValue === "") {
@@ -260,15 +260,15 @@
                 LOAD.factorInvertFunction(inputValue, currentRotationTable);
                 $('#invertModal').toggleClass('active');
                 $('.successModal').toggleClass('active');
-                setTimeout(function () {
+                setTimeout(function() {
                     $('.successModal').toggleClass('active');
                 }, 2000);
             }
         });
     });
 
-    $(function () {
-        $('#splitModal .button-submit').on('click', function (e) {
+    $(function() {
+        $('#splitModal .button-submit').on('click', function(e) {
             e.preventDefault();
             var inputValue = $("#splitModal input").val();
             if (inputValue === false || inputValue === "") {
@@ -281,7 +281,7 @@
                 LOAD.factorSplitFunction(inputValue);
                 $('#splitModal').toggleClass('active');
                 $('.successModal').toggleClass('active');
-                setTimeout(function () {
+                setTimeout(function() {
                     $('.successModal').toggleClass('active');
                 }, 2000);
             }
@@ -289,8 +289,8 @@
     });
 
     // cancel and close button across all modal windows
-    $(function () {
-        $('.button-cancel').on('click', function (e) {
+    $(function() {
+        $('.button-cancel').on('click', function(e) {
             e.preventDefault();
             $(this).closest("div.modal").toggleClass('active');
         });
@@ -300,7 +300,7 @@
     // ******* SECTION 6 - output tables  *******************************
     // ******************************************************************
 
-    VIEW.removeOutputFactorCheckboxes = function () {
+    VIEW.removeOutputFactorCheckboxes = function() {
         var temp = document.getElementById("selectFactorsForOutputDiv");
         if (temp) {
             while (temp.firstChild) {
@@ -314,7 +314,16 @@
     // *****************************************************************************
     // todo - dry and clean-up this block
 
-    VIEW.clearPreviousTables = function () {
+    VIEW.clearPreviousTables = function() {
+
+        var temp99 = $('#synSortSvgNo1');
+        if (temp99) {
+            d3.selectAll("#synFactorVizDiv svg").remove();
+        }
+
+        $(".vizTitles").remove();
+        $(".svgDownloadButton").remove();
+
         var $temp = $("#factorCorrelationTableTitle");
         var $temp3 = $("#factorCorrelationTableDiv");
         if ($temp) {

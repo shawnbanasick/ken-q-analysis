@@ -1,28 +1,553 @@
-//Ken-Q Analysis
+// Ken-Q Analysis
 //Copyright (C) 2016 Shawn Banasick
 //
 //    This program is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version. 
-
+//    (at your option) any later version.
 
 // JSlint declarations
 /* global numeric, CENTROID, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
 
-(function (OUTPUT, QAV, undefined) {
-
-
+(function(OUTPUT, QAV, undefined) {
 
     // ************************************************************************  view
-    // ******  Preliminary Results 1 - draw factor score correlations table  ********
+    // ******  Preliminary Results 1 - draw factor synthetic Q-sorts visuals ********
     // ******************************************************************************
-    OUTPUT.showPreliminaryOutput1 = function () {
+    OUTPUT.showPreliminaryOutput1 = function() {
+        // add synthetic factors visualizations
 
+        // $("#synFactorVizTitle").append("<h4>" + synFactorVizTitleText + "</h4>");
+
+        var distStatementDataVizArray = QAV.getState("distStatementDataVizArray");
+        var outputForDataViz = QAV.getState("outputForDataViz");
+        var userSelectedFactors = QAV.getState("userSelectedFactors");
         var language = QAV.getState("language");
-        var headerText = resources[language]["translation"]["Factor score correlations"];
+        var vizConfig = QAV.getState("vizConfig") || {};
+
+        // loop through userSelectedFactors to get each synFactorViz
+        for (var i = 0; i < outputForDataViz.length; i++) {
+            var synFactorVizName = "synFactorViz" + (i + 1);
+
+            // loop through each distinguishing statement in distStatementDataVizArray[i]
+            for (var j = 0; j < distStatementDataVizArray[i].length; j++) {
+                // get statement number
+                var statementId = distStatementDataVizArray[i][j]["No."];
+                // avoid empty objects
+                var sigSymbol;
+                var testValue = parseInt(statementId, 10);
+                if (!isNaN(testValue)) {
+
+                    // get values for calc of direction symbol
+                    var sigFactorZscoreKey = "Z-SCR-" + userSelectedFactors[i];
+                    var sigFactorZscoreValue = distStatementDataVizArray[i][j][sigFactorZscoreKey];
+                    var allFactorZscores = [];
+
+                    // loop through all of the factor z-scores and push to array
+                    for (var k = 0; k < userSelectedFactors.length; k++) {
+                        var temp1 = "Z-SCR-" + userSelectedFactors[k];
+                        var temp2 = distStatementDataVizArray[i][j][temp1];
+                        allFactorZscores.push(temp2);
+                    }
+                    // calc directionSymbol by checking against Zscore in all other factors
+                    var otherFactorZscores = _.pull(allFactorZscores, sigFactorZscoreValue);
+                    // var factorZscoreAverage = d3.mean(otherFactorZscores);
+                    var arrowPointerArrayLeft = [],
+                        arrowPointerArrayRight = [];
+                    for (var kk = 0; kk < otherFactorZscores.length; kk++) {
+                        if (sigFactorZscoreValue - otherFactorZscores[kk] > 0) {
+                            arrowPointerArrayRight.push("1");
+                        } else {
+                            arrowPointerArrayLeft.push("1");
+                        }
+                    }
+
+                    var directionSymbol;
+                    if (otherFactorZscores.length === arrowPointerArrayRight.length && userSelectedFactors.length > 1) {
+                        directionSymbol = vizConfig.shouldUseUnicode !== false
+                            ? "\u25BA"
+                            : ">>>"; // " >>>"; "&#9658;";  right-pointing pointer
+                    } else if (otherFactorZscores.length === arrowPointerArrayLeft.length) {
+                        directionSymbol = vizConfig.shouldUseUnicode !== false
+                            ? "\u25C4"
+                            : "<<<"; //" <<<";  "&#9668;";  left-pointing pointer
+                    } else {
+                        directionSymbol = "";
+                    }
+                    // put it all together and insert into object
+                    var sigFactorName = "SIG" + userSelectedFactors[i];
+                    var sigAt01Level = distStatementDataVizArray[i][j][sigFactorName];
+                    var location = statementId - 1;
+                    if (sigAt01Level === "*") {
+                        sigSymbol = vizConfig.shouldUseUnicode !== false
+                            ? "\u25C9"
+                            : "** "; //"**";  "&#9673;";  sig at .01
+                    } else if (sigAt01Level === "") {
+                        sigSymbol = vizConfig.shouldUseUnicode !== false
+                            ? "\u25CE"
+                            : "* "; // "*";  "&#9678;";  sig at .05
+                    }
+                    if (vizConfig.shouldShowZscoreArrows !== false) {
+                        outputForDataViz[i][location].sigVisualization = (sigSymbol + directionSymbol);
+                    } else if (vizConfig.shouldShowZscoreArrows === false) {
+                        outputForDataViz[i][location].sigVisualization = sigSymbol;
+                    }
+                }
+            }
+        }
+        // QAV.setState("outputForDataViz", outputForDataViz);
+
+        OUTPUT.drawSynSortTrianglesForOutput(outputForDataViz, userSelectedFactors);
+    };
+
+    OUTPUT.drawSynSortTrianglesForOutput = function(outputForDataViz, userSelectedFactors) {
+        var sortTriangleShape = QAV.getState("qavSortTriangleShape");
+        var uniques = _.uniq(sortTriangleShape);
+        var currentStatements = QAV.getState("qavCurrentStatements");
+        var language = QAV.getState("language");
+        var synFactorVizTitleText = resources[language].translation["Synthetic Sort for"];
+        var svgHeight;
+        var elementHeight, symbolSize, vSeparation, svgHeightCalc;
+        var vizConfig = QAV.getState("vizConfig") || {};
+        var cardFontSize = "12px"; // default setting
+        var containerWidth = ($(".container").width() - 40);
+        var elementWidth, config;
+
+        if (vizConfig.shouldSetCardWidth === true) {
+            elementWidth = vizConfig.cardWidth;
+            containerWidth = (elementWidth * uniques.length)+10;
+        } else {
+            elementWidth = containerWidth / uniques.length;
+        }
+
+        // user adjust font size for cards
+        if (vizConfig.shouldSetFontSize === true) {
+            cardFontSize = vizConfig.fontSize + "px";
+        }
+
+        // user adjust card height
+        if (vizConfig.shouldSetCardHeight === true) {
+            var newHeightValue = vizConfig.cardHeight;
+            if (newHeightValue === undefined) {
+                newHeightValue = 110;
+            }
+            elementHeight = parseInt(newHeightValue, 10);
+        } else {
+            elementHeight = 110;
+        }
+
+        // user adjust sig symbol size
+        if (vizConfig.shouldSetSymbolFontSize === true) {
+            symbolSize = vizConfig.sigSymbolFontSize + "px";
+        } else {
+            symbolSize = "12px";
+        }
+
+        // user adjust line spacing
+        if (vizConfig.shouldSetLineSpacing === true) {
+            vSeparation = vizConfig.lineSpacing;
+        } else {
+            vSeparation = 15;
+        }
+
+        // prepare statements !false sets as default
+        appendNumbersToStatements(outputForDataViz);
+
+        // auto adjust if no card header info
+        var locateStateY;
+        if (vizConfig.shouldShowMatchCounts === true || vizConfig.shouldIndicateDistinguishing) {
+            locateStateY = 40;
+        } else if (vizConfig.shouldIndicateDistinguishing === undefined){
+            locateStateY = 40;
+        } else {
+            locateStateY = 20;
+        }
+
+        // user trim statements
+        if (vizConfig.shouldTrimStatements === true) {
+            trimStatments(outputForDataViz);
+        }
+
+        // todo - fix so it doesn't trigger multiple times
+        if (vizConfig.shouldShowMatchCounts === true || vizConfig.shouldShowBackgroundColor === true) {
+            calcMatchCounts(outputForDataViz);
+        }
+
+        function appendNumbersToStatements(outputForDataViz) {
+            for (var i = 0; i < outputForDataViz.length; i++) {
+                for (var ii = 0; ii < outputForDataViz[i].length; ii++) {
+                    if (vizConfig.shouldPrependStateNo === false) {
+                        outputForDataViz[i][ii].displayStatements = outputForDataViz[i][ii].sortStatement;
+                    } else {
+                        outputForDataViz[i][ii].displayStatements = outputForDataViz[i][ii].statement + ". " + outputForDataViz[i][ii].sortStatement;
+                    }
+                }
+            }
+            return outputForDataViz;
+        }
+
+        function trimStatments(outputForDataViz) {
+            for (var i = 0; i < outputForDataViz.length; i++) {
+                for (var ii = 0; ii < outputForDataViz[i].length; ii++) {
+                    if (vizConfig.shouldTrimStatements === true) {
+                        var preSubString = outputForDataViz[i][ii].displayStatements;
+                        outputForDataViz[i][ii].displayStatements = preSubString.substring(0, vizConfig.trimStatementSize);
+                    }
+                }
+            }
+            return outputForDataViz;
+        }
+
+        function calcMatchCounts(outputForDataViz) {
+            var x = 10;
+            for (var i = 0; i < userSelectedFactors.length; i++) {
+                var data1 = QAV.outputSpreadsheetArray[x];
+
+                // sort by zScore z-score
+                var data = data1.slice(0);
+                data.sort(function(a, b) {
+                    return a["State Num"] - b["State Num"];
+                });
+                for (var jj = 0, len=data.length; jj<len; jj++) {
+                    var count = 0, totalCount = 0;
+                    var synSortNum = data[jj]["Synthetic Sort"];
+                    for (var key in data[jj] ) {
+                        if (data[jj][key] === synSortNum) {
+                            count = count + 1;
+                        }
+                        totalCount = totalCount + 1;
+                    }
+                    if (data[jj]["Z-score"] === synSortNum) {
+                        count = count-2;
+                        totalCount = totalCount - 4;
+                    } else {
+                        count = count-1;
+                        totalCount = totalCount - 4;
+                    }
+                    var countPercent = parseInt(((count / totalCount)*100), 10);
+                    var locator = data[jj]["State Num"];
+                    if (locator === outputForDataViz[i][jj].statement) {
+                        outputForDataViz[i][jj].matchingCount = count;
+                        outputForDataViz[i][jj].matchingCountPercent = countPercent;
+                    } else {
+                        console.log("error - statement ordering doesn't match");
+                    }
+                }
+                x = x + 3;
+            }
+            return outputForDataViz;
+        }
+
+        function findOccurrences(arr, val) {
+            var i,
+                j,
+                count = 0;
+            for (i = 0, j = arr.length; i < j; i++) {
+                if (arr[i] === val) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        function getSvgHeight(arr1) {
+            var b = [],
+                prev;
+            var arr = _.cloneDeep(arr1);
+            arr.sort();
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] !== prev) {
+                    b.push(1);
+                } else {
+                    b[b.length - 1]++;
+                }
+                prev = arr[i];
+            }
+            if (vizConfig.shouldHaveLegend === true) {
+                svgHeightCalc = (((parseInt(elementHeight, 10) + 10) * d3.max(b)) + 175); // plus 150 for legend
+                return svgHeightCalc;
+            } else {
+                svgHeightCalc = (((parseInt(elementHeight, 10) + 10) * d3.max(b)) + 25);
+                return svgHeightCalc; // 25 for the sort values header
+            }
+        }
+
+        // todo - find cause of error with !=
+        function wordwrap(text, max) {
+            var language = QAV.getState("language");
+            var lines = [];
+            var line;
+            if (language === "ja" || vizConfig.shouldSetWidthForAsian===true) {
+                if (vizConfig.shouldSetWidthForAsian===true) {
+                        max = vizConfig.asianStatmentLength || 12;
+                    } else {
+                        max = 12;
+                    }
+                lines = text.match(new RegExp('.{1,' + max + '}', 'g'));
+            } else {
+                var regex = new RegExp(".{0," + max + "}(?:\\s|$)", "g");
+                while ((line = regex.exec(text)) != "") { // DO NOT CHANGE != TO !== - WILL THROW ERROR
+                    lines.push(line);
+                }
+            }
+            return lines;
+        }
+
+        var temp1,
+            k,
+            instances = [];
+        for (k = 0; k < uniques.length; k++) {
+            temp1 = findOccurrences(sortTriangleShape, uniques[k]);
+            instances.push(temp1);
+        }
+
+        // get x position
+        var xPosLoop = [];
+        var counterX = 0;
+        for (var m = 0; m < instances.length; m++) {
+            for (var p = 0; p < instances[m]; p++) {
+                xPosLoop.push(counterX);
+            }
+            counterX = counterX + 1;
+        }
+
+        // get y position
+        var yPosLoop = [];
+        var counterY;
+        for (var r = 0; r < instances.length; r++) {
+            counterY = 0;
+            for (var s = 0; s < instances[r]; s++) {
+                yPosLoop.push(counterY);
+                counterY = counterY + 1;
+            }
+        }
+
+        // legend location
+        var yLegend = ((d3.max(yPosLoop) + 1) * elementHeight) + 50;
+        var xLegendCenterPoint = ((((d3.max(xPosLoop) + 1) * elementWidth) + 20) / 2);
+        var halfLegendWidth = 285;
 
 
+        // text wrap variables - set in control panel?
+        var maxLength;
+        if (vizConfig.shouldSetFontSize === true) {
+            var fontAdjustment = parseInt(vizConfig.fontSize, 10);
+            maxLength = parseInt((elementWidth / (6.75 * (fontAdjustment/12))), 10);
+        } else {
+            maxLength = parseInt((elementWidth / 6.75), 10);
+        }
+        // calc the height of the svg
+        svgHeight = getSvgHeight(sortTriangleShape);
+
+        // var backgroundColorCutoff;
+        // if (isNaN(vizConfig.backgroundColorCutoff)) {
+        //     backgroundColorCutoff = 0;
+        // } else {
+        //     backgroundColorCutoff = vizConfig.backgroundColorCutoff;
+        // }
+
+        var backgroundColorCutoff = vizConfig.backgroundColorCutoff;
+
+        // loop through array to draw visualizations   synFactorVizDiv
+        for (var z = 0; z < outputForDataViz.length; z++) {
+
+            var zz = z + 1;
+
+            var factorVizDivName = "factorVizDiv" + zz;
+            $("#synFactorVizDiv").append("<div id=" + factorVizDivName + "></div>");
+
+            $("#" + factorVizDivName).append("<h4 class='vizTitles'>" + synFactorVizTitleText + userSelectedFactors[z] + "</h4>");
+
+            var idName = "synSortSvgNo" + zz;
+
+            var svg = d3.select("#" + factorVizDivName)
+                .append("svg")
+                .attr('width', containerWidth)
+                .attr('height', svgHeight)
+                .attr('id', idName)
+                .attr('class', "factorViz");
+
+            var textArray1 = outputForDataViz[z];
+
+            // sort by zScore z-score
+            var textArray = textArray1.slice(0);
+            textArray.sort(function(a, b) {
+                return a.zScore - b.zScore;
+            });
+
+            // add location data
+            for (var c = 0; c < textArray.length; c++) {
+                textArray[c].xVal = xPosLoop[c];
+                textArray[c].yVal = yPosLoop[c];
+            }
+
+            var index = svg.selectAll("g.node").data(uniques, function(d) {
+                return d;
+            });
+
+            var indexGroup = index.enter().append("g").attr("class", "node");
+
+            indexGroup.append('rect')
+                .attr('width', elementWidth)
+                .attr('height', '20')
+                .attr('x', function(d) {return uniques.indexOf(d) * elementWidth;})
+                .attr('y', '0')
+                .attr('fill', 'white')
+                .attr('stroke', 'black');
+
+            indexGroup.append('text')
+                .attr('x', function(d) {
+                return ((uniques.indexOf(d) * elementWidth) + (elementWidth / 2));})
+                .attr('y', '16').style('text-anchor', 'middle')
+                .attr('class', 'headerText').attr('font-family', 'Arial')
+                .attr('font-size', '14px')
+                .attr('font-weight', 'bold')
+                .attr('fill', 'black')
+                .text(function(d) {return d;});
+
+            // associate data with identifiers
+            var index2 = svg.selectAll("g.node2").data(textArray, function(d) {
+                return d.statement;
+            });
+
+            var indexGroup2 = index2.enter().append("g").attr("class", "node2");
+
+            indexGroup2.append('rect')
+                .attr('width', elementWidth)
+                .attr('height', elementHeight)
+                .attr('x', function(d) {return d.xVal * elementWidth;})
+                .attr('y', function(d) {return ((d.yVal * elementHeight) + 20);})
+                .attr('fill', function(d) {if (vizConfig.shouldShowBackgroundColor === true) { if (d.matchingCountPercent <= backgroundColorCutoff) { return  '#ffffb2'; } else { return '#ffffff';}
+                } else { return '#ffffff';}})
+                //.style('background-color', '#ffffff');
+                .attr('stroke', 'black');
+
+            if (vizConfig.shouldIndicateDistinguishing !== false) {
+            indexGroup2.append('text')
+                .attr('width', elementWidth)
+                .attr('height', elementHeight)
+                .attr('font-size', symbolSize)
+                .attr('x', function(d) {return ((d.xVal * elementWidth) + 5); })
+                .attr('y', function(d) {return ((d.yVal * elementHeight) + 38); })
+                .text(function(d) { return d.sigVisualization; });
+            }
+
+            indexGroup2.append('text')
+                .attr('class', 'wrap')
+                .attr('font-family', 'Arial')
+                .attr('font-size', cardFontSize)
+                .attr('x', function(d) {return ((d.xVal * elementWidth) + 3);})
+                .attr('y', function(d) {return ((d.yVal * elementHeight) + locateStateY); })
+                .attr('dy', 0).each(function(d) { var lines = wordwrap(d.displayStatements, maxLength);
+                    for (var iii = 0; iii < lines.length; iii++) {
+                    d3.select(this).append("tspan")
+                        .attr("dy", vSeparation)
+                        .attr('text-anchor', 'middle')
+                        .attr("x", (d.xVal * elementWidth) + (elementWidth / 2))
+                        .text(lines[iii]);
+                    }
+                });
+
+            if (vizConfig.shouldShowMatchCounts === true) {
+              indexGroup2.append('text')
+              .attr('font-family', 'Arial')
+              .attr('font-size', cardFontSize)
+              .attr('x', function(d) {return ((d.xVal * elementWidth) + (elementWidth * .97)); })
+              .attr('y', function(d) {return ((d.yVal * elementHeight) + 38); })
+              .style("text-anchor","end")
+              .text(function(d) { return (d.matchingCount + " (" + d.matchingCountPercent + "%)"); });
+            }
+
+            if (vizConfig.shouldHaveLegend === true) {
+
+                var indexGroup3 = svg.append("g").attr("class", "node3");
+
+                indexGroup3.append('rect')
+                    .attr('height', 175)
+                    .attr('width', 540)
+                    .attr('x', (xLegendCenterPoint - halfLegendWidth))
+                    .attr('y', (yLegend - 5))
+                    .attr('fill', 'white')
+                    .style('stroke', 'black');
+
+                indexGroup3.append('text')
+                    .attr('x', ((xLegendCenterPoint - halfLegendWidth) + 10)) // half of legend box width
+                    .attr('y', (yLegend + 20))
+                    .attr('class', 'legendHeader')
+                    .attr('font-family', 'Arial')
+                    .text('Symbol')
+                    .attr('font-weight', 'bold');
+
+                indexGroup3.append('text')
+                    .attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)) // half of legend box width
+                    .attr('y', (yLegend + 20))
+                    .attr('class', 'legendHeader')
+                    .attr('font-family', 'Arial')
+                    .text('Interpretation')
+                    .attr('font-weight', 'bold');
+
+                // symbols  - !==false is to set as default
+                if (vizConfig.shouldUseUnicode !== false) {
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 52)).text('\u25CE');
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 82)).text('\u25C9');
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 127)).text('\u25BA');
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 157)).text('\u25C4');
+                } else if (vizConfig.shouldUseUnicode === false) {
+                    // symbols
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 52)).text('*');
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 82)).text('**');
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 127)).text('>>>');
+                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 157)).text('<<<');
+                }
+
+                // interpretation
+                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 50)).attr('font-family', 'Arial').text('Distinguishing statement at P < 0.05');
+                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 80)).attr('font-family', 'Arial').text('Distinguishing statement at P < 0.01');
+                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 125)).attr('font-family', 'Arial').text('z-Score for the statement is higher than in all of the other factors');
+                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 155)).attr('font-family', 'Arial').text('z-Score for the statement is lower than in all of the other factors');
+            }
+
+            var downloadText = resources[language].translation.downloadImage;
+            $("#" + factorVizDivName).append('<input class="svgDownloadButton blackHover" name="downloadButton" type="button" value="' + userSelectedFactors[z] + downloadText + '" />');
+        }
+
+        $('.svgDownloadButton').on('click', function(event) {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            var shouldAddName = vizConfig.shouldAddCustomName;
+            var svgId = $(this).parent().find("svg").attr('id');
+            var arrayIndexNumber = (svgId.slice(-1) - 1);
+            var factorName = userSelectedFactors[arrayIndexNumber];
+            var cleanFactorName = factorName.replace(/\s+/g, '');
+            var date = UTIL.currentDate1();
+            var time = UTIL.currentTime1();
+            var dateTime = date + "_" + time;
+            var projectName = QAV.getState("qavProjectName");
+            var customName = vizConfig.customName;
+            if (shouldAddName === true) {
+                if (vizConfig.customNameLocation === "prepend") {
+                    config = { filename: customName + "_" + projectName + "_" + cleanFactorName + "_" + dateTime};
+                } else if (vizConfig.customNameLocation === "append") {
+                    config = { filename: projectName + "_" + cleanFactorName + "_" + dateTime + "_" + customName};
+                } else if ( vizConfig.customNameLocation === "replace" ){
+                    config = { filename: customName};} else {
+                    config = { filename: projectName + "_" + cleanFactorName + "_" + dateTime};
+                }
+            } else {
+            config = { filename: projectName + "_" + cleanFactorName + "_" + dateTime};
+        }
+            d3_save_svg.save(d3.select('#' + svgId).node(), config);
+        });
+        OUTPUT.showPreliminaryOutput1b();
+    };
+
+    // ************************************************************************  view
+    // ******  Preliminary Results 1b - draw factor score correlations table  ********
+    // ******************************************************************************
+    OUTPUT.showPreliminaryOutput1b = function() {
+        var language = QAV.getState("language");
+        var headerText = resources[language].translation["Factor score correlations"];
+
+        // add factor correlations and loadings tables
         $("#factorCorrelationTableTitle").append("<h4>" + headerText + "</h4>");
 
         //  todo - fix ordering error of factors - use large demo set with 7 factors to see error and reduce appends to only one
@@ -62,17 +587,15 @@
 
         var table = $('#factorCorrelationTable').DataTable();
         var lastIdx = null;
-        $('#factorCorrelationTable tbody')
-            .on('mouseover', 'td', function () {
-                var colIdx = table.cell(this).index().column;
-                if (colIdx !== lastIdx) {
-                    $(table.cells().nodes()).removeClass('highlight');
-                    $(table.column(colIdx).nodes()).addClass('highlight');
-                }
-            })
-            .on('mouseleave', function () {
+        $('#factorCorrelationTable tbody').on('mouseover', 'td', function() {
+            var colIdx = table.cell(this).index().column;
+            if (colIdx !== lastIdx) {
                 $(table.cells().nodes()).removeClass('highlight');
-            });
+                $(table.column(colIdx).nodes()).addClass('highlight');
+            }
+        }).on('mouseleave', function() {
+            $(table.cells().nodes()).removeClass('highlight');
+        });
         showPreliminaryOutput2();
     };
 
@@ -88,18 +611,19 @@
 
         //  todo - fix ordering error of factors - use large demo set with 7 factors to see error
         var data = QAV.getState("outputSpreadsheetArray");
-        var s1, s2, s3;
+        var s1,
+            s2,
+            s3;
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Flagged q - sort weights"];
-        var chartText2 = resources[language]["translation"]["Flagged q-sort correlations"];
-        var chartText3 = resources[language]["translation"]["Z-scores, sort values, raw sorts"];
-        var chartText4 = resources[language]["translation"]["Statement Number"];
-        var chartText5 = resources[language]["translation"]["Statement"];
-        var chartText6 = resources[language]["translation"]["Z-score"];
-        var chartText7 = resources[language]["translation"]["Sort Values"];
-        var chartText8 = resources[language]["translation"]["Weight"];
-
+        var chartText1 = resources[language].translation["Flagged q - sort weights"];
+        var chartText2 = resources[language].translation["Flagged q-sort correlations"];
+        var chartText3 = resources[language].translation["Z-scores, sort values, raw sorts"];
+        var chartText4 = resources[language].translation["Statement Number"];
+        var chartText5 = resources[language].translation.Statement;
+        var chartText6 = resources[language].translation["Z-score"];
+        var chartText7 = resources[language].translation["Sort Values"];
+        var chartText8 = resources[language].translation.Weight;
 
         // START FOR EACH FACTOR LOOP
         for (var j = 0; j < userSelectedFactors.length; j++) {
@@ -118,11 +642,10 @@
             var weightColumnHeaders = [
                 {
                     title: "Q-Sort",
-                    class: "dt-head-center dt-body-center",
-                },
-                {
+                    class: "dt-head-center dt-body-center"
+                }, {
                     title: chartText8,
-                    class: "dt-head-center dt-body-center",
+                    class: "dt-head-center dt-body-center"
                 }
             ];
 
@@ -130,7 +653,9 @@
                 "retrieve": true,
                 "searching": false,
                 "ordering": true,
-                "order": [[1, "desc"]],
+                "order": [
+                    [1, "desc"]
+                ],
                 "info": false,
                 "scrollY": 800,
                 "scrollCollapse": true,
@@ -138,17 +663,19 @@
                 "paging": false,
                 "data": newWeightData,
                 "columns": weightColumnHeaders,
-                "columnDefs": [{
-                    targets: [0],
-                    className: 'dt-body-center dt-body-name'
-                }, {
-                    targets: '_all',
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        if (cellData < 0) {
-                            $(td).css('color', 'red');
+                "columnDefs": [
+                    {
+                        targets: [0],
+                        className: 'dt-body-center dt-body-name'
+                    }, {
+                        targets: '_all',
+                        "createdCell": function(td, cellData, rowData, row, col) {
+                            if (cellData < 0) {
+                                $(td).css('color', 'red');
+                            }
                         }
                     }
-                }],
+                ]
             });
 
             s1 = s1 + 3;
@@ -163,8 +690,9 @@
             var miniCorrColumnHeaders = [
                 {
                     title: "Q-Sort",
-                    class: "dt-head-center dt-body-center",
-                }];
+                    class: "dt-head-center dt-body-center"
+                }
+            ];
 
             for (var k = 1; k < newMiniCorrData[0].length; k++) {
                 var tempObjMC = {};
@@ -186,17 +714,19 @@
                 "paging": false,
                 "data": newMiniCorrData,
                 "columns": miniCorrColumnHeaders,
-                "columnDefs": [{
-                    targets: [0],
-                    className: 'dt-body-center dt-body-name'
-                }, {
-                    targets: '_all',
-                    "createdCell": function (td, cellData, rowData, row, col) {
-                        if (cellData < 0) {
-                            $(td).css('color', 'red');
+                "columnDefs": [
+                    {
+                        targets: [0],
+                        className: 'dt-body-center dt-body-name'
+                    }, {
+                        targets: '_all',
+                        "createdCell": function(td, cellData, rowData, row, col) {
+                            if (cellData < 0) {
+                                $(td).css('color', 'red');
+                            }
                         }
                     }
-                }],
+                ]
             });
 
             s2 = s2 + 3;
@@ -216,18 +746,15 @@
                     title: chartText4,
                     class: "dt-head-center dt-body-center",
                     "data": chartText4
-                },
-                {
+                }, {
                     title: chartText5,
                     class: "dt-head-center dt-body-left",
                     "data": chartText5
-                },
-                {
+                }, {
                     "data": chartText6,
                     title: chartText6,
                     class: "dt-head-center dt-body-right"
-                },
-                {
+                }, {
                     title: chartText7,
                     class: "dt-head-center dt-body-center",
                     "data": chartText7
@@ -249,7 +776,9 @@
                 "retrieve": true,
                 "searching": false,
                 "ordering": true,
-                "order": [[2, "desc"]],
+                "order": [
+                    [2, "desc"]
+                ],
                 "info": false,
                 "scrollY": 800,
                 "scrollCollapse": true,
@@ -266,10 +795,14 @@
     // **********************************************************************  view
     // ******  dynamicallly append checkboxs to select factors for analysis *******
     // ****************************************************************************
-    OUTPUT.appendFactorSelectionCheckboxes = function () {
+    OUTPUT.appendFactorSelectionCheckboxes = function() {
 
         var hasSplitFactor = QAV.getState("hasSplitFactor");
-        var j, len, k, temp5, pcaFactorLabels = [];
+        var j,
+            len,
+            k,
+            temp5,
+            pcaFactorLabels = [];
         // read in factor labels to generate checkboxes (and checking for split factor)
         var factorsToSelect;
 
@@ -279,7 +812,9 @@
         if (hasSplitFactor > 0) {
 
             var headers = QAV.getState("factorLabels");
-            var i, temp1, temp3;
+            var i,
+                temp1,
+                temp3;
             factorsToSelect = [];
 
             headers.shift();
@@ -341,7 +876,7 @@
     // **************  pull user-selected factors for analysis *********************
     // *****************************************************************************
 
-    OUTPUT.getFactorsForAnalysis = function () {
+    OUTPUT.getFactorsForAnalysis = function() {
         var checkboxes = document.getElementsByName('analysisFactors');
         var vals = [];
         for (var i = 0; i < checkboxes.length; i++) {
@@ -356,15 +891,19 @@
     // **************  pull loadings that have been flagged  **********************
     // ****************************************************************************
 
-    OUTPUT.pullFlaggedFactorLoadings = function () {
+    OUTPUT.pullFlaggedFactorLoadings = function() {
         var numberFactorsExtracted = parseInt(QAV.getState("numberFactorsExtracted"));
 
         var results = QAV.getState("results");
 
         var jLoopLen = (numberFactorsExtracted * 2) + 3;
         var significantLoadingsArray = [];
-        var i, j;
-        var isLoadingSignificant, factorNumber, respondentName, factorLoading;
+        var i,
+            j;
+        var isLoadingSignificant,
+            factorNumber,
+            respondentName,
+            factorLoading;
         // todo check to see if this can be removed see bind dump button function
         var iLoopLen = results.length;
         var factorLabelsArray = QAV.getState("factorLabelsArray");
@@ -398,7 +937,7 @@
             }
         }
 
-        // check for sorts flagged for more than one factor user error 
+        // check for sorts flagged for more than one factor user error
         var multipleFlags;
         var problemSort;
         for (var k = 0; k < significantLoadingsArray.length; k++) {
@@ -414,8 +953,8 @@
         // check for user-selected factors with no loading sorts user error
         var loadingSortCheck = $(userSelectedFactors).not(loadingSortCheckArray).length === 0;
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["The sort for respondent"];
-        var appendText2 = resources[language]["translation"]["is flagged for more than one factor"];
+        var appendText1 = resources[language].translation["The sort for respondent"];
+        var appendText2 = resources[language].translation["is flagged for more than one factor"];
 
         if (loadingSortCheck === false) {
             $('#noFactorLoadingModal').toggleClass('active');
@@ -427,7 +966,7 @@
             $("#sortLoadingMultipleFactorsModal").toggleClass('active');
             return "false";
         } else {
-            significantLoadingsArray.sort(function (a, b) {
+            significantLoadingsArray.sort(function(a, b) {
                 if (a[0] < b[0]) {
                     return -1;
                 }
@@ -444,7 +983,8 @@
         for (var i = 0; i < significantLoadingsArray.length; i++) {
             var f = evenRound((significantLoadingsArray[i][2]), 8);
             var f2 = evenRound((f * f), 8);
-            var oneMinusF2, w;
+            var oneMinusF2,
+                w;
             if (f2 === 1) {
                 oneMinusF2 = f2;
                 w = evenRound((f / oneMinusF2), 8);
@@ -465,14 +1005,14 @@
     function findLargestFactorWeights(significantLoadingsArray) {
 
         // remove unique sorts (value 99) from array
-        var factorSelect = _.filter(significantLoadingsArray, function (n) {
+        var factorSelect = _.filter(significantLoadingsArray, function(n) {
             return n[0] !== 99;
         });
 
         // pull out just factor number and W value to array
         var factorNumbersArray2 = [];
         var factorNumbersArray = [];
-        _(factorSelect).forEach(function (n) {
+        _(factorSelect).forEach(function(n) {
             var tempArray = [];
             var factorNumber = n[0];
             factorNumbersArray2.push(factorNumber);
@@ -489,13 +1029,13 @@
 
         var maxFactorValuesArray = [];
         var factorValue = 0;
-        _(sigFactorNumbersArray).forEach(function () {
-            var temp = _(factorNumbersArray).filter(function (j) {
+        _(sigFactorNumbersArray).forEach(function() {
+            var temp = _(factorNumbersArray).filter(function(j) {
                 return j[0] === sigArray[factorValue];
             });
 
             var tempArray2 = [];
-            var maxFactorLoadings = _(temp).forEach(function (q) {
+            var maxFactorLoadings = _(temp).forEach(function(q) {
                 var tempVar3 = evenRound((Math.abs(1 / q[1])), 8);
                 tempArray2.push(tempVar3);
             }).value();
@@ -533,7 +1073,6 @@
         weightRawSorts(significantFactors);
     }
 
-
     function weightRawSorts(significantFactors) {
         var respondentNames = QAV.getState("qavRespondentNames");
         var rawSorts = QAV.getState("positiveShiftedRawSorts");
@@ -568,7 +1107,8 @@
     function combineWeightedSorts(weightedSorts) {
         var sigFactorNumbersArray1 = QAV.getState("sigFactorNumbersArray");
         var sigFactorNumbersArray = sigFactorNumbersArray1.sort();
-        var tempArray2, summedWeightedSorts;
+        var tempArray2,
+            summedWeightedSorts;
 
         summedWeightedSorts = [];
         var sigSortsArray = [];
@@ -661,6 +1201,7 @@
 
             for (var j = 0; j < qavSortTriangleShape.length; j++) {
                 temp1[j].sortValue = qavSortTriangleShape[j];
+                temp1[j].sigVisualization = "";
             }
             var temp2 = alasql("SELECT * FROM ? ORDER BY statement ASC", [temp1]);
             sortedZScoreArray.push(temp2);
@@ -687,18 +1228,18 @@
         var output = [];
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Project Overview"];
-        var appendText2 = resources[language]["translation"]["Undo"];
-        var appendText3 = resources[language]["translation"]["Analysis Completed on"];
-        var appendText4 = resources[language]["translation"]["Total Number of Statements"];
-        var appendText5 = resources[language]["translation"]["Q-sort Triangle Shape"];
-        var appendText6 = resources[language]["translation"]["Total Number of Q-sorts"];
-        var appendText7 = resources[language]["translation"]["Analysis Process"];
-        var appendText8 = resources[language]["translation"]["Project name"];
+        var appendText1 = resources[language].translation["Project Overview"];
+        var appendText2 = resources[language].translation.Undo;
+        var appendText3 = resources[language].translation["Analysis Completed on"];
+        var appendText4 = resources[language].translation["Total Number of Statements"];
+        var appendText5 = resources[language].translation["Q-sort Triangle Shape"];
+        var appendText6 = resources[language].translation["Total Number of Q-sorts"];
+        var appendText7 = resources[language].translation["Analysis Process"];
+        var appendText8 = resources[language].translation["Project name"];
 
         var newSheet = {
             sheetid: appendText1,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet);
 
@@ -724,7 +1265,9 @@
 
         var list = document.getElementById("rotationHistoryList");
         var items = list.childNodes;
-        var temp, temp1, temp2;
+        var temp,
+            temp1,
+            temp2;
 
         settings.push([appendText7, ""]);
         // pull list items and push to array for output
@@ -741,26 +1284,27 @@
         settings.push(spacer, ["Language", outputLanguage]);
 
         var timeCompleted = UTIL.currentDate1() + " at " + UTIL.currentTime1();
-        settings.push(spacer, [appendText3 + timeCompleted, ""]);
+        settings.push(spacer, [
+            appendText3 + timeCompleted,
+            ""
+        ]);
 
         output.push(settings);
 
         pushStatementsToOutputArray(sheetNames, output);
     };
 
-
     function pushStatementsToOutputArray(sheetNames, output) {
 
         var statements = QAV.getState("qavCurrentStatements");
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Statements"];
-        var appendText2 = resources[language]["translation"]["Statement Number"];
-
+        var appendText1 = resources[language].translation.Statements;
+        var appendText2 = resources[language].translation["Statement Number"];
 
         var newSheet = {
             sheetid: appendText1,
-            header: true,
+            header: true
         };
 
         var statementsArray = [];
@@ -780,14 +1324,14 @@
     function pushSortsToOutputArray(sheetNames, output) {
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Q-sorts"];
-        var appendText2 = resources[language]["translation"]["Respondent"];
-        var appendText3 = resources[language]["translation"]["Mean"];
-        var appendText4 = resources[language]["translation"]["Standard Deviation"];
+        var appendText1 = resources[language].translation["Q-sorts"];
+        var appendText2 = resources[language].translation.Respondent;
+        var appendText3 = resources[language].translation.Mean;
+        var appendText4 = resources[language].translation["Standard Deviation"];
 
         var newSheet = {
             sheetid: appendText1,
-            header: true,
+            header: true
         };
         sheetNames.push(newSheet);
 
@@ -815,11 +1359,11 @@
     function pushCorrelationArray(sheetNames, output) {
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Correlation matrix"];
+        var appendText1 = resources[language].translation["Correlation matrix"];
 
         var newSheet = {
             sheetid: appendText1,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet);
 
@@ -831,15 +1375,25 @@
 
     function pushCentroidFactorsTableToOutputArray(sheetNames, output) {
 
-        var factorMatrixTransposed, i, j, k, m, temp, temp1, temp2;
-        var newSheet, expVar, centroidsArray, tempObj, respondentNames;
+        var factorMatrixTransposed,
+            i,
+            j,
+            k,
+            m,
+            temp,
+            temp1,
+            temp2;
+        var newSheet,
+            expVar,
+            centroidsArray,
+            tempObj,
+            respondentNames;
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Unrotated Factor Matrix"];
-        var appendText2 = resources[language]["translation"]["Eigenvalues"];
-        var appendText3 = resources[language]["translation"]["Factor"];
-        var appendText4 = resources[language]["translation"]["Respondent"];
-
+        var appendText1 = resources[language].translation["Unrotated Factor Matrix"];
+        var appendText2 = resources[language].translation.Eigenvalues;
+        var appendText3 = resources[language].translation.Factor;
+        var appendText4 = resources[language].translation.Respondent;
 
         if (QAV.typeOfFactor === "PCA") {
             // conform PCA to legacy centroid data structure
@@ -867,7 +1421,7 @@
 
         newSheet = {
             sheetid: appendText1,
-            headers: true,
+            headers: true
         };
         sheetNames.push(newSheet);
 
@@ -889,15 +1443,23 @@
     }
 
     function pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, factorMatrixTransposed) {
-        var newSheet, cumulCommMatrix9, explnVarRow, responderHeadersRow;
-        var i, j, k, temp1, temp2, respondentName;
+        var newSheet,
+            cumulCommMatrix9,
+            explnVarRow,
+            responderHeadersRow;
+        var i,
+            j,
+            k,
+            temp1,
+            temp2,
+            respondentName;
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Cumul Comm Matrix"];
-        var appendText2 = resources[language]["translation"]["cumulative % explained variance"];
+        var appendText1 = resources[language].translation["Cumul Comm Matrix"];
+        var appendText2 = resources[language].translation["cumulative % explained variance"];
 
         newSheet = {
             sheetid: appendText1,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet);
 
@@ -944,11 +1506,11 @@
     function pushFactorScoreCorrelationsToOutputArray(sheetNames, output) {
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Factor score correlations"];
+        var appendText1 = resources[language].translation["Factor score correlations"];
 
         var newSheet = {
             sheetid: appendText1,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet);
 
@@ -956,7 +1518,9 @@
         var userSelectedFactors = QAV.getState("userSelectedFactors");
         var analysisOutput2 = _.cloneDeep(analysisOutput);
         var factorScoresCorrelationArray2 = [];
-        var temp1, temp2, tempArray;
+        var temp1,
+            temp2,
+            tempArray;
 
         // i loop through selected factors, j loop through sorts to get new array of z-scores
         // todo - added after other calculations, so now repeats with factor download sheets - dry out
@@ -994,10 +1558,11 @@
 
         function factorScoresCorrelationsHelper(factorScoresCorrelationArray, pullX) {
 
-            var correlationHolder, correlationHolder2;
+            var correlationHolder,
+                correlationHolder2;
             var correlationTableArrayFragment = [];
 
-            _(factorScoresCorrelationArray).forEach(function (element) {
+            _(factorScoresCorrelationArray).forEach(function(element) {
                 correlationHolder2 = CORR.getPqmethodCorrelation(pullX, element);
                 correlationHolder = evenRound((correlationHolder2[0]), 4);
                 correlationTableArrayFragment.push(correlationHolder);
@@ -1026,12 +1591,12 @@
     function pushRotatedFactorsArrayToOutputArray(sheetNames, output) {
         var results = QAV.getState("results");
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Loadings"];
-        var appendText2 = resources[language]["translation"]["Flagged"];
+        var appendText1 = resources[language].translation.Loadings;
+        var appendText2 = resources[language].translation.Flagged;
 
         var newSheet = {
             sheetid: appendText1,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet);
 
@@ -1039,21 +1604,22 @@
 
         var jLoopLen = results[0].length;
 
-        var i, j;
+        var i,
+            j;
 
         var iLoopLen = results.length;
         var temp;
         var tempArray = [];
 
         var headerRowFromCurrentTable = $('#factorRotationTable2 thead tr')[0];
-        $.each(headerRowFromCurrentTable.cells, function (i, v) {
+        $.each(headerRowFromCurrentTable.cells, function(i, v) {
             var temp5 = v.textContent;
             tempArray.push(temp5);
         });
         formattedResults.push(tempArray);
 
         // resort the array
-        results.sort(function (a, b) {
+        results.sort(function(a, b) {
             return a[0] - b[0];
         });
 
@@ -1076,8 +1642,8 @@
 
     //    function pushFactorsToOutputArray(sheetNames, output) {
     //        var language = QAV.getState("language");
-    //        var appendText1 = resources[language]["translation"]["Project history"];
-    //        var appendText2 = resources[language]["translation"]["Undo"];
+    //        var appendText1 = resources[language].translation["Project history"];
+    //        var appendText2 = resources[language].translation["Undo"];
     //
     //        var newSheet = {
     //            sheetid: appendText1,
@@ -1111,12 +1677,12 @@
     function pushFactorsToOutputArray(sheetNames, output) {
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language]["translation"]["Sorts Weight"];
-        var appendText2 = resources[language]["translation"]["Sorts Corr"];
-        var appendText3 = resources[language]["translation"]["Statement Number"];
-        var appendText4 = resources[language]["translation"]["Statement"];
-        var appendText5 = resources[language]["translation"]["Z-score"];
-        var appendText6 = resources[language]["translation"]["Sort Values"];
+        var appendText1 = resources[language].translation["Sorts Weight"];
+        var appendText2 = resources[language].translation["Sorts Corr"];
+        var appendText3 = resources[language].translation["Statement Number"];
+        var appendText4 = resources[language].translation.Statement;
+        var appendText5 = resources[language].translation["Z-score"];
+        var appendText6 = resources[language].translation["Sort Values"];
 
         var analysisOutput2 = QAV.getState("analysisOutput");
         var analysisOutput = _.cloneDeep(analysisOutput2);
@@ -1166,7 +1732,9 @@
         for (var j = 0; j < analysisOutput.length; j++) {
 
             // FACTOR WEIGHTS TABLES STARTS FROM HERE
-            var factorWeightFactorArray = [["Q-Sort", "Weight"]];
+            var factorWeightFactorArray = [
+                ["Q-Sort", "Weight"]
+            ];
             var factorWeightName = userSelectedFactors[j];
             for (var w = 0; w < sortWeights.length; w++) {
                 var factorWeightTempArray = [];
@@ -1241,7 +1809,7 @@
             }
 
             var synFactorArray1 = synFactorArray.slice(0);
-            synFactorArray1.sort(function (a, b) {
+            synFactorArray1.sort(function(a, b) {
                 return b[appendText5] - a[appendText5];
             });
             output.push(synFactorArray1);
@@ -1252,15 +1820,18 @@
     function pushFactorPowerSetDiffsToOutputArray(sheetNames, output, analysisOutput) {
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Diff"];
-        var chartText2 = resources[language]["translation"]["Difference"];
-        var chartText3 = resources[language]["translation"]["Statement Number"];
-        var chartText4 = resources[language]["translation"]["Statement"];
+        var chartText1 = resources[language].translation.Diff;
+        var chartText2 = resources[language].translation.Difference;
+        var chartText3 = resources[language].translation["Statement Number"];
+        var chartText4 = resources[language].translation.Statement;
 
         var factorPairs = [];
         for (var i = 0; i < analysisOutput.length - 1; i++) {
             for (var j = i; j < analysisOutput.length - 1; j++) {
-                factorPairs.push([analysisOutput[i], analysisOutput[j + 1]]);
+                factorPairs.push([
+                    analysisOutput[i],
+                    analysisOutput[j + 1]
+                ]);
             }
         }
         var diffArraySorted;
@@ -1284,7 +1855,7 @@
                 tempObj[factorPairs[m][1][0].factor] = factorPairs[m][1][p].zScore;
                 tempObj[chartText2] = evenRound(((factorPairs[m][0][p].zScore) - (factorPairs[m][1][p].zScore)), 3);
                 diffArray.push(tempObj);
-                diffArraySorted = diffArray.sort(function (a, b) {
+                diffArraySorted = diffArray.sort(function(a, b) {
                     return b[chartText2] - a[chartText2];
                 });
             }
@@ -1296,18 +1867,18 @@
     function pushConsensusStatementsToOutput(sheetNames, output, analysisOutput) {
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Z-Score Variance"];
-        var chartText2 = resources[language]["translation"]["Consensus-Disagreement"];
-        var chartText3 = resources[language]["translation"]["Statement Number"];
-        var chartText4 = resources[language]["translation"]["Statement"];
-        var chartText5 = resources[language]["translation"]["Z-Score Variance"];
+        var chartText1 = resources[language].translation["Z-Score Variance"];
+        var chartText2 = resources[language].translation["Consensus-Disagreement"];
+        var chartText3 = resources[language].translation["Statement Number"];
+        var chartText4 = resources[language].translation.Statement;
+        var chartText5 = resources[language].translation["Z-Score Variance"];
         var sigFactorNumbersArray = QAV.getState("sigFactorNumbersArray");
 
         sigFactorNumbersArray.sort();
 
         var newSheet = {
             sheetid: chartText2,
-            header: true,
+            header: true
         };
         sheetNames.push(newSheet);
 
@@ -1328,7 +1899,7 @@
 
             zScoreArrayForStatements.push(tempObj);
         }
-        var zScoreArrayForStatementsSorted = zScoreArrayForStatements.sort(function (a, b) {
+        var zScoreArrayForStatementsSorted = zScoreArrayForStatements.sort(function(a, b) {
             return a[chartText5] - b[chartText5];
         });
         output.push(zScoreArrayForStatementsSorted);
@@ -1338,16 +1909,16 @@
     function pushFactorCharacteristicsToOutput(sheetNames, output, analysisOutput, sigFactorNumbersArray) {
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Factor Characteristics"];
-        var chartText2 = resources[language]["translation"]["Factor Number"];
-        var chartText3 = resources[language]["translation"]["No. of Defining Variables"];
-        var chartText4 = resources[language]["translation"]["Avg. Rel. Coef."];
-        var chartText5 = resources[language]["translation"]["Composite Reliability"];
-        var chartText6 = resources[language]["translation"]["S.E. of Factor Z-scores"];
+        var chartText1 = resources[language].translation["Factor Characteristics"];
+        var chartText2 = resources[language].translation["Factor Number"];
+        var chartText3 = resources[language].translation["No. of Defining Variables"];
+        var chartText4 = resources[language].translation["Avg. Rel. Coef."];
+        var chartText5 = resources[language].translation["Composite Reliability"];
+        var chartText6 = resources[language].translation["S.E. of Factor Z-scores"];
 
         var newSheet = {
             sheetid: chartText1,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet);
 
@@ -1379,7 +1950,8 @@
 
         factorCharacteristicsArray.push(tempObj);
 
-        var nSorts, compositeRel;
+        var nSorts,
+            compositeRel;
         var composRelArray = [];
         tempObj = {};
         tempObj[chartText1] = chartText5;
@@ -1410,11 +1982,11 @@
     function pushStandardErrorsDifferencesToOutput(sheetNames, output, stndErrorArray, sigSortsArray, analysisOutput, sigFactorNumbersArray) {
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Standard Errors for Diffs"];
+        var chartText1 = resources[language].translation["Standard Errors for Diffs"];
 
         var newSheet = {
             sheetid: chartText1,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet);
 
@@ -1429,7 +2001,9 @@
         }
         stndErrorDiffArray.push(tempObj);
 
-        var stndError1, stndError2, stndError3;
+        var stndError1,
+            stndError2,
+            stndError3;
 
         for (var j = 0; j < sigSortsArray.length; j++) {
             tempObj = {};
@@ -1457,13 +2031,11 @@
         pushDistinguishingStatementsToOutput(sheetNames, output, sigSortsArray, analysisOutput, stndErrorDiffDataArray, stndErrorDiffDataDistingArray, sigFactorNumbersArray);
     }
 
-
     function pushDistinguishingStatementsToOutput(sheetNames, output, sigSortsArray, analysisOutput, stndErrorDiffDataArray, stndErrorDiffDataDistingArray, sigFactorNumbersArray) {
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Dist State"];
-        var chartText2 = resources[language]["translation"]["Consensus Statements"];
-
+        var chartText1 = resources[language].translation["Dist State"];
+        var chartText2 = resources[language].translation["Consensus Statements"];
 
         // property to count loop iterations for assigning significance * in disting factor output
         formatDistingArrayForDownload.calledTimes = 0;
@@ -1472,14 +2044,18 @@
         for (var i = 0; i < sigSortsArray.length; i++) {
             var newSheet = {
                 sheetid: chartText1 + sigSortsArray[i]["Factor Number"],
-                headers: false,
+                headers: false
             };
             sheetNames.push(newSheet);
         }
 
-        var sedComparisonValue, j, k, m;
+        var sedComparisonValue,
+            j,
+            k,
+            m;
         var consensusStatementComparisonArray05 = [];
         var consensusStatementComparisonArray01 = [];
+        var distStatementDataVizArray = [];
 
         // looping through all factors to determine if distinguishing!
         // todo - create if statement for case of only two sig factors-bypass processing of second c 4894
@@ -1504,9 +2080,7 @@
                 for (m = 0; m < sigSortsArray.length; m++) {
                     // factor m
                     // check to avoid comparison with self
-                    if (analysisOutput[j][k].factor === analysisOutput[m][k].factor) {
-
-                    } else {
+                    if (analysisOutput[j][k].factor === analysisOutput[m][k].factor) {} else {
                         // loop through SED array to find comparison value
                         sedComparisonValue = null;
 
@@ -1563,21 +2137,21 @@
 
             var formattedDistingStatements = formatDistingArrayForDownload(distingStatementsTransferArray01b, distingStatementsTransferArray05c, factorNumber, analysisOutput, sigFactorNumbersArray);
 
+            distStatementDataVizArray.push(formattedDistingStatements);
             output.push(formattedDistingStatements);
-
-
         }
+
+        var outputForDataViz = _.cloneDeep(analysisOutput);
+        QAV.setState("distStatementDataVizArray", distStatementDataVizArray);
+        QAV.setState("outputForDataViz", outputForDataViz);
 
         do {
             consensusStatementComparisonArray05 = reduceDistingArray(consensusStatementComparisonArray05);
-        }
-        while (consensusStatementComparisonArray05.length > 1);
-
+        } while (consensusStatementComparisonArray05.length > 1);
 
         do {
             consensusStatementComparisonArray01 = reduceDistingArray(consensusStatementComparisonArray01);
-        }
-        while (consensusStatementComparisonArray01.length > 1);
+        } while (consensusStatementComparisonArray01.length > 1);
 
         var consensus05 = _.flatten(consensusStatementComparisonArray05);
         var consensusStatementComparisonArray01b = _.flatten(consensusStatementComparisonArray01);
@@ -1586,10 +2160,9 @@
 
         var newSheet2 = {
             sheetid: chartText2,
-            headers: false,
+            headers: false
         };
         sheetNames.push(newSheet2);
-
 
         var formattedConsensusStatements = formatConsensusArrayForDownload(consensus05, consensus01, analysisOutput, sigFactorNumbersArray);
 
@@ -1598,13 +2171,13 @@
         pushSettingsToOutput(sheetNames, output);
     }
 
-
     function pushSettingsToOutput(sheetNames, output) {
         QAV.setState("outputComplete", "true");
         QAV.setState("outputSpreadsheetArray", output);
         QAV.setState("outputSpreadsheetSheetNamesArray", sheetNames);
-        // for output testing
-        console.log(JSON.stringify(output));
+
+        // for output testing - do not delete!
+        // console.log(JSON.stringify(output));
     }
 
     //*******************************************************************************
@@ -1615,14 +2188,14 @@
     function formatConsensusArrayForDownload(consensus05, consensus01, analysisOutput, sigFactorNumbersArray) {
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Consensus Statements"];
-        var chartText2 = resources[language]["translation"]["Those That Do Not Distinguish Between ANY Pair of Factors"];
-        var chartText3 = resources[language]["translation"]["All Listed Statements are Non-Significant at P > 0.01, and Those Flagged with an * are also Non-Significant at P > 0.05)"];
-        var chartText4 = resources[language]["translation"]["Significance"];
-        var chartText5 = resources[language]["translation"]["Statement"];
-        var chartText6 = resources[language]["translation"]["Num"];
-        var chartText7 = resources[language]["translation"]["Statement Number"];
-        var chartText8 = resources[language]["translation"]["Z-score"];
+        var chartText1 = resources[language].translation["Consensus Statements"];
+        var chartText2 = resources[language].translation["Those That Do Not Distinguish Between ANY Pair of Factors"];
+        var chartText3 = resources[language].translation["All Listed Statements are Non-Significant at P > 0.01, and Those Flagged with an * are also Non-Significant at P > 0.05)"];
+        var chartText4 = resources[language].translation.Significance;
+        var chartText5 = resources[language].translation.Statement;
+        var chartText6 = resources[language].translation.Num;
+        var chartText7 = resources[language].translation["Statement Number"];
+        var chartText8 = resources[language].translation["Z-score"];
 
         var outputLength = analysisOutput.length;
         var consensus05Length = consensus05.length;
@@ -1666,7 +2239,10 @@
         }
         printArray.push(printHeaderObj4);
 
-        var tempObj, tempObj2, kShift, pShift;
+        var tempObj,
+            tempObj2,
+            kShift,
+            pShift;
 
         // push 05 statements
         for (var k = 0; k < consensus05Length; k++) {
@@ -1702,7 +2278,7 @@
             printArray2.push(tempObj2);
         }
 
-        var printArray3 = printArray2.sort(function (a, b) {
+        var printArray3 = printArray2.sort(function(a, b) {
             return a["No."] - b["No."];
         });
 
@@ -1732,15 +2308,14 @@
     function formatDistingArrayForDownload(distingStatementsTransferArray01, distingStatementsTransferArray05, factorNumber, analysisOutput, sigFactorNumbersArray) {
 
         var language = QAV.getState("language");
-        var chartText1 = resources[language]["translation"]["Distinguishing Statements for"];
-        var chartText2 = resources[language]["translation"]["(P < .05 : Asterisk (*) Indicates Significance at P < .01)"];
-        var chartText3 = resources[language]["translation"]["Both the Factor Q-Sort Value and the Z-Score (Z-SCR) are Shown"];
-        var chartText4 = resources[language]["translation"]["Significance"];
-        var chartText5 = resources[language]["translation"]["Statement"];
-        var chartText6 = resources[language]["translation"]["Num"];
-        var chartText7 = resources[language]["translation"]["Statement Number"];
-        var chartText8 = resources[language]["translation"]["Z-score"];
-
+        var chartText1 = resources[language].translation["Distinguishing Statements for"];
+        var chartText2 = resources[language].translation["(P < .05 : Asterisk (*) Indicates Significance at P < .01)"];
+        var chartText3 = resources[language].translation["Both the Factor Q-Sort Value and the Z-Score (Z-SCR) are Shown"];
+        var chartText4 = resources[language].translation.Significance;
+        var chartText5 = resources[language].translation.Statement;
+        var chartText6 = resources[language].translation.Num;
+        var chartText7 = resources[language].translation["Statement Number"];
+        var chartText8 = resources[language].translation["Z-score"];
 
         var outputLength = analysisOutput.length;
         var disting05Length = distingStatementsTransferArray05.length;
@@ -1788,7 +2363,10 @@
         }
         printArray.push(printHeaderObj4);
 
-        var tempObj, tempObj2, kShift, pShift;
+        var tempObj,
+            tempObj2,
+            kShift,
+            pShift;
 
         // push 05 statements
         for (var k = 0; k < disting05Length; k++) {
@@ -1832,8 +2410,8 @@
 
         var sortFactorValue = "Z-SCR-" + lookupValue;
 
-
-        var printArray3 = printArray2.sort(function (a, b) {
+        // sort desc
+        var printArray3 = printArray2.sort(function(a, b) {
             return b[sortFactorValue] - a[sortFactorValue];
         });
 
@@ -1848,9 +2426,15 @@
     // todo - evenRound the sed comparison values in disting statements function
     // todo - check to get rid of outputcomplete check - no longer needed i think by hiding download button
 
-    OUTPUT.downloadOutput = function () {
+    OUTPUT.downloadOutput = function() {
 
-        var outputComplete, sheetNames, output, timeStamp, projectName, fileName, download;
+        var outputComplete,
+            sheetNames,
+            output,
+            timeStamp,
+            projectName,
+            fileName,
+            download;
 
         outputComplete = QAV.getState("outputComplete");
 
@@ -1876,27 +2460,27 @@
     };
 
     /*
-********************************************************
-HELPER FUNCTIONS
+    ********************************************************
+    HELPER FUNCTIONS
 
-standard deviation and average from:
-http://derickbailey.com/2014/09/21/calculating-standard-deviation-with-array-map-and-array-reduce-in-javascript/
+    standard deviation and average from:
+    http://derickbailey.com/2014/09/21/calculating-standard-deviation-with-array-map-and-array-reduce-in-javascript/
 
-variance from:
-http://www.endmemo.com/js/jstatistics.php
-********************************************************
-*/
+    variance from:
+    http://www.endmemo.com/js/jstatistics.php
+    ********************************************************
+    */
 
     function standardDeviation(values) {
         var avg = average(values);
 
-        var squareDiffs = values.map(function (value) {
+        var squareDiffs = values.map(function(value) {
             var diff = value - avg;
             var sqrDiff = diff * diff;
             return sqrDiff;
         });
 
-        var avgSquareDiff1 = squareDiffs.reduce(function (sum, value) {
+        var avgSquareDiff1 = squareDiffs.reduce(function(sum, value) {
 
             return sum + value;
         }, 0);
@@ -1908,7 +2492,7 @@ http://www.endmemo.com/js/jstatistics.php
     }
 
     function average(data) {
-        var sum = data.reduce(function (sum, value) {
+        var sum = data.reduce(function(sum, value) {
             return sum + value;
         }, 0);
 

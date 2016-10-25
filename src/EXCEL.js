@@ -163,8 +163,8 @@
     EXCEL.filePickedKenq = function (e) {
 
         var language = QAV.getState("language");
-        var localText1 = resources[language]["translation"]["Project Overview"];
-        var localText2 = resources[language]["translation"]["Statements"];
+        var localText1 = resources[language].translation["Project Overview"];
+        var localText2 = resources[language].translation.Statements;
 
 
         var files = e.target.files[0];
@@ -447,7 +447,7 @@
         var qavCurrentStatements = [];
 
         var language = QAV.getState("language");
-        var localText1 = resources[language]["translation"]["Statements"];
+        var localText1 = resources[language].translation.Statements;
 
         for (var p = 0; p < data[1][0].length; p++) {
             var temp11 = data[1][0][p][localText1];
@@ -499,7 +499,7 @@
         return (a - b); //causes an array to be sorted numerically and ascending
     }
 
-    // strips everything but letters and numbers and "." "-" 
+    // strips everything but letters and numbers and "." "-"
     function sanitizeSortValues(value) {
         return value.replace(/[^a-zA-Z0-9.-]/g, function () {
             return '';

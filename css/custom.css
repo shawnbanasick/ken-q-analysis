@@ -38,8 +38,7 @@ div.two.columns {
 
 /*D3 styling*/
 
-.axis path,
-.axis line {
+.axis path, .axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
@@ -87,7 +86,7 @@ rotation chart labels
     padding-right: 2px;
     padding-top: 8px;
     padding-bottom: 8px;
-    margin-left: 0px;
+    margin-left: 0;
 }
 
 #handRotationDisplayContainer input[type="number"] {
@@ -107,7 +106,7 @@ rotation chart labels
     font-size: 40px;
     display: inline-block;
     margin-left: 50px;
-    margin-top: 0px;
+    margin-top: 0;
     margin-right: 5px;
     margin-bottom: 5px;
     vertical-align: top;
@@ -245,7 +244,7 @@ save rotation lists
     font-weight: bold;
     line-height: 15px;
     margin-bottom: 5px;
-    margin-top: 0px;
+    margin-top: 0;
     margin-left: 5px;
     padding: 3px 3px;
     text-transform: none;
@@ -313,7 +312,7 @@ li:nth-last-child(n+2) .deleteSplitFactorButton {
     font-weight: bold;
     line-height: 15px;
     margin-bottom: 5px;
-    margin-top: 0px;
+    margin-top: 0;
     margin-left: 5px;
     padding: 3px 3px;
     text-transform: none;
@@ -523,6 +522,7 @@ td.highlight {
 
 .choose_file span {
     display: inline-block;
+    pointer-events: none;
     margin: 0px 10px 0 10px;
     font-size: 12px;
     font-weight: 600;
@@ -677,7 +677,7 @@ MODAL WINDOW CSS
 }
 */
 
-.modal > div > input[type="number"] {
+.modal>div>input[type="number"] {
     display: inline-block;
     width: 55px;
     /*    margin-bottom: 25px;*/
@@ -720,9 +720,10 @@ MODAL WINDOW CSS
 
 .analysisDataDiv {
     margin-top: 150px;
-    border: 2px solid black;
-    width: 98%;
+    border: 2px solid lightgray;
+    width: 97.8%;
     height: auto;
+    border-radius: 4px;
 }
 
 .pastePQM {
@@ -975,6 +976,61 @@ MODAL WINDOW CSS
     visibility: hidden;
 }
 
+#section7 fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+#section7 legend {
+    padding: 0;
+    margin: 0;
+}
+
+#section7 label {
+    cursor: pointer;
+    display: inline-block;
+    width: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+    height: 28px;
+    line-height: 28px;
+    padding: 0 15px;
+    letter-spacing: .1rem;
+    /*float: left;*/
+    background-color: #eeeeee;
+    border: 1px solid #bbb;
+}
+
+#section7 label:first-child {
+    border-left-width: 1px;
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+#section7 label:last-child {
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+}
+
+#section7 label.selected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#section7 label.warning.selected {
+    background-color: red;
+    border-color: darkred;
+}
+
+#section7 input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
 #factorLoadingTableRadioDiv {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -1144,15 +1200,137 @@ div.d3Tooltip {
     fill: none;
 }
 
-#section4 .axis path,
-#section4 .axis line {
+#section4 .axis path, #section4 .axis line {
     fill: none;
     stroke: grey;
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
 
+#factorVizOptionsDiv {
+    border: 3px solid lightgray;
+    width: 98%;
+    max-width: 1100px;
+    height: auto;
+    border-radius: 4px;
+}
 
-/*
+.factorVizOptionsDivHeader {
+    background-color: lightgray;
+    height: 45px;
+    width: 100%;
+}
 
-td.dt-head-right*/
+.svgDownloadButton {
+    margin-bottom: 100px;
+}
+
+#section4>input {
+    display: none;
+    margin-top: 30px;
+}
+
+.rotationChartDownloadButton {
+    margin-top: 30px;
+}
+
+.factorVizOptionsText {
+    margin-left: 20px;
+    margin-right: 10px;
+    font-size: 20px;
+    display: inline-block;
+}
+
+.section7BulletList {
+    margin-left: 30px;
+}
+
+.helpImageDiv {
+    margin-left: 10px;
+    margin-top: -4px;
+    display: inline-block;
+    border: 1px solid black;
+    border-color: gray;
+    height: 25px;
+    width: 25px;
+    background-color: #ffffcc;
+}
+
+.helpImageDivText {
+    text-align: center;
+    font-size: 18px;
+    color: black;
+}
+
+.vizInput {
+    width: 45px !important;
+}
+
+.marginTopAdjustor {
+  margin-top: 10px;
+}
+
+.defaultOptionsText {
+    color: gray;
+}
+
+.factorVizOptionsHeaderText {
+    width: 48%;
+    margin-bottom: -12px;
+    font-size: 25px;
+    margin-left: 10px;
+    margin-top: 30px;
+    display: inline-block;
+}
+
+
+#showDisplayPanelButton {
+    width: 125px;
+    height: auto;
+    display: inline-block;
+    margin-left: -80px !important;
+    margin-top: 2px;
+}
+
+
+.factorVizOptionsHeaderDivText {
+    margin-bottom: 25px;
+    font-size: 25px;
+    margin-left: 10px;
+}
+
+.vizInput3 {
+    width:416px !important;
+}
+
+.displayPanelIntroText {
+  padding-left: 5px;
+  margin-top: 20px;
+  font-size: 25px;
+  margin-left: 10px;
+}
+
+#vizPanelHideContainer {
+    display: none;
+}
+
+#section7 input[type='text']{
+text-align:right;
+}
+
+#section7 input[type='text']:focus{
+text-align:left;
+}
+
+.customNameBox {
+text-align:left !important;
+}
+
+.panelIntroTextSpanDiv {
+    margin-left: 20px;
+    width: 98%;
+}
+
+.panelIntroTextSpanDiv span {
+    font-size: 18px;
+}

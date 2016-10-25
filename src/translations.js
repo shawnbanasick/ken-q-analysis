@@ -46,7 +46,7 @@ var resources = {
             "Download a hand-coded excel example file here": "Download a hand-coded Excel example file",
             "Demo data": "Demo data",
             "Select data set": "Select Data Set",
-            "Analysis data": "Analysis data",
+            "Analysis data": "Analysis Data",
             "Correlation matrix": "Correlation Matrix",
             "Create correlation table": "Create Correlation Table",
             "Respondent": "Respondent",
@@ -178,7 +178,48 @@ var resources = {
             "Total Number of Statements": "Total Number of Statements: ",
             "Q-sort Triangle Shape": "Q-sort Pattern: ",
             "Total Number of Q-sorts": "Total Number of Q-sorts: ",
-            "Analysis Process": "Analysis Process"
+            "Analysis Process": "Analysis Process",
+            "synFactorVizTitle": "Factor Synthetic Q-sorts",
+            "Synthetic Sort for": "Synthetic Q-Sort for ",
+            "downloadImage": " - Download image",
+            "Download Scree Plot": "Download Scree Plot",
+            "Download Rotation Chart": "Download Rotation Chart",
+            "Synthetic Q-sort Display Options": "Synthetic Q-sort Display Options",
+            "SHOW": "SHOW",
+            "HIDE": "HIDE",
+            "panelText1": "Default values are show in the input boxes in a light gray color.",
+            "panelText2": "Enter the new values, then click the 'Display Preliminary Output' button to refresh the synthetic Q-sort display.",
+            "panelText3": "Downloaded SVG images can be quickly converted to low-resolution PNG files using online conversion websites.",
+            "panelText4": "Use the free and open source software program 'Inkscape' to convert the SVG images into high-resolution PNG files.",
+            "General": "General",
+            "Include legend with image?": "Include legend with image?",
+            "Yes": "Yes",
+            "No": "No",
+            "Prepend statement numbers?": "Prepend statement numbers?",
+            "Card Characteristics": "Card Characteristics",
+            "Adjust card height?": "Adjust card height",
+            "Adjust card width?": "Adjust card width",
+            "Adjust font size?": "Adjust font size",
+            "Adjust line spacing": "Adjust line spacing",
+            "Trim statements to prevent overflow": "Trim statements to prevent overflow",
+            "(Asian languages only) Adjust width of statement rows?": "(Asian languages only) Adjust width of statement rows?",
+            "Indicate distinguishing statements?": "Indicate distinguishing statements?",
+            "Change distinguishing statement indicator": "Change distinguishing statement indicator",
+            "Adjust distinguishing statement indicator font size": "Adjust distinguishing statement indicator font size",
+            "Display distinguishing statement comparison symbos": "Display distinguishing statement comparison symbos",
+            "Raw Q-Sort Value Match Counts": "Raw Q-Sort Value Match Counts",
+            "Include matching count of raw Q-sort Values?": "Include matching count of raw Q-sort Values?",
+            "Display matching count caution color?": "Display matching count caution color?",
+            "Set caution cutoff level at &lt; =": "Set caution cutoff level at &lt; =",
+            "Downloads": "Downloads",
+            "Add custom name to image downloads?": "Add custom name to image downloads?",
+            "Name:": "Name:",
+            "Custom name position?": "Custom name position?",
+            "PREPEND": "PREPEND",
+            "APPEND": "APPEND",
+            "REPLACE": "REPLACE",
+            "UNICODE": "UNICODE",
+            "ASCII": "ASCII"
         }
     },
     "ja": {
@@ -291,7 +332,7 @@ var resources = {
             "Sort is not symmetric": "対称なQ-sortでわない！",
             "Factor": "因子",
             "Delete Ken-Q Data": "Ken-Qのデータを削除する?",
-            "Scree Plot": "固有値プロット（スクリープロット）",
+            "Scree Plot": "固有値プロット",
             "Factor Number": "因子番号",
             "Cum % Expln Var": "累積寄与率",
             "Factors Kept": "因子を保った",
@@ -351,7 +392,12 @@ var resources = {
             "Total Number of Statements": "ステートメントの数：",
             "Q-sort Triangle Shape": "Q-sort パターン: ",
             "Total Number of Q-sorts": "Q-sort の数",
-            "Analysis Process": "分析のプロセス"
+            "Analysis Process": "分析のプロセス",
+            "synFactorVizTitle": "合成Q−sort",
+            "Synthetic Sort for": "合成Q−sort - ",
+            "downloadImage": " - イメージをダウンロードする",
+            "Download Scree Plot": "スクリープロットをダウンロードする",
+            "Download Rotation Chart": "回転のプロットをダウンロードする"
         }
     }
 };
@@ -360,17 +406,17 @@ var resources = {
 // JSlint declarations
 /* global $, i18n, QAV, document */
 
-(function () {
+(function() {
     i18n.init({
         "lng": 'en-us',
         "resStore": resources,
         "useDataAttrOptions": true,
         "fallbackLng": 'en-us'
-    }, function () {
+    }, function() {
         $(document).i18n();
     });
 
-    $('#languageSelect').on("change", function () {
+    $('#languageSelect').on("change", function() {
         var lang = $(this).val();
         console.log(lang);
 
@@ -379,7 +425,7 @@ var resources = {
 
         i18n.init({
             lng: lang
-        }, function () {
+        }, function() {
             $(document).i18n();
         });
     });

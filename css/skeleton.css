@@ -154,6 +154,11 @@ max-width: 1200px;
     .container .five.columns {
         width: 39.3333333333%;
     }
+    .container .fiveHalf.columns {
+      width: 43%;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
     .container .six.columns {
         width: 48%;
         margin-top: 10px;
@@ -645,10 +650,11 @@ p {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 hr {
-    margin-top: 3rem;
-    margin-bottom: 3.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     border-width: 0;
-    border-top: 1px solid #E1E1E1;
+    border-top: 3px solid #E1E1E1;
+    width: 99%;
 }
 
 

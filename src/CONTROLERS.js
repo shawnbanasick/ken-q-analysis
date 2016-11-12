@@ -724,7 +724,7 @@
             if (canOutput !== "false") {
                 OUTPUT.generateOutput();
                 VIEW.clearPreviousTables();
-                CORR.drawRawSortsRadviz();
+                // CORR.drawRawSortsRadviz();
                 OUTPUT.showPreliminaryOutput1();
                 $("#downloadResultsButton").show();
                 $("#clearStorageButton").show();
@@ -772,9 +772,9 @@
     (function() {
         $("#includeLegendDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#includeLegendDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#includeLegendDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldHaveLegend = true;
@@ -789,9 +789,9 @@
     (function() {
         $("#prependStateNoDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#prependStateNoDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#prependStateNoDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldPrependStateNo = true;
@@ -806,9 +806,9 @@
     (function() {
         $("#setCardHeightDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#setCardHeightDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#setCardHeightDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldSetCardHeight = true;
@@ -823,9 +823,9 @@
     (function() {
         $("#setCardWidthDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#setCardWidthDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#setCardWidthDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldSetCardWidth = true;
@@ -840,9 +840,9 @@
     (function() {
         $("#setFontSizeDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#setFontSizeDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#setFontSizeDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldSetFontSize = true;
@@ -853,13 +853,30 @@
         });
     })();
 
+    // should set font size? - event handler
+    (function() {
+        $("#setStatementWidthDiv :radio").on('click', function() {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            $('#setStatementWidthDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
+            var $radioOption = ($(this).val());
+            if ($radioOption === "Yes") {
+                vizConfig.shouldSetStatementWidth = true;
+            } else if ($radioOption === "No") {
+                vizConfig.shouldSetStatementWidth = false;
+            }
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
     // should set line spacing? - event handler
     (function() {
         $("#adjustLineSpacingDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#adjustLineSpacingDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#adjustLineSpacingDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldSetLineSpacing = true;
@@ -874,9 +891,9 @@
     (function() {
         $("#trimStatementsDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#trimStatementsDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#trimStatementsDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldTrimStatements = true;
@@ -892,9 +909,9 @@
     (function() {
         $("#setAsianStatementsLengthDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#setAsianStatementsLengthDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#setAsianStatementsLengthDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldSetWidthForAsian = true;
@@ -910,14 +927,19 @@
     (function() {
         $("#showSignificanceSymbolsDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#showSignificanceSymbolsDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#showSignificanceSymbolsDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldIndicateDistinguishing = true;
+                $('#useUnicodeYes').trigger("click");
+                vizConfig.shouldUseUnicode = true;
             } else if ($radioOption === "No") {
                 vizConfig.shouldIndicateDistinguishing = false;
+                $('#useUnicodeSymbolsDiv .radioHighlight2').removeClass("selected");
+                $('#zscoreArrowDirectionDiv .radioHighlight2').removeClass("active");
+                $('#setSymbolFontSizeDiv .radioHighlight2').removeClass("active");
             }
             QAV.setState("vizConfig", vizConfig);
         });
@@ -944,9 +966,9 @@
     (function() {
         $("#setSymbolFontSizeDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#setSymbolFontSizeDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#setSymbolFontSizeDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldSetSymbolFontSize = true;
@@ -962,9 +984,9 @@
     (function() {
         $("#zscoreArrowDirectionDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#zscoreArrowDirectionDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#zscoreArrowDirectionDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldShowZscoreArrows = true;
@@ -975,13 +997,50 @@
         });
     })();
 
+    // should show zscore factor comparison arrows? - event handler
+    (function() {
+        $("#displayConsensusStatementsDiv :radio").on('click', function() {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            $('#displayConsensusStatementsDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
+            var $radioOption = ($(this).val());
+            if ($radioOption === "Yes") {
+                vizConfig.shouldIndicateConsensus = true;
+                $('#setConsensusSymbolNo').trigger("click");
+                vizConfig.shouldUseToIndicateConsensus = "stripe";
+            } else if ($radioOption === "No") {
+                vizConfig.shouldIndicateConsensus = false;
+                $('#setConsensusSymbolDiv .radioHighlight2').removeClass("selected");
+            }
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    // should color vs stripe for consensus? - event handler
+    (function() {
+        $("#setConsensusSymbolDiv :radio").on('click', function() {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            $('#setConsensusSymbolDiv .radioHighlight2').removeClass("selected");
+            $(this).parent().addClass("selected");
+            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            var $radioOption = ($(this).val());
+            if ($radioOption === "COLOR") {
+                vizConfig.shouldUseToIndicateConsensus = "color";
+            } else if ($radioOption === "STRIPE") {
+                vizConfig.shouldUseToIndicateConsensus = "stripe";
+            }
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
     // should show matching counts? - event handler
     (function() {
         $("#useMatchCountDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#useMatchCountDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#useMatchCountDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldShowMatchCounts = true;
@@ -996,16 +1055,56 @@
     (function() {
         $("#indicateMatchCountAsBackgroundDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#indicateMatchCountAsBackgroundDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#indicateMatchCountAsBackgroundDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldShowBackgroundColor = true;
+                $('#setMatchCountCautionIndicatorNo').trigger("click");
+                vizConfig.shouldUseToIndicateMatchCaution = "stripe";
+                $('#setMatchConsensusOverlapIndicatorNo').trigger("click");
+                vizConfig.shouldUseToIndicateOverlap = "crosshatch";
             } else if ($radioOption === "No") {
                 vizConfig.shouldShowBackgroundColor = false;
+                $('#setMatchCountCautionIndicatorDiv .radioHighlight2').removeClass("selected");
+                $('#setMatchConsensusOverlapIndicatorDiv .radioHighlight2').removeClass("selected");
             }
             vizConfig.backgroundColorCutoff = 0;
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    // should color vs stripe for consensus? - event handler
+    (function() {
+        $("#setMatchCountCautionIndicatorDiv :radio").on('click', function() {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            $('#setMatchCountCautionIndicatorDiv .radioHighlight2').removeClass("selected");
+            $(this).parent().addClass("selected");
+            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            var $radioOption = ($(this).val());
+            if ($radioOption === "COLOR") {
+                vizConfig.shouldUseToIndicateMatchCaution = "color";
+            } else if ($radioOption === "STRIPE") {
+                vizConfig.shouldUseToIndicateMatchCaution = "stripe";
+            }
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    // should color vs stripe for consensus? - event handler
+    (function() {
+        $("#setMatchConsensusOverlapIndicatorDiv :radio").on('click', function() {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            $('#setMatchConsensusOverlapIndicatorDiv .radioHighlight2').removeClass("selected");
+            $(this).parent().addClass("selected");
+            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            var $radioOption = ($(this).val());
+            if ($radioOption === "COLOR") {
+                vizConfig.shouldUseToIndicateOverlap = "color";
+            } else if ($radioOption === "CROSSHATCH") {
+                vizConfig.shouldUseToIndicateOverlap = "crosshatch";
+            }
             QAV.setState("vizConfig", vizConfig);
         });
     })();
@@ -1014,9 +1113,9 @@
     (function() {
         $("#addCustomNameDiv :radio").on('click', function() {
             var vizConfig = QAV.getState("vizConfig") || {};
-            $('#addCustomNameDiv .radioHighlight2').removeClass("selected");
-            $(this).parent().addClass("selected");
-            $("label[for='" + $(this).attr('id') + "']").addClass("selected");
+            $('#addCustomNameDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
             var $radioOption = ($(this).val());
             if ($radioOption === "Yes") {
                 vizConfig.shouldAddCustomName = true;
@@ -1041,12 +1140,25 @@
 
     (function() {
       $("#showDisplayPanelButton").on('click', function() {
+        var language = QAV.getState("language");
+        var hide = resources[language].translation.HIDE;
+        var view = resources[language].translation.VIEW;
         $(this).val(function(i, value) {
-            return value === "HIDE" ? "VIEW" : "HIDE";
+            return value === hide ? view : hide;
             });
         $("#vizPanelHideContainer").toggle();
       });
     })();
+
+
+    (function() {
+      $("#updateDisplayButton").on('click', function() {
+          VIEW.clearPreviousTables();
+          OUTPUT.showPreliminaryOutput1();
+      });
+    })();
+
+
 
     //
     // Visualization Control Panel On-change event listeners
@@ -1054,7 +1166,7 @@
 
     // capture card height input in Viz panel   #cardHeightInputBox
     (function() {
-        $('#cardHeightInputBox').on('input', function(e) { // .on('input propertychange change', function()
+        $('#cardHeightInputBox').on('input', function(e) {
             var vizConfig = QAV.getState("vizConfig") || {};
             var cardHeight = $('#cardHeightInputBox').val();
             UTIL.checkIfValueIsNumber(cardHeight, "cardHeightInputBox");
@@ -1097,6 +1209,22 @@
             QAV.setState("vizConfig", vizConfig);
         });
     })();
+
+    (function() {
+        $('#statementWidthInputBox').on('input', function(e) {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            var statementWidth = $('#statementWidthInputBox').val();
+            UTIL.checkIfValueIsNumber(statementWidth, "statementWidthInputBox");
+            if (statementWidth > 180) {
+                statementWidth = 180;
+            } else if (statementWidth < -180) {
+                statementWidth = -180;
+            }
+            vizConfig.statementWidth = statementWidth;
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
 
     (function() {
         $('#lineSpacingInputBox').on('input', function(e) {
@@ -1159,6 +1287,15 @@
     })();
 
     (function() {
+        $('#consensusCustomColorInputBox').on('change', function(e) {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            var hexCode = $(this).css('background-color');
+            vizConfig.consensusCustomColor = hexCode;
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    (function() {
         $('#backgroundColorCutoffInputBox').on('input', function(e) {
             var vizConfig = QAV.getState("vizConfig") || {};
             var backgroundColorCutoff = $('#backgroundColorCutoffInputBox').val();
@@ -1167,6 +1304,24 @@
                 backgroundColorCutoff = 99;
             }
             vizConfig.backgroundColorCutoff = backgroundColorCutoff;
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    (function() {
+        $('#matchCountCustomColorInputBox').on('change', function(e) {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            var hexCode = $(this).css('background-color');
+            vizConfig.matchCountCustomColor = hexCode;
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    (function() {
+        $('#matchCountOverlapColorInputBox').on('change', function(e) {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            var hexCode = $(this).css('background-color');
+            vizConfig.overlapCustomColor = hexCode;
             QAV.setState("vizConfig", vizConfig);
         });
     })();

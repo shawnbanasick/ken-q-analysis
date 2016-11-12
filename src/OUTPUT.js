@@ -7,16 +7,16 @@
 //    (at your option) any later version.
 
 // JSlint declarations
-/* global numeric, CENTROID, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
+/* global numeric, CENTROID, resources, d3, VIEW, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
 
-(function(OUTPUT, QAV, undefined) {
+(function (OUTPUT, QAV, undefined) {
 
     // ************************************************************************  view
     // ******  Preliminary Results 1 - draw factor synthetic Q-sorts visuals ********
     // ******************************************************************************
-    OUTPUT.showPreliminaryOutput1 = function() {
+    OUTPUT.showPreliminaryOutput1 = function () {
         // add synthetic factors visualizations
-
+        console.log("showPreliminaryOutput1 called");
         // $("#synFactorVizTitle").append("<h4>" + synFactorVizTitleText + "</h4>");
 
         var distStatementDataVizArray = QAV.getState("distStatementDataVizArray");
@@ -64,13 +64,13 @@
 
                     var directionSymbol;
                     if (otherFactorZscores.length === arrowPointerArrayRight.length && userSelectedFactors.length > 1) {
-                        directionSymbol = vizConfig.shouldUseUnicode !== false
-                            ? "\u25BA"
-                            : ">>>"; // " >>>"; "&#9658;";  right-pointing pointer
+                        directionSymbol = vizConfig.shouldUseUnicode !== false ?
+                            "\u25BA" :
+                            ">>"; // " >>>"; "&#9658;";  right-pointing pointer
                     } else if (otherFactorZscores.length === arrowPointerArrayLeft.length) {
-                        directionSymbol = vizConfig.shouldUseUnicode !== false
-                            ? "\u25C4"
-                            : "<<<"; //" <<<";  "&#9668;";  left-pointing pointer
+                        directionSymbol = vizConfig.shouldUseUnicode !== false ?
+                            "\u25C4" :
+                            "<<"; //" <<<";  "&#9668;";  left-pointing pointer
                     } else {
                         directionSymbol = "";
                     }
@@ -79,13 +79,13 @@
                     var sigAt01Level = distStatementDataVizArray[i][j][sigFactorName];
                     var location = statementId - 1;
                     if (sigAt01Level === "*") {
-                        sigSymbol = vizConfig.shouldUseUnicode !== false
-                            ? "\u25C9"
-                            : "** "; //"**";  "&#9673;";  sig at .01
+                        sigSymbol = vizConfig.shouldUseUnicode !== false ?
+                            "\u25C9" :
+                            "** "; //"**";  "&#9673;";  sig at .01
                     } else if (sigAt01Level === "") {
-                        sigSymbol = vizConfig.shouldUseUnicode !== false
-                            ? "\u25CE"
-                            : "* "; // "*";  "&#9678;";  sig at .05
+                        sigSymbol = vizConfig.shouldUseUnicode !== false ?
+                            "\u25CE" :
+                            "* "; // "*";  "&#9678;";  sig at .05
                     }
                     if (vizConfig.shouldShowZscoreArrows !== false) {
                         outputForDataViz[i][location].sigVisualization = (sigSymbol + directionSymbol);
@@ -100,22 +100,63 @@
         OUTPUT.drawSynSortTrianglesForOutput(outputForDataViz, userSelectedFactors);
     };
 
-    OUTPUT.drawSynSortTrianglesForOutput = function(outputForDataViz, userSelectedFactors) {
+    OUTPUT.drawSynSortTrianglesForOutput = function (outputForDataViz, userSelectedFactors) {
         var sortTriangleShape = QAV.getState("qavSortTriangleShape");
         var uniques = _.uniq(sortTriangleShape);
         var currentStatements = QAV.getState("qavCurrentStatements");
         var language = QAV.getState("language");
         var synFactorVizTitleText = resources[language].translation["Synthetic Sort for"];
+        var disting05LegendText = resources[language].translation["Distinguishing statement at P < 0.05"];
+        var disting01LegendText = resources[language].translation["Distinguishing statement at P < 0.01"];
+        var legendTitleText = resources[language].translation.Legend;
+        var zscoreHigherLegendText = resources[language].translation["z-Score for the statement is higher than in all of the other factors"];
+        var zscoreLowerLegendText = resources[language].translation["z-Score for the statement is lower than in all of the other factors"];
+        var consensusLegendText = resources[language].translation["Consensus statement (non-significant at P > 0.1)"];
+        var matchingCountLegendText = resources[language].translation["Low number of raw Q-sort matching values (cutoff"];
+        var overlapLegendText = resources[language].translation["Consensus statement with low number of matching values"];
+
+
         var svgHeight;
-        var elementHeight, symbolSize, vSeparation, svgHeightCalc;
+        var elementHeight,
+            symbolSize,
+            vSeparation,
+            svgHeightCalc;
         var vizConfig = QAV.getState("vizConfig") || {};
         var cardFontSize = "12px"; // default setting
-        var containerWidth = ($(".container").width() - 40);
-        var elementWidth, config;
+        var containerWidth = ($(".container")
+            .width() - 40);
+        var elementWidth,
+            config;
+        var consensusColor = vizConfig.consensusCustomColor;
+        var matchCountColor = vizConfig.matchCountCustomColor;
+        var overlapColor = vizConfig.overlapCustomColor;
+        var consensusIndicator = vizConfig.shouldUseToIndicateConsensus; //"color / stripe"
+        var matchCautionIndicator = vizConfig.shouldUseToIndicateMatchCaution; // color stripe
+        var overlapIndicator = vizConfig.shouldUseToIndicateOverlap; // color crosshatch
 
+        // user adjust indicator types
+        if (consensusIndicator === "stripe") {
+            consensusIndicator = 'url(#hash4_4)';
+        } else if (consensusIndicator === "color") {
+            consensusIndicator = consensusColor;
+        }
+
+        if (matchCautionIndicator === "color") {
+            matchCautionIndicator = matchCountColor;
+        } else if (matchCautionIndicator === "stripe") {
+            matchCautionIndicator = 'url(#hash4_4b)';
+        }
+
+        if (overlapIndicator === "color") {
+            overlapIndicator = overlapColor;
+        } else if (overlapIndicator === "crosshatch") {
+            overlapIndicator = 'url(#crosshatch)';
+        }
+
+        // user adjust card width
         if (vizConfig.shouldSetCardWidth === true) {
             elementWidth = vizConfig.cardWidth;
-            containerWidth = (elementWidth * uniques.length)+10;
+            containerWidth = (elementWidth * uniques.length) + 10;
         } else {
             elementWidth = containerWidth / uniques.length;
         }
@@ -150,6 +191,19 @@
             vSeparation = 15;
         }
 
+        // set legend symbols
+        if (vizConfig.shouldUseUnicode === true) {
+            vizConfig.legendSymbol05 = '\u25CE';
+            vizConfig.legendSymbol01 = '\u25C9';
+            vizConfig.rightArrow = '\u25BA';
+            vizConfig.leftArrow = '\u25C4';
+        } else {
+            vizConfig.legendSymbol05 = '*';
+            vizConfig.legendSymbol01 = '**';
+            vizConfig.rightArrow = '>>';
+            vizConfig.leftArrow = '<<';
+        }
+
         // prepare statements !false sets as default
         appendNumbersToStatements(outputForDataViz);
 
@@ -157,7 +211,7 @@
         var locateStateY;
         if (vizConfig.shouldShowMatchCounts === true || vizConfig.shouldIndicateDistinguishing) {
             locateStateY = 40;
-        } else if (vizConfig.shouldIndicateDistinguishing === undefined){
+        } else if (vizConfig.shouldIndicateDistinguishing === undefined) {
             locateStateY = 40;
         } else {
             locateStateY = 20;
@@ -171,6 +225,89 @@
         // todo - fix so it doesn't trigger multiple times
         if (vizConfig.shouldShowMatchCounts === true || vizConfig.shouldShowBackgroundColor === true) {
             calcMatchCounts(outputForDataViz);
+        }
+
+        var isNumber = function isNumber(value) {
+            return typeof value === 'number' &&
+                isFinite(value);
+        };
+
+        function integrateConsensusStatementIndicators() {
+            var consensusStatementArrays = QAV.getState("formattedConsensusStatements");
+            var consensusNums = [];
+            for (var i = 0, iLen = consensusStatementArrays.length; i < iLen; i++) {
+                var testValue = consensusStatementArrays[i]["No."];
+                if (isNumber(testValue)) {
+                    consensusNums.push(testValue);
+                }
+            }
+
+            for (var j = 0, jLen = outputForDataViz.length; j < jLen; j++) {
+                var counter = 0;
+                for (var k = 0, kLen = outputForDataViz[j].length; k < kLen; k++) {
+                    var conStateNum = consensusNums[counter];
+                    if (outputForDataViz[j][k].statement === conStateNum) {
+                        outputForDataViz[j][k].isConsensusState = true;
+                        counter++;
+                    } else {
+                        outputForDataViz[j][k].isConsensusState = false;
+                    }
+                }
+            }
+        }
+        integrateConsensusStatementIndicators();
+
+
+        function setBackgroundColorFill() {
+            var isConsensus, isCaution, matchingCountPercent;
+            var cutoff = vizConfig.backgroundColorCutoff;
+            var caution = Boolean(vizConfig.shouldShowBackgroundColor);
+            var consensus = Boolean(vizConfig.shouldIndicateConsensus);
+
+            // loop through factors, then Q-sorts
+            for (var i = 0, iLen = outputForDataViz.length; i < iLen; i++) {
+                for (var j = 0, jLen = outputForDataViz[0].length; j < jLen; j++) {
+                    isConsensus = outputForDataViz[i][j].isConsensusState;
+                    matchingCountPercent = outputForDataViz[i][j].matchingCountPercent;
+                    if (matchingCountPercent <= cutoff) {
+                        isCaution = true;
+                    } else {
+                        isCaution = false;
+                    }
+
+                    // if user selects both caution and consensus
+                    if (caution === true && consensus === true) {
+                        // and the card shows
+                        if (isConsensus === true && isCaution === true) {
+                            outputForDataViz[i][j].displayFill = overlapIndicator;
+                        } else if (isConsensus === true && isCaution === false) {
+                            outputForDataViz[i][j].displayFill = consensusIndicator;
+                        } else if (isConsensus === false && isCaution === true) {
+                            outputForDataViz[i][j].displayFill = matchCautionIndicator;
+                        } else {
+                            outputForDataViz[i][j].displayFill = '#ffffff';
+                        }
+                    } else if (caution === true && consensus === false) {
+                        if (isCaution === true) {
+                            outputForDataViz[i][j].displayFill = matchCautionIndicator;
+                        } else {
+                            outputForDataViz[i][j].displayFill = '#ffffff';
+                        }
+                    } else if (caution === false && consensus === true) {
+                        if (isConsensus === true) {
+                            outputForDataViz[i][j].displayFill = consensusIndicator;
+                        } else {
+                            outputForDataViz[i][j].displayFill = '#ffffff';
+                        }
+                    } else {
+                        outputForDataViz[i][j].displayFill = '#ffffff';
+                    }
+                } // end card loop
+            } // end factor loop
+        } // end function
+
+        if (vizConfig.shouldShowBackgroundColor === true || vizConfig.shouldIndicateConsensus === true) {
+            setBackgroundColorFill();
         }
 
         function appendNumbersToStatements(outputForDataViz) {
@@ -193,6 +330,8 @@
                         var preSubString = outputForDataViz[i][ii].displayStatements;
                         outputForDataViz[i][ii].displayStatements = preSubString.substring(0, vizConfig.trimStatementSize);
                     }
+
+
                 }
             }
             return outputForDataViz;
@@ -200,41 +339,28 @@
 
         function calcMatchCounts(outputForDataViz) {
             var x = 10;
-            for (var i = 0; i < userSelectedFactors.length; i++) {
-                var data1 = QAV.outputSpreadsheetArray[x];
 
-                // sort by zScore z-score
+            var data2 = QAV.getState("matchCount");
+
+            for (var i = 0, iLen = userSelectedFactors.length; i < iLen; i++) {
+                var data1 = data2[i];
                 var data = data1.slice(0);
-                data.sort(function(a, b) {
-                    return a["State Num"] - b["State Num"];
+                data.sort(function (a, b) {
+                    return a.indexer - b.indexer;
                 });
-                for (var jj = 0, len=data.length; jj<len; jj++) {
-                    var count = 0, totalCount = 0;
-                    var synSortNum = data[jj]["Synthetic Sort"];
-                    for (var key in data[jj] ) {
-                        if (data[jj][key] === synSortNum) {
-                            count = count + 1;
-                        }
-                        totalCount = totalCount + 1;
-                    }
-                    if (data[jj]["Z-score"] === synSortNum) {
-                        count = count-2;
-                        totalCount = totalCount - 4;
-                    } else {
-                        count = count-1;
-                        totalCount = totalCount - 4;
-                    }
-                    var countPercent = parseInt(((count / totalCount)*100), 10);
-                    var locator = data[jj]["State Num"];
-                    if (locator === outputForDataViz[i][jj].statement) {
-                        outputForDataViz[i][jj].matchingCount = count;
-                        outputForDataViz[i][jj].matchingCountPercent = countPercent;
+
+                for (var jj = 0, jjLen = data.length; jj < jjLen; jj++) {
+                    var indexer = data[jj].indexer;
+                    if (indexer === outputForDataViz[i][jj].statement) {
+                        outputForDataViz[i][jj].matchingCount = data[jj].matchingCounts;
+                        outputForDataViz[i][jj].matchingCountPercent = data[jj].matchingCountsPercent;
                     } else {
                         console.log("error - statement ordering doesn't match");
                     }
                 }
                 x = x + 3;
             }
+            QAV.setState("outputForDataViz", outputForDataViz);
             return outputForDataViz;
         }
 
@@ -251,6 +377,28 @@
         }
 
         function getSvgHeight(arr1) {
+            var heightAdjustment = 0;
+            if (vizConfig.shouldIndicateDistinguishing === true) {
+                heightAdjustment = heightAdjustment + 60;
+            }
+            if (vizConfig.shouldShowZscoreArrows === true && vizConfig.shouldIndicateDistinguishing === true) {
+                heightAdjustment = heightAdjustment + 60;
+            }
+            if (vizConfig.shouldIndicateConsensus === true) {
+                heightAdjustment = heightAdjustment + 30;
+            }
+            if (vizConfig.shouldShowZscoreArrows === true) {
+                heightAdjustment = heightAdjustment + 30;
+            }
+            if (vizConfig.shouldShowBackgroundColor === true) {
+                heightAdjustment = heightAdjustment + 30;
+            }
+            if (vizConfig.shouldIndicateConsensus === true && vizConfig.shouldShowBackgroundColor === true) {
+                heightAdjustment = heightAdjustment + 30;
+            }
+
+            vizConfig.heightAdjustment = heightAdjustment;
+
             var b = [],
                 prev;
             var arr = _.cloneDeep(arr1);
@@ -264,7 +412,7 @@
                 prev = arr[i];
             }
             if (vizConfig.shouldHaveLegend === true) {
-                svgHeightCalc = (((parseInt(elementHeight, 10) + 10) * d3.max(b)) + 175); // plus 150 for legend
+                svgHeightCalc = (((parseInt(elementHeight, 10) + 10) * d3.max(b)) + 160 + heightAdjustment); // plus 150 for legend
                 return svgHeightCalc;
             } else {
                 svgHeightCalc = (((parseInt(elementHeight, 10) + 10) * d3.max(b)) + 25);
@@ -277,21 +425,17 @@
             var language = QAV.getState("language");
             var lines = [];
             var line;
-            if (language === "ja" || vizConfig.shouldSetWidthForAsian===true) {
-                if (vizConfig.shouldSetWidthForAsian===true) {
-                        max = vizConfig.asianStatmentLength || 12;
-                    } else {
-                        max = 12;
-                    }
+            if (vizConfig.shouldSetWidthForAsian === true) {
+                max = vizConfig.asianStatmentLength || 12;
                 lines = text.match(new RegExp('.{1,' + max + '}', 'g'));
             } else {
                 var regex = new RegExp(".{0," + max + "}(?:\\s|$)", "g");
                 while ((line = regex.exec(text)) != "") { // DO NOT CHANGE != TO !== - WILL THROW ERROR
                     lines.push(line);
-                }
-            }
+                } // end while
+            } // end 294 else
             return lines;
-        }
+        } // end function
 
         var temp1,
             k,
@@ -327,40 +471,40 @@
         var xLegendCenterPoint = ((((d3.max(xPosLoop) + 1) * elementWidth) + 20) / 2);
         var halfLegendWidth = 285;
 
-
         // text wrap variables - set in control panel?
         var maxLength;
-        if (vizConfig.shouldSetFontSize === true) {
-            var fontAdjustment = parseInt(vizConfig.fontSize, 10);
-            maxLength = parseInt((elementWidth / (6.75 * (fontAdjustment/12))), 10);
+        var newStatementWidth = vizConfig.statementWidth || 6.75;
+        if (vizConfig.shouldSetStatementWidth === true) {
+            maxLength = parseInt(((elementWidth - newStatementWidth) / 6.75), 10);
         } else {
             maxLength = parseInt((elementWidth / 6.75), 10);
         }
+
         // calc the height of the svg
         svgHeight = getSvgHeight(sortTriangleShape);
 
-        // var backgroundColorCutoff;
-        // if (isNaN(vizConfig.backgroundColorCutoff)) {
-        //     backgroundColorCutoff = 0;
-        // } else {
-        //     backgroundColorCutoff = vizConfig.backgroundColorCutoff;
-        // }
-
+        // get Cutoff from state
         var backgroundColorCutoff = vizConfig.backgroundColorCutoff;
 
+        /*
+        BEGIN visualizations calc
+        */
         // loop through array to draw visualizations   synFactorVizDiv
         for (var z = 0; z < outputForDataViz.length; z++) {
 
             var zz = z + 1;
 
             var factorVizDivName = "factorVizDiv" + zz;
-            $("#synFactorVizDiv").append("<div id=" + factorVizDivName + "></div>");
+            $("#synFactorVizDiv")
+                .append("<div id=" + factorVizDivName + "></div>");
 
-            $("#" + factorVizDivName).append("<h4 class='vizTitles'>" + synFactorVizTitleText + userSelectedFactors[z] + "</h4>");
+            $("#" + factorVizDivName)
+                .append("<h4 class='vizTitles'>" + synFactorVizTitleText + userSelectedFactors[z] + "</h4>");
 
             var idName = "synSortSvgNo" + zz;
 
-            var svg = d3.select("#" + factorVizDivName)
+            var svg = d3
+                .select("#" + factorVizDivName)
                 .append("svg")
                 .attr('width', containerWidth)
                 .attr('height', svgHeight)
@@ -371,7 +515,7 @@
 
             // sort by zScore z-score
             var textArray = textArray1.slice(0);
-            textArray.sort(function(a, b) {
+            textArray.sort(function (a, b) {
                 return a.zScore - b.zScore;
             });
 
@@ -381,169 +525,432 @@
                 textArray[c].yVal = yPosLoop[c];
             }
 
-            var index = svg.selectAll("g.node").data(uniques, function(d) {
-                return d;
-            });
+            var index = svg
+                .selectAll("g.node")
+                .data(uniques, function (d) {
+                    return d;
+                });
 
-            var indexGroup = index.enter().append("g").attr("class", "node");
+            var indexGroup = index
+                .enter()
+                .append("g")
+                .attr("class", "node");
 
-            indexGroup.append('rect')
+            indexGroup
+                .append('rect')
                 .attr('width', elementWidth)
                 .attr('height', '20')
-                .attr('x', function(d) {return uniques.indexOf(d) * elementWidth;})
+                .attr('x', function (d) {
+                    return uniques.indexOf(d) * elementWidth;
+                })
                 .attr('y', '0')
                 .attr('fill', 'white')
                 .attr('stroke', 'black');
 
-            indexGroup.append('text')
-                .attr('x', function(d) {
-                return ((uniques.indexOf(d) * elementWidth) + (elementWidth / 2));})
-                .attr('y', '16').style('text-anchor', 'middle')
-                .attr('class', 'headerText').attr('font-family', 'Arial')
+            indexGroup
+                .append('text')
+                .attr('x', function (d) {
+                    return ((uniques.indexOf(d) * elementWidth) + (elementWidth / 2));
+                })
+                .attr('y', '16')
+                .style('text-anchor', 'middle')
+                .attr('class', 'headerText')
+                .attr('font-family', 'Arial')
                 .attr('font-size', '14px')
                 .attr('font-weight', 'bold')
                 .attr('fill', 'black')
-                .text(function(d) {return d;});
+                .text(function (d) {
+                    return d;
+                });
 
             // associate data with identifiers
-            var index2 = svg.selectAll("g.node2").data(textArray, function(d) {
-                return d.statement;
-            });
+            var index2 = svg
+                .selectAll("g.node2")
+                .data(textArray, function (d) {
+                    return d.statement;
+                });
 
-            var indexGroup2 = index2.enter().append("g").attr("class", "node2");
+            var indexGroup2 = index2
+                .enter()
+                .append("g")
+                .attr("class", "node2");
 
-            indexGroup2.append('rect')
+            // Pattern injection
+            var pattern = svg.append("defs")
+                .append("pattern")
+                .attr({
+                    id: "hash4_4",
+                    width: "8",
+                    height: "8",
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(60)"
+                })
+                .append("rect")
+                .attr({
+                    width: "2",
+                    height: "8",
+                    transform: "translate(0,0)",
+                    fill: consensusColor
+                });
+
+            var pattern2 = svg.append("pattern")
+                .append("pattern")
+                .attr({
+                    id: "hash4_4b",
+                    width: "8",
+                    height: "8",
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(135)"
+                })
+                .append("rect")
+                .attr({
+                    width: "2",
+                    height: "8",
+                    transform: "translate(0,0)",
+                    fill: matchCountColor
+                });
+
+            var pattern3 = svg.append("pattern")
+                .append("pattern")
+                .attr({
+                    id: "crosshatch",
+                    width: "8",
+                    height: "8",
+                    patternUnits: "userSpaceOnUse",
+                    patternTransform: "rotate(135)"
+                })
+                .append("rect")
+                .attr({
+                    width: "8",
+                    height: "8",
+                    transform: "translate(0,0)",
+                    fill: "white",
+                    stroke: overlapColor
+                });
+
+
+            indexGroup2
+                .append('rect')
                 .attr('width', elementWidth)
                 .attr('height', elementHeight)
-                .attr('x', function(d) {return d.xVal * elementWidth;})
-                .attr('y', function(d) {return ((d.yVal * elementHeight) + 20);})
-                .attr('fill', function(d) {if (vizConfig.shouldShowBackgroundColor === true) { if (d.matchingCountPercent <= backgroundColorCutoff) { return  '#ffffb2'; } else { return '#ffffff';}
-                } else { return '#ffffff';}})
+                .attr('x', function (d) {
+                    return d.xVal * elementWidth;
+                })
+                .attr('y', function (d) {
+                    return ((d.yVal * elementHeight) + 20);
+                })
+                .attr('fill', function (d) {
+                    if (vizConfig.shouldShowBackgroundColor === true || vizConfig.shouldIndicateConsensus === true) {
+                        return d.displayFill;
+                    } else {
+                        return '#ffffff';
+                    }
+                })
                 //.style('background-color', '#ffffff');
                 .attr('stroke', 'black');
 
             if (vizConfig.shouldIndicateDistinguishing !== false) {
-            indexGroup2.append('text')
-                .attr('width', elementWidth)
-                .attr('height', elementHeight)
-                .attr('font-size', symbolSize)
-                .attr('x', function(d) {return ((d.xVal * elementWidth) + 5); })
-                .attr('y', function(d) {return ((d.yVal * elementHeight) + 38); })
-                .text(function(d) { return d.sigVisualization; });
+                indexGroup2
+                    .append('text')
+                    .attr('width', elementWidth)
+                    .attr('height', elementHeight)
+                    .attr('font-size', symbolSize)
+                    .attr('x', function (d) {
+                        return ((d.xVal * elementWidth) + 5);
+                    })
+                    .attr('y', function (d) {
+                        return ((d.yVal * elementHeight) + 38);
+                    })
+                    .text(function (d) {
+                        return d.sigVisualization;
+                    });
             }
 
-            indexGroup2.append('text')
+            indexGroup2
+                .append('text')
                 .attr('class', 'wrap')
                 .attr('font-family', 'Arial')
                 .attr('font-size', cardFontSize)
-                .attr('x', function(d) {return ((d.xVal * elementWidth) + 3);})
-                .attr('y', function(d) {return ((d.yVal * elementHeight) + locateStateY); })
-                .attr('dy', 0).each(function(d) { var lines = wordwrap(d.displayStatements, maxLength);
+                .attr('x', function (d) {
+                    return ((d.xVal * elementWidth) + 3);
+                })
+                .attr('y', function (d) {
+                    return ((d.yVal * elementHeight) + locateStateY);
+                })
+                .attr('dy', 0)
+                .each(function (d) {
+                    var lines = wordwrap(d.displayStatements, maxLength);
                     for (var iii = 0; iii < lines.length; iii++) {
-                    d3.select(this).append("tspan")
-                        .attr("dy", vSeparation)
-                        .attr('text-anchor', 'middle')
-                        .attr("x", (d.xVal * elementWidth) + (elementWidth / 2))
-                        .text(lines[iii]);
+                        d3
+                            .select(this)
+                            .append("tspan")
+                            .attr("dy", vSeparation)
+                            .attr('text-anchor', 'middle')
+                            .attr("x", (d.xVal * elementWidth) + (elementWidth / 2))
+                            .text(lines[iii]);
                     }
                 });
 
             if (vizConfig.shouldShowMatchCounts === true) {
-              indexGroup2.append('text')
-              .attr('font-family', 'Arial')
-              .attr('font-size', cardFontSize)
-              .attr('x', function(d) {return ((d.xVal * elementWidth) + (elementWidth * .97)); })
-              .attr('y', function(d) {return ((d.yVal * elementHeight) + 38); })
-              .style("text-anchor","end")
-              .text(function(d) { return (d.matchingCount + " (" + d.matchingCountPercent + "%)"); });
+                indexGroup2
+                    .append('text')
+                    .attr('font-family', 'Arial')
+                    .attr('font-size', cardFontSize)
+                    .attr('x', function (d) {
+                        return ((d.xVal * elementWidth) + (elementWidth * 0.97));
+                    })
+                    .attr('y', function (d) {
+                        return ((d.yVal * elementHeight) + 38);
+                    })
+                    .style("text-anchor", "end")
+                    .text(function (d) {
+                        return (d.matchingCount + " (" + d.matchingCountPercent + "%)");
+                    });
             }
 
             if (vizConfig.shouldHaveLegend === true) {
 
-                var indexGroup3 = svg.append("g").attr("class", "node3");
+                var indexGroup3 = svg
+                    .append("g")
+                    .attr("class", "node3");
 
-                indexGroup3.append('rect')
-                    .attr('height', 175)
+                indexGroup3
+                    .append('rect')
+                    .attr('height', 50 + vizConfig.heightAdjustment)
                     .attr('width', 540)
                     .attr('x', (xLegendCenterPoint - halfLegendWidth))
                     .attr('y', (yLegend - 5))
                     .attr('fill', 'white')
                     .style('stroke', 'black');
 
-                indexGroup3.append('text')
-                    .attr('x', ((xLegendCenterPoint - halfLegendWidth) + 10)) // half of legend box width
-                    .attr('y', (yLegend + 20))
+                indexGroup3
+                    .append('text')
+                    //.attr('x', ((xLegendCenterPoint - halfLegendWidth) + 20)) // half of legend box width
+                    .attr('x', (xLegendCenterPoint - 10)) // half of legend box width
+                    .attr('y', (yLegend + 30))
                     .attr('class', 'legendHeader')
                     .attr('font-family', 'Arial')
-                    .text('Symbol')
+                    .attr('font-size', '20px')
+                    .attr('text-anchor', 'middle')
+                    //.text('Symbol')
+                    .text(legendTitleText)
                     .attr('font-weight', 'bold');
 
-                indexGroup3.append('text')
-                    .attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)) // half of legend box width
-                    .attr('y', (yLegend + 20))
-                    .attr('class', 'legendHeader')
-                    .attr('font-family', 'Arial')
-                    .text('Interpretation')
-                    .attr('font-weight', 'bold');
+                /*
+                                indexGroup3
+                                    .append('text')
+                                    .attr('x', ((xLegendCenterPoint - halfLegendWidth) + 100)) // half of legend box width
+                                    .attr('y', (yLegend + 30))
+                                    .attr('class', 'legendHeader')
+                                    .attr('font-family', 'Arial')
+                                    .text('Interpretation')
+                                    .attr('font-weight', 'bold');
+                                    */
+
+                // set X and Y values for legend
+                var symbolY = 34;
+                var legendTextY = 30;
+                var legendSymbolX = 40;
+                var legendTextX = 80;
 
                 // symbols  - !==false is to set as default
-                if (vizConfig.shouldUseUnicode !== false) {
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 52)).text('\u25CE');
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 82)).text('\u25C9');
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 127)).text('\u25BA');
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 157)).text('\u25C4');
-                } else if (vizConfig.shouldUseUnicode === false) {
-                    // symbols
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 52)).text('*');
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 82)).text('**');
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 127)).text('>>>');
-                    indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 30)).attr('y', (yLegend + 157)).text('<<<');
+                if (vizConfig.shouldIndicateDistinguishing === true) {
+                    symbolY = symbolY + 28;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendSymbolX))
+                        .attr('y', (yLegend + symbolY))
+                        .attr('font-size', symbolSize)
+                        .text(vizConfig.legendSymbol05);
+
+                    symbolY = symbolY + 30;
+
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendSymbolX))
+                        .attr('y', (yLegend + symbolY))
+                        .attr('font-size', symbolSize)
+                        .text(vizConfig.legendSymbol01);
                 }
 
-                // interpretation
-                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 50)).attr('font-family', 'Arial').text('Distinguishing statement at P < 0.05');
-                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 80)).attr('font-family', 'Arial').text('Distinguishing statement at P < 0.01');
-                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 125)).attr('font-family', 'Arial').text('z-Score for the statement is higher than in all of the other factors');
-                indexGroup3.append('text').attr('x', ((xLegendCenterPoint - halfLegendWidth) + 105)).attr('y', (yLegend + 155)).attr('font-family', 'Arial').text('z-Score for the statement is lower than in all of the other factors');
-            }
+                if (vizConfig.shouldShowZscoreArrows === true && vizConfig.shouldIndicateDistinguishing === true) {
+                    symbolY = symbolY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendSymbolX))
+                        .attr('y', (yLegend + symbolY))
+                        .attr('font-size', symbolSize)
+                        .text(vizConfig.rightArrow);
+
+                    symbolY = symbolY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendSymbolX))
+                        .attr('y', (yLegend + symbolY))
+                        .attr('font-size', symbolSize)
+                        .text(vizConfig.leftArrow);
+                }
+
+                if (vizConfig.shouldIndicateConsensus === true) {
+                    symbolY = symbolY + 12;
+                    indexGroup3
+                        .append('rect')
+                        .attr('height', 20)
+                        .attr('width', 20)
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendSymbolX - 2))
+                        .attr('y', (yLegend + symbolY))
+                        .attr('fill', consensusIndicator)
+                        .style('stroke', 'black');
+                    symbolY = symbolY + 18;
+                }
+
+                if (vizConfig.shouldShowBackgroundColor === true) {
+                    symbolY = symbolY + 12;
+                    indexGroup3
+                        .append('rect')
+                        .attr('height', 20)
+                        .attr('width', 20)
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendSymbolX - 2))
+                        .attr('y', (yLegend + symbolY))
+                        .attr('fill', matchCautionIndicator)
+                        .style('stroke', 'black');
+                    symbolY = symbolY + 18;
+                }
+
+                if (vizConfig.shouldShowBackgroundColor === true && vizConfig.shouldIndicateConsensus === true) {
+                    symbolY = symbolY + 12;
+                    indexGroup3
+                        .append('rect')
+                        .attr('height', 20)
+                        .attr('width', 20)
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendSymbolX - 2))
+                        .attr('y', (yLegend + symbolY))
+                        .attr('fill', overlapIndicator)
+                        .style('stroke', 'black');
+                    symbolY = symbolY + 18;
+                }
+
+                // if (shouldindi)
+
+                // interpretation text
+                if (vizConfig.shouldIndicateDistinguishing === true) {
+                    legendTextY = legendTextY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendTextX))
+                        .attr('y', (yLegend + legendTextY))
+                        .attr('font-family', 'Arial')
+                        .text(disting05LegendText);
+
+                    legendTextY = legendTextY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendTextX))
+                        .attr('y', (yLegend + legendTextY))
+                        .attr('font-family', 'Arial')
+                        .text(disting01LegendText);
+                }
+                if (vizConfig.shouldShowZscoreArrows === true && vizConfig.shouldIndicateDistinguishing === true) {
+                    legendTextY = legendTextY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendTextX))
+                        .attr('y', (yLegend + legendTextY))
+                        .attr('font-family', 'Arial')
+                        .text(zscoreHigherLegendText);
+
+                    legendTextY = legendTextY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendTextX))
+                        .attr('y', (yLegend + legendTextY))
+                        .attr('font-family', 'Arial')
+                        .text(zscoreLowerLegendText);
+                }
+                if (vizConfig.shouldIndicateConsensus === true) {
+                    legendTextY = legendTextY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendTextX))
+                        .attr('y', (yLegend + legendTextY))
+                        .attr('font-family', 'Arial')
+                        .text(consensusLegendText);
+                }
+
+                if (vizConfig.shouldShowBackgroundColor === true) {
+                    legendTextY = legendTextY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendTextX))
+                        .attr('y', (yLegend + legendTextY))
+                        .attr('font-family', 'Arial')
+                        .text(matchingCountLegendText + " " + vizConfig.backgroundColorCutoff + '%)');
+                }
+                if (vizConfig.shouldShowBackgroundColor === true && vizConfig.shouldIndicateConsensus === true) {
+                    legendTextY = legendTextY + 30;
+                    indexGroup3
+                        .append('text')
+                        .attr('x', ((xLegendCenterPoint - halfLegendWidth) + legendTextX))
+                        .attr('y', (yLegend + legendTextY))
+                        .attr('font-family', 'Arial')
+                        .text(overlapLegendText);
+                }
+            } // end of should have legend
 
             var downloadText = resources[language].translation.downloadImage;
-            $("#" + factorVizDivName).append('<input class="svgDownloadButton blackHover" name="downloadButton" type="button" value="' + userSelectedFactors[z] + downloadText + '" />');
+            $("#" + factorVizDivName)
+                .append('<input class="svgDownloadButton blackHover" name="downloadButton" type="button" value="' + userSelectedFactors[z] + downloadText + '" />');
         }
 
-        $('.svgDownloadButton').on('click', function(event) {
-            var vizConfig = QAV.getState("vizConfig") || {};
-            var shouldAddName = vizConfig.shouldAddCustomName;
-            var svgId = $(this).parent().find("svg").attr('id');
-            var arrayIndexNumber = (svgId.slice(-1) - 1);
-            var factorName = userSelectedFactors[arrayIndexNumber];
-            var cleanFactorName = factorName.replace(/\s+/g, '');
-            var date = UTIL.currentDate1();
-            var time = UTIL.currentTime1();
-            var dateTime = date + "_" + time;
-            var projectName = QAV.getState("qavProjectName");
-            var customName = vizConfig.customName;
-            if (shouldAddName === true) {
-                if (vizConfig.customNameLocation === "prepend") {
-                    config = { filename: customName + "_" + projectName + "_" + cleanFactorName + "_" + dateTime};
-                } else if (vizConfig.customNameLocation === "append") {
-                    config = { filename: projectName + "_" + cleanFactorName + "_" + dateTime + "_" + customName};
-                } else if ( vizConfig.customNameLocation === "replace" ){
-                    config = { filename: customName};} else {
-                    config = { filename: projectName + "_" + cleanFactorName + "_" + dateTime};
+        $('.svgDownloadButton')
+            .on('mousedown', function (event) {
+                var vizConfig = QAV.getState("vizConfig") || {};
+                var shouldAddName = vizConfig.shouldAddCustomName;
+                var svgId = $(this)
+                    .parent()
+                    .find("svg")
+                    .attr('id');
+                var arrayIndexNumber = (svgId.slice(-1) - 1);
+                var factorName = userSelectedFactors[arrayIndexNumber];
+                var cleanFactorName = factorName.replace(/\s+/g, '');
+                var date = UTIL.currentDate1();
+                var time = UTIL.currentTime1();
+                var dateTime = date + "_" + time;
+                var projectName = QAV.getState("qavProjectName");
+                var customName = vizConfig.customName;
+                if (shouldAddName === true) {
+                    if (vizConfig.customNameLocation === "prepend") {
+                        config = {
+                            filename: customName + "_" + projectName + "_" + cleanFactorName + "_" + dateTime
+                        };
+                    } else if (vizConfig.customNameLocation === "append") {
+                        config = {
+                            filename: projectName + "_" + cleanFactorName + "_" + dateTime + "_" + customName
+                        };
+                    } else if (vizConfig.customNameLocation === "replace") {
+                        config = {
+                            filename: customName
+                        };
+                    } else {
+                        config = {
+                            filename: projectName + "_" + cleanFactorName + "_" + dateTime
+                        };
+                    }
+                } else {
+                    config = {
+                        filename: projectName + "_" + cleanFactorName + "_" + dateTime
+                    };
                 }
-            } else {
-            config = { filename: projectName + "_" + cleanFactorName + "_" + dateTime};
-        }
-            d3_save_svg.save(d3.select('#' + svgId).node(), config);
-        });
+                d3_save_svg.save(d3.select('#' + svgId)
+                    .node(), config);
+            });
         OUTPUT.showPreliminaryOutput1b();
     };
 
     // ************************************************************************  view
     // ******  Preliminary Results 1b - draw factor score correlations table  ********
     // ******************************************************************************
-    OUTPUT.showPreliminaryOutput1b = function() {
+    OUTPUT.showPreliminaryOutput1b = function () {
         var language = QAV.getState("language");
         var headerText = resources[language].translation["Factor score correlations"];
 
@@ -587,15 +994,19 @@
 
         var table = $('#factorCorrelationTable').DataTable();
         var lastIdx = null;
-        $('#factorCorrelationTable tbody').on('mouseover', 'td', function() {
-            var colIdx = table.cell(this).index().column;
-            if (colIdx !== lastIdx) {
+        $('#factorCorrelationTable tbody').on('mouseover', 'td', function () {
+                var colIdx = table
+                    .cell(this)
+                    .index()
+                    .column;
+                if (colIdx !== lastIdx) {
+                    $(table.cells().nodes()).removeClass('highlight');
+                    $(table.column(colIdx).nodes()).addClass('highlight');
+                }
+            })
+            .on('mouseleave', function () {
                 $(table.cells().nodes()).removeClass('highlight');
-                $(table.column(colIdx).nodes()).addClass('highlight');
-            }
-        }).on('mouseleave', function() {
-            $(table.cells().nodes()).removeClass('highlight');
-        });
+            });
         showPreliminaryOutput2();
     };
 
@@ -643,19 +1054,19 @@
                 {
                     title: "Q-Sort",
                     class: "dt-head-center dt-body-center"
-                }, {
+             }, {
                     title: chartText8,
                     class: "dt-head-center dt-body-center"
-                }
-            ];
+             }
+         ];
 
             $("#factorWeightResults" + factorNumber).DataTable({
                 "retrieve": true,
                 "searching": false,
                 "ordering": true,
                 "order": [
-                    [1, "desc"]
-                ],
+                 [1, "desc"]
+             ],
                 "info": false,
                 "scrollY": 800,
                 "scrollCollapse": true,
@@ -667,15 +1078,15 @@
                     {
                         targets: [0],
                         className: 'dt-body-center dt-body-name'
-                    }, {
+                 }, {
                         targets: '_all',
-                        "createdCell": function(td, cellData, rowData, row, col) {
+                        "createdCell": function (td, cellData, rowData, row, col) {
                             if (cellData < 0) {
                                 $(td).css('color', 'red');
                             }
                         }
-                    }
-                ]
+                 }
+             ]
             });
 
             s1 = s1 + 3;
@@ -691,8 +1102,8 @@
                 {
                     title: "Q-Sort",
                     class: "dt-head-center dt-body-center"
-                }
-            ];
+             }
+         ];
 
             for (var k = 1; k < newMiniCorrData[0].length; k++) {
                 var tempObjMC = {};
@@ -718,15 +1129,15 @@
                     {
                         targets: [0],
                         className: 'dt-body-center dt-body-name'
-                    }, {
+                 }, {
                         targets: '_all',
-                        "createdCell": function(td, cellData, rowData, row, col) {
+                        "createdCell": function (td, cellData, rowData, row, col) {
                             if (cellData < 0) {
                                 $(td).css('color', 'red');
                             }
                         }
-                    }
-                ]
+                 }
+             ]
             });
 
             s2 = s2 + 3;
@@ -746,20 +1157,20 @@
                     title: chartText4,
                     class: "dt-head-center dt-body-center",
                     "data": chartText4
-                }, {
+             }, {
                     title: chartText5,
                     class: "dt-head-center dt-body-left",
                     "data": chartText5
-                }, {
+             }, {
                     "data": chartText6,
                     title: chartText6,
                     class: "dt-head-center dt-body-right"
-                }, {
+             }, {
                     title: chartText7,
                     class: "dt-head-center dt-body-center",
                     "data": chartText7
-                }
-            ];
+             }
+         ];
             // looping in all of the raw sort column headers
             for (var i = 4; i < columnHeadersArray.length; i++) {
                 var tempObj = {};
@@ -777,8 +1188,8 @@
                 "searching": false,
                 "ordering": true,
                 "order": [
-                    [2, "desc"]
-                ],
+                 [2, "desc"]
+             ],
                 "info": false,
                 "scrollY": 800,
                 "scrollCollapse": true,
@@ -795,7 +1206,7 @@
     // **********************************************************************  view
     // ******  dynamicallly append checkboxs to select factors for analysis *******
     // ****************************************************************************
-    OUTPUT.appendFactorSelectionCheckboxes = function() {
+    OUTPUT.appendFactorSelectionCheckboxes = function () {
 
         var hasSplitFactor = QAV.getState("hasSplitFactor");
         var j,
@@ -867,8 +1278,12 @@
             label.htmlFor = factorsToSelect[j];
             label.className = "checkboxLabel";
             label.appendChild(document.createTextNode(factorsToSelect[j]));
-            document.getElementById("selectFactorsForOutputDiv").appendChild(checkbox);
-            document.getElementById("selectFactorsForOutputDiv").appendChild(label);
+            document
+                .getElementById("selectFactorsForOutputDiv")
+                .appendChild(checkbox);
+            document
+                .getElementById("selectFactorsForOutputDiv")
+                .appendChild(label);
         }
     };
 
@@ -876,7 +1291,7 @@
     // **************  pull user-selected factors for analysis *********************
     // *****************************************************************************
 
-    OUTPUT.getFactorsForAnalysis = function() {
+    OUTPUT.getFactorsForAnalysis = function () {
         var checkboxes = document.getElementsByName('analysisFactors');
         var vals = [];
         for (var i = 0; i < checkboxes.length; i++) {
@@ -891,7 +1306,7 @@
     // **************  pull loadings that have been flagged  **********************
     // ****************************************************************************
 
-    OUTPUT.pullFlaggedFactorLoadings = function() {
+    OUTPUT.pullFlaggedFactorLoadings = function () {
         var numberFactorsExtracted = parseInt(QAV.getState("numberFactorsExtracted"));
 
         var results = QAV.getState("results");
@@ -951,7 +1366,9 @@
         }
 
         // check for user-selected factors with no loading sorts user error
-        var loadingSortCheck = $(userSelectedFactors).not(loadingSortCheckArray).length === 0;
+        var loadingSortCheck = $(userSelectedFactors)
+            .not(loadingSortCheckArray)
+            .length === 0;
         var language = QAV.getState("language");
         var appendText1 = resources[language].translation["The sort for respondent"];
         var appendText2 = resources[language].translation["is flagged for more than one factor"];
@@ -966,15 +1383,16 @@
             $("#sortLoadingMultipleFactorsModal").toggleClass('active');
             return "false";
         } else {
-            significantLoadingsArray.sort(function(a, b) {
-                if (a[0] < b[0]) {
-                    return -1;
-                }
-                if (a[0] > b[0]) {
-                    return 1;
-                }
-                return 0;
-            });
+            significantLoadingsArray
+                .sort(function (a, b) {
+                    if (a[0] < b[0]) {
+                        return -1;
+                    }
+                    if (a[0] > b[0]) {
+                        return 1;
+                    }
+                    return 0;
+                });
             computeFactorWeights(significantLoadingsArray);
         }
     };
@@ -1005,14 +1423,14 @@
     function findLargestFactorWeights(significantLoadingsArray) {
 
         // remove unique sorts (value 99) from array
-        var factorSelect = _.filter(significantLoadingsArray, function(n) {
+        var factorSelect = _.filter(significantLoadingsArray, function (n) {
             return n[0] !== 99;
         });
 
         // pull out just factor number and W value to array
         var factorNumbersArray2 = [];
         var factorNumbersArray = [];
-        _(factorSelect).forEach(function(n) {
+        _(factorSelect).forEach(function (n) {
             var tempArray = [];
             var factorNumber = n[0];
             factorNumbersArray2.push(factorNumber);
@@ -1029,13 +1447,13 @@
 
         var maxFactorValuesArray = [];
         var factorValue = 0;
-        _(sigFactorNumbersArray).forEach(function() {
-            var temp = _(factorNumbersArray).filter(function(j) {
+        _(sigFactorNumbersArray).forEach(function () {
+            var temp = _(factorNumbersArray).filter(function (j) {
                 return j[0] === sigArray[factorValue];
             });
 
             var tempArray2 = [];
-            var maxFactorLoadings = _(temp).forEach(function(q) {
+            var maxFactorLoadings = _(temp).forEach(function (q) {
                 var tempVar3 = evenRound((Math.abs(1 / q[1])), 8);
                 tempArray2.push(tempVar3);
             }).value();
@@ -1285,9 +1703,9 @@
 
         var timeCompleted = UTIL.currentDate1() + " at " + UTIL.currentTime1();
         settings.push(spacer, [
-            appendText3 + timeCompleted,
-            ""
-        ]);
+         appendText3 + timeCompleted,
+         ""
+     ]);
 
         output.push(settings);
 
@@ -1562,7 +1980,7 @@
                 correlationHolder2;
             var correlationTableArrayFragment = [];
 
-            _(factorScoresCorrelationArray).forEach(function(element) {
+            _(factorScoresCorrelationArray).forEach(function (element) {
                 correlationHolder2 = CORR.getPqmethodCorrelation(pullX, element);
                 correlationHolder = evenRound((correlationHolder2[0]), 4);
                 correlationTableArrayFragment.push(correlationHolder);
@@ -1612,14 +2030,14 @@
         var tempArray = [];
 
         var headerRowFromCurrentTable = $('#factorRotationTable2 thead tr')[0];
-        $.each(headerRowFromCurrentTable.cells, function(i, v) {
+        $.each(headerRowFromCurrentTable.cells, function (i, v) {
             var temp5 = v.textContent;
             tempArray.push(temp5);
         });
         formattedResults.push(tempArray);
 
         // resort the array
-        results.sort(function(a, b) {
+        results.sort(function (a, b) {
             return a[0] - b[0];
         });
 
@@ -1728,13 +2146,14 @@
         // get the raw sort for that specific sigSort
         // read that sigSorts raw sort data into testObj
 
+        var matchCount = [];
         //  FOR EACH FACTOR LOOP
         for (var j = 0; j < analysisOutput.length; j++) {
 
             // FACTOR WEIGHTS TABLES STARTS FROM HERE
             var factorWeightFactorArray = [
-                ["Q-Sort", "Weight"]
-            ];
+             ["Q-Sort", "Weight"]
+         ];
             var factorWeightName = userSelectedFactors[j];
             for (var w = 0; w < sortWeights.length; w++) {
                 var factorWeightTempArray = [];
@@ -1794,26 +2213,47 @@
             // SYNTHETIC FACTOR OUTPUT STARTS FROM HERE
             // convert arrays to object
             var synFactorArray = [];
+            var matchCountArray = [];
 
-            for (var m = 0; m < analysisOutput[0].length; m++) {
+            // simul calc two md arrays - one for tables, one for match counts
+            for (var m = 0, mLen = analysisOutput[0].length; m < mLen; m++) {
+                // initialize and empty temp objs and arrays
                 var tempObj = {};
+                var tempObj5 = {};
+                var matchSortValue = [];
+                var matchingCounter = 0;
+
+                tempObj5.indexer = analysisOutput[j][m].statement;
+                tempObj5.matchSortValue = analysisOutput[j][m].sortValue;
+                tempObj5.zScore = analysisOutput[j][m].zScore;
+                var testValue = analysisOutput[j][m].sortValue;
 
                 tempObj[appendText3] = analysisOutput[j][m].statement;
                 tempObj[appendText4] = analysisOutput[j][m].sortStatement;
                 tempObj[appendText5] = analysisOutput[j][m].zScore;
                 tempObj[appendText6] = analysisOutput[j][m].sortValue;
-                for (var s = 0; s < rawSorts[j].length; s++) {
+                for (var s = 0, sLen = rawSorts[j].length; s < sLen; s++) {
                     tempObj["Raw Sort " + sigSortsArray[j].SigSorts[s]] = rawSorts[j][s][m];
-                }
+                    // matchSortValue.push(rawSorts[j][s][m]);
+                    if (testValue === rawSorts[j][s][m]) {
+                        matchingCounter++;
+                    }
+                } // pushing in raw sort vals
+                tempObj5.matchingCounts = matchingCounter;
+                tempObj5.matchingCountsPercent = parseInt((matchingCounter / sLen * 100), 10);
+                // tempObj5.matchSortValue = matchSortValue;
+                matchCountArray.push(tempObj5);
                 synFactorArray.push(tempObj);
-            }
+            } // pushing in q-sort loadings
+            matchCount.push(matchCountArray); // push in factor arrays
 
             var synFactorArray1 = synFactorArray.slice(0);
-            synFactorArray1.sort(function(a, b) {
+            synFactorArray1.sort(function (a, b) {
                 return b[appendText5] - a[appendText5];
             });
             output.push(synFactorArray1);
         }
+        QAV.setState("matchCount", matchCount);
         pushFactorPowerSetDiffsToOutputArray(sheetNames, output, analysisOutput2);
     }
 
@@ -1829,9 +2269,9 @@
         for (var i = 0; i < analysisOutput.length - 1; i++) {
             for (var j = i; j < analysisOutput.length - 1; j++) {
                 factorPairs.push([
-                    analysisOutput[i],
-                    analysisOutput[j + 1]
-                ]);
+                 analysisOutput[i],
+                 analysisOutput[j + 1]
+             ]);
             }
         }
         var diffArraySorted;
@@ -1855,7 +2295,7 @@
                 tempObj[factorPairs[m][1][0].factor] = factorPairs[m][1][p].zScore;
                 tempObj[chartText2] = evenRound(((factorPairs[m][0][p].zScore) - (factorPairs[m][1][p].zScore)), 3);
                 diffArray.push(tempObj);
-                diffArraySorted = diffArray.sort(function(a, b) {
+                diffArraySorted = diffArray.sort(function (a, b) {
                     return b[chartText2] - a[chartText2];
                 });
             }
@@ -1899,7 +2339,7 @@
 
             zScoreArrayForStatements.push(tempObj);
         }
-        var zScoreArrayForStatementsSorted = zScoreArrayForStatements.sort(function(a, b) {
+        var zScoreArrayForStatementsSorted = zScoreArrayForStatements.sort(function (a, b) {
             return a[chartText5] - b[chartText5];
         });
         output.push(zScoreArrayForStatementsSorted);
@@ -2165,7 +2605,7 @@
         sheetNames.push(newSheet2);
 
         var formattedConsensusStatements = formatConsensusArrayForDownload(consensus05, consensus01, analysisOutput, sigFactorNumbersArray);
-
+        QAV.setState("formattedConsensusStatements", formattedConsensusStatements);
         output.push(formattedConsensusStatements);
 
         pushSettingsToOutput(sheetNames, output);
@@ -2278,7 +2718,7 @@
             printArray2.push(tempObj2);
         }
 
-        var printArray3 = printArray2.sort(function(a, b) {
+        var printArray3 = printArray2.sort(function (a, b) {
             return a["No."] - b["No."];
         });
 
@@ -2411,7 +2851,7 @@
         var sortFactorValue = "Z-SCR-" + lookupValue;
 
         // sort desc
-        var printArray3 = printArray2.sort(function(a, b) {
+        var printArray3 = printArray2.sort(function (a, b) {
             return b[sortFactorValue] - a[sortFactorValue];
         });
 
@@ -2426,7 +2866,7 @@
     // todo - evenRound the sed comparison values in disting statements function
     // todo - check to get rid of outputcomplete check - no longer needed i think by hiding download button
 
-    OUTPUT.downloadOutput = function() {
+    OUTPUT.downloadOutput = function () {
 
         var outputComplete,
             sheetNames,
@@ -2474,13 +2914,13 @@
     function standardDeviation(values) {
         var avg = average(values);
 
-        var squareDiffs = values.map(function(value) {
+        var squareDiffs = values.map(function (value) {
             var diff = value - avg;
             var sqrDiff = diff * diff;
             return sqrDiff;
         });
 
-        var avgSquareDiff1 = squareDiffs.reduce(function(sum, value) {
+        var avgSquareDiff1 = squareDiffs.reduce(function (sum, value) {
 
             return sum + value;
         }, 0);
@@ -2492,7 +2932,7 @@
     }
 
     function average(data) {
-        var sum = data.reduce(function(sum, value) {
+        var sum = data.reduce(function (sum, value) {
             return sum + value;
         }, 0);
 

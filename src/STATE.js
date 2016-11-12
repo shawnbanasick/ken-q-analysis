@@ -26,6 +26,21 @@
         return value;
     };
 
+    // set defaults for composite factor visualizations
+    QAV.vizConfig = {};
+    QAV.vizConfig.consensusCustomColor = "#D6D6D6";
+    QAV.vizConfig.matchCountCustomColor = "#D6D6D6";
+    QAV.vizConfig.overlapCustomColor = "#D6D6D6";
+    QAV.vizConfig.shouldUseToIndicateOverlap = "crosshatch";
+    QAV.vizConfig.shouldUseToIndicateConsensus = "stripe";
+    QAV.vizConfig.shouldUseToIndicateMatchCaution = "stripe";
+    QAV.vizConfig.shouldIndicateDistinguishing = true;
+    QAV.vizConfig.shouldUseUnicode = true;
+    QAV.vizConfig.shouldShowZscoreArrows = true;
 
+    $('#prependStateNoDiv .vizButtonYes').addClass("active");
+    $('#showSignificanceSymbolsDiv .vizButtonYes').addClass("active");
+    $('#useUnicodeSymbolsDiv .vizButtonYes').addClass("selected");
+    $('#zscoreArrowDirectionDiv .vizButtonYes').addClass("active");
 
 }(window.QAV = window.QAV || {}));

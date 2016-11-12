@@ -509,7 +509,7 @@ td.highlight {
     border-radius: 5px;
     border: #ebebeb solid 1px;
     width: 200px;
-    height: 28px;
+    min-height: 28px;
     padding: 6px 6px 2px 8px;
     color: black;
     background: #eeeeee;
@@ -1182,7 +1182,7 @@ div.d3Tooltip {
 }
 
 .linkUnderline:link {
-    border-bottom: 3px solid #38acec;
+    border-bottom: 2px solid #38acec;
     opacity: 0.6;
     box-shadow: 0px -4px 0px #38acec inset;
     color: black !important;
@@ -1193,6 +1193,15 @@ div.d3Tooltip {
     background-color: #38acec;
     opacity: 0.6;
 }
+
+.linkUnderline:visited {
+    border-bottom: 2px solid #38acec;
+    opacity: 0.6;
+    box-shadow: 0px -4px 0px #38acec inset;
+    color: black !important;
+    text-decoration: none !important;
+}
+
 
 #section4 path {
     stroke: black;
@@ -1294,13 +1303,18 @@ div.d3Tooltip {
 
 
 .factorVizOptionsHeaderDivText {
-    margin-bottom: 25px;
+    margin-top: 3px !important;
+    margin-left: 10px !important;
     font-size: 25px;
     margin-left: 10px;
 }
 
 .vizInput3 {
     width:416px !important;
+}
+
+.vizInput4 {
+  width:80px !important;
 }
 
 .displayPanelIntroText {
@@ -1333,4 +1347,17 @@ text-align:left !important;
 
 .panelIntroTextSpanDiv span {
     font-size: 18px;
+}
+
+.vizButtonYes.active {
+  background-color: #38acec !important;
+  color: white !important;
+}
+
+.vizButtonNo.active {
+  background-color: transparent; !important;
+}
+
+.updateVizButton {
+    margin-left: 10px;
 }

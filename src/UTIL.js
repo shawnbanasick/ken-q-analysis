@@ -188,6 +188,24 @@ function evenRound(num, decimalPlaces) {
             }
     };
 
+// todo - check if still used or delete
+    UTIL.checkIfValueIsHex = function(hexCodeValue, inputBoxId) {
+    var box = $("#" + inputBoxId);
+      if (hexCodeValue.length > 6) {
+      var isOk = Boolean(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(hexCodeValue));
+      if (isOk === true) {
+          box.css("border", "lightgray solid 1px");
+          box.css("background-color", hexCodeValue);
+          return hexCodeValue;
+      } else {
+          box.css("background-color", "#ffffff");
+          box.css("border", "red solid 3px");
+      }} else {
+          box.css("background-color", "#ffffff");
+          box.css("border", "lightgray solid 1px");
+      }
+    };
+
     // *************************************************************  Data Model
     // **********  Archive function to allow undo of rotations *****************
     // *************************************************************************

@@ -1361,3 +1361,81 @@ text-align:left !important;
 .updateVizButton {
     margin-left: 10px;
 }
+
+#section2 label {
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    width: auto;
+    font-size: 18px;
+    font-weight: 800;
+    color: #555;
+    height: 38px;
+    line-height: 38px;
+    padding: 5px 15px 5px 15px;
+    /*letter-spacing: .1rem;*/
+    /*float: left;*/
+    background-color: #eeeeee;
+    border: 1px solid #bbb;
+}
+
+#section2 label:first-child {
+    border-left-width: 1px;
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+#section2 label:last-child {
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+}
+
+#section2 label:hover {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+
+#section2 label.selected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#section2 label.warning.selected {
+    background-color: red;
+    border-color: darkred;
+}
+
+#section2 input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
+.dataSelectionLabelDiv {
+    display: inline-block !important;
+    width: auto;
+    margin-right: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.selectBox {
+    margin-left: 10px;
+}
+
+.jsonFileName {
+    margin-right: 10px;
+}
+
+.jsonDownloadPQ {
+  margin-top: 3px;
+  margin-right: 5px;
+}
+
+.u-right-margin {
+  margin-right: 20px;
+}

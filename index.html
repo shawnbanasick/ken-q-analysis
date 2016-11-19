@@ -8,8 +8,8 @@
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
     <meta charset="utf-8">
     <title> Ken-Q Analysis</title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Ken-Q Analysis is a desktop web application for Q methodology">
+    <meta name="author" content="Shawn Banasick">
 
 
     <!-- Mobile Specific Metas
@@ -95,7 +95,7 @@
                 </div>
                 <h1 class="singleLine vertical"><strong>Ken-Q Analysis</strong></h1>
                 <h2 data-i18n="A Web Application for Q Methodology"></h2>
-                <h5><i>Beta Version 0.7.1 Test Release (November 13, 2016)</i></h5>
+                <h5><i>Beta Version 0.8.0 Test Release (November 20, 2016)</i></h5>
                 <br>
                 <ul>
                     <li>Ken-Q Analysis requires an up-to-date browser - Tested on:
@@ -123,7 +123,14 @@
                 <h5>Change Log</h5>
                 <div id="accordion">
 
-                  <a href="#nine" class="first">Beta Version 0.7.1 Test Release (November 13, 2016)</a>
+                    <a href="#ten" class="first">Beta Version 0.8.0 Test Release (November 20, 2016)</a>
+                    <div id="ten">
+                        <ul>
+                            <li>Added JSON data import for Easy-HtmlQ</li>
+                        </ul>
+                    </div>
+
+                  <a href="#nine">Beta Version 0.7.1 Test Release (November 13, 2016)</a>
                   <div id="nine">
                       <ul>
                           <li>Changed behaviour of buttons in composite Q-sort visualizations settings panel</li>
@@ -224,37 +231,43 @@
             </div>
             <h4 class="specialH4" data-i18n="Data"></h4>
 
-            <form>
+
                 <div class="row">
 
-                    <div class="three columns">
-                        <div class="radioButtonDiv">
-                            <input type="radio" name="radio" id="radio2" class="radio" />
-                            <label for="radio2" data-i18n="User input"></label>
+                    <div class="dataSelectionLabelDiv">
+                        <div>
+                            <input type="radio" name="radio" id="radio2" />
+                            <label for="radio2" class="radioHighlight2 vertical" data-i18n="User input"></label>
                         </div>
                     </div>
-                    <div class="three columns">
-                        <div class="radioButtonDiv">
-                            <input type="radio" name="radio" id="radio3" class="radio" />
-                            <label for="radio3" data-i18n="PQMethod File"></label>
+                    <div class="dataSelectionLabelDiv">
+                        <div>
+                            <input type="radio" name="radio" id="radio3"  />
+                            <label for="radio3" class="radioHighlight2 vertical" data-i18n="PQMethod File"></label>
                         </div>
                     </div>
-                    <div class="three columns">
-                        <div class="radioButtonDiv">
-                            <input type="radio" name="radio" id="radio4" class="radio" />
-                            <label for="radio4" data-i18n="Excel File"></label>
+                    <div class="dataSelectionLabelDiv">
+                        <div>
+                            <input type="radio" name="radio" id="radio4" />
+                            <label for="radio4" class="radioHighlight2 vertical" data-i18n="Excel File"></label>
                         </div>
                     </div>
-                    <div class="three columns">
-                        <div class="radioButtonDiv">
-                            <input type="radio" name="radio" id="radio1" class="radio" checked/>
-                            <label for="radio1" data-i18n="Demo Data"></label>
+                    <div class="dataSelectionLabelDiv">
+                        <div>
+                            <input type="radio" name="radio" id="radio5" />
+                            <label for="radio5" class="radioHighlight2 vertical" data-i18n="JSON File"></label>
+                        </div>
+                    </div>
+                    <div class="dataSelectionLabelDiv">
+                        <div>
+                            <input type="radio" name="radio" id="radio1" />
+                            <label for="radio1" class="radioHighlight2 vertical" data-i18n="Demo Data"></label>
                         </div>
                     </div>
                     <!-- end three column div     -->
                 </div>
                 <!-- end skeleton row div     -->
-            </form>
+
 
 
             <!-- Subsection USE EXISTING DATA SET Layout ***************************––––––––––––––––––––––––––––––––––––––––––––––––– -->
@@ -1080,9 +1093,40 @@
 
             </div>
 
+            <div class="firebaseDataInputDiv">
+                <h5 class="pastePQM" data-i18n="Upload 'Easy-HtmlQ' JSON file"></h5>
+                <div class="choose_filePQM">
+                    <span data-i18n="Upload"></span>
+                    <input accept=".JSON" id="fileSelectJSON" type="file" />
+                </div>
+                <h5 class="pastePQM u-pull-right u-right-margin"><a class="linkUnderline" target="_blank" style="target-new: tab;" href="https://docs.google.com/presentation/d/1fOYxQOo2XpgR1lZ4gyGO_dRi9Ehh6-0TN98us2xPEPs/edit?usp=sharing">Easy-HtmlQ Guide</a></h5>
+                <br />
+                <div class="row downloadCsvDataDiv pastePQM hidden">
+                    <h5 class="jsonFileName pastePQM"></h5>
+                    <input type="button" class="blackHover vertical pastePQM" id="downloadJsonData" data-i18n="[value]DOWNLOAD DATA AS CSV FILE">
+                    <h6 class="pastePQM" data-i18n="(Stage Data to enable export in PQMethod Format)"></h6>
+                </div>
+                <div class="jsonSelect hidden">
+                    <br />
+                    <h5 class="pastePQM" data-i18n="Select respondent ID:"></h5>
+                    <select id="jsonIdSelect" autocomplete="off" class="singleLIne vertical selectBox">
+                        <!--  <option disabled="disabled" selected="selected">Choose option</option>-->
+                        <option value="id" selected="selected">ID</option>
+                    </select>
+                    <br />
+                    <h5 class="pastePQM" data-i18n="Paste Q-sort statements"></h5>
+                    <textarea id="statementsInputBoxJson" class="textbox inputBoxAutoWidth" name="rawStatementsJson" rows="40"></textarea>
+                    <input type="button" class="blackHover vertical" id="stageJsonData" data-i18n="[value]STAGE DATA FOR ANALYSIS">
+                </div>
+            </div>
+
+
             <div class="analysisDataDiv">
                 <div class="factorVizOptionsDivHeader">
-                    <h4 data-i18n="Analysis data"></h4>
+                    <h4 data-i18n="Analysis data" class="pastePQM"></h4>
+                    <div class="jsonDownloadPQ hidden pastePQM u-pull-right">
+                        <input type="button" id="exportJsonSortsPQM" class="vertical downloadHover" data-i18n="[value]Export q-sorts to pqmethod" />
+                    </div>
                 </div>
                 <ol id="existingDatabaseStatementList"></ol>
                 <br>
@@ -1808,6 +1852,7 @@
     <script type="text/javascript" src="src/ROTA.js"></script>
     <script type="text/javascript" src="src/OUTPUT.js"></script>
     <script type="text/javascript" src="src/CENTROID.js"></script>
+    <script type="text/javascript" src="src/FIREBASE.js"></script>
     <script type="text/javascript" src="src/CONTROLERS.js"></script>
 
     <script>

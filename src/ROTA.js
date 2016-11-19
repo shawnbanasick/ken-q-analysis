@@ -728,8 +728,6 @@
 
         if (testVar === true) { //
 
-            console.log("table exits and not new factors selected");
-
             baseLineData = QAV.getState("baseLineData");
 
             new2FactorDataArray = [];
@@ -776,8 +774,6 @@
             //$('#twoFactorDisplayTable').DataTable();
 
         } else {
-
-            console.log("no table or is new selection");
 
             // if (testVar === true) {
             //     // var table1 = $('#twoFactorDisplayTable').DataTable();

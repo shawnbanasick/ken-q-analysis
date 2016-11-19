@@ -19,7 +19,7 @@ var resources = {
             "Licenses": "Licenses",
             "A Web Application for Q Methodology": "A Web Application for Q Methodology",
             "Data": "Data",
-            "User input": "User input",
+            "User input": "USER INPUT",
             "Project name": "Project Name",
             "Paste q-sort statements": "Paste q-sort statements",
             "Input q-sorts for this data set": "Input q-sorts for this data set",
@@ -33,18 +33,18 @@ var resources = {
             "Respondent list": "Respondent list",
             "Stage data for analysis": "Stage Data for Analysis",
             "Export to pqmethod dat file": "Export to PQMethod DAT File",
-            "PQMethod File": "PQMethod file",
+            "PQMethod File": "PQMETHOD FILE",
             "Paste sort data or upload DAT file": "Paste Sort Data or Upload DAT File From Ken-Q Mobile or PQMethod",
             "Upload": "UPLOAD",
             "Paste Q-Sort Statements Or Upload STA File": "Paste Q-Sort Statements or Upload STA File",
             "Or upload STA file": "Or upload STA file",
             "Clear all data from input boxes": "Clear all data from input boxes",
-            "Excel File": "Excel file",
+            "Excel File": "EXCEL FILE",
             "Upload user-coded excel file": "UPLOAD USER-CODED EXCEL FILE",
             "Upload ken-q results file": "UPLOAD KEN-Q RESULTS FILE",
             "Export q-sorts to pqmethod": "EXPORT Q-SORTS to PQMETHOD",
             "Download a user-coded excel example file here": "Download a user-coded Excel example file",
-            "Demo data": "Demo data",
+            "Demo Data": "DEMO DATA",
             "Select data set": "Select Data Set",
             "Analysis data": "Analysis Data",
             "Correlation matrix": "Correlation Matrix",
@@ -239,7 +239,10 @@ var resources = {
             "Consensus statement (non-significant at P > 0.1)": "Consensus statement (non-significant at P > 0.1)",
             "Low number of raw Q-sort matching values (cutoff": "Low number of raw Q-sort matching values (cutoff",
             "Consensus statement with low number of matching values": "Consensus statement with low number of matching values",
-            "Legend": "Legend"
+            "Legend": "Legend",
+            "JSON File": "JSON FILE",
+            "Select respondent ID:": "Select respondent ID:",
+            "Upload 'Easy HTMLQ' JSON file": "Upload 'Easy HTMLQ' JSON file"
         }
     },
     "ja": {
@@ -473,7 +476,9 @@ var resources = {
             "Consensus statement (non-significant at P > 0.1)": "総意ステートメント (非有意　ー P > 0.1)",
             "Low number of raw Q-sort matching values (cutoff": "被告のQ-Sortのマッチング数が低い（カットオフ ",
             "Consensus statement with low number of matching values": "総意ステートメントとマッチング数が低い",
-            "Legend": "凡例"
+            "Legend": "凡例",
+            "Firebase File": "FIREBASE FILE",
+            "Select respondent ID:": "Select respondent ID: "
         }
     }
 };

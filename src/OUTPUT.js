@@ -16,7 +16,6 @@
     // ******************************************************************************
     OUTPUT.showPreliminaryOutput1 = function () {
         // add synthetic factors visualizations
-        console.log("showPreliminaryOutput1 called");
         // $("#synFactorVizTitle").append("<h4>" + synFactorVizTitleText + "</h4>");
 
         var distStatementDataVizArray = QAV.getState("distStatementDataVizArray");

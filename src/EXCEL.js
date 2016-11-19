@@ -78,11 +78,16 @@
 
             var temp8d = temp8c.toString();
 
+            var testForButtonText = temp8d.slice(-4);
+            if (testForButtonText === "sort") {
+              temp8d = temp8d.replace(/delete sort/g, "");
+            }
+
             var temp8e = temp8d.replace(/,/g, " ");
             var temp8f = temp8e.replace(/ -/g, "-");
             var temp8g = temp8f.replace(/[\[\]']+/g, '');
 
-            if (temp8[1] < 0) {
+            if (+temp8[1] < 0) {
                 temp8g = "  " + temp8g;
             } else {
                 temp8g = "   " + temp8g;

@@ -1,4 +1,4 @@
-//Ken-Q Analysis 
+//Ken-Q Analysis
 //Copyright (C) 2016 Shawn Banasick
 //
 //    This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 
     CORR.createCorrelationTable = function () {
         var t0 = performance.now();
+
         var namesFromExistingData2 = QAV.getState("qavRespondentNames");
 
         // to prevent errors in zScores and datatable error when "." in name
@@ -334,7 +335,7 @@
     }
 
     (function () {
-        // control factor loadings table background 
+        // control factor loadings table background
         $("#zoomFactorRadioSelect :radio").on('click', function () {
             var button = $(this);
 

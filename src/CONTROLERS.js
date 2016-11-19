@@ -112,6 +112,54 @@
         });
     })();
 
+    // import STA files to PASTE     displayJsonData
+    (function() {
+        $("#fileSelectJSON").on("change", function(e) {
+            FIREBASE.filePickedJSON(e);
+        });
+    })();
+
+    (function() {
+        $("#stageJsonData").on("click", function(e) {
+            FIREBASE.stageJsonData(e);
+            $(".jsonDownloadPQ").show();
+        });
+    })();
+
+    (function() {
+        $("#downloadJsonData").on("click", function(e) {
+            FIREBASE.downloadJsonData(e);
+        });
+    })();
+
+    (function() {
+        $("#existingDatabaseRespondentList").on("click", "button", function(e) {
+            e.preventDefault();
+            var index = $(this).parent().index();
+            $(this).parent().remove();
+            var respondentNames = QAV.getState("qavRespondentNames");
+            var sorts = QAV.getState("qavRespondentSortsFromDbStored");
+            respondentNames.splice(index, 1);
+            sorts.splice(index, 1);
+
+            if ($.fn.DataTable.isDataTable('#correlationTable2')) {
+                $('#correlationTable2').DataTable().destroy();
+                $('#correlationTable2').html("");
+              }
+
+            QAV.setState("qavRespondentNames", respondentNames);
+            QAV.setState("qavRespondentSortsFromDbStored", sorts);
+        });
+    })();
+
+    (function() {
+        $("#exportJsonSortsPQM").on("click", function(e) {
+            e.preventDefault();
+            EXCEL.exportExcelSortsPQM();
+        });
+    })();
+
+
 
     /*
     //

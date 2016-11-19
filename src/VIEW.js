@@ -63,6 +63,7 @@
             if (state) {
                 this.checked = state.checked;
                 var radioValue = $("input[name='radio']:checked").attr("id");
+                $("#"+radioValue).parent().addClass("selected");
                 inputTypeDisplay(radioValue);
             }
         });
@@ -87,6 +88,7 @@
                 $('#correlationTable2').DataTable().destroy();
                 $('#correlationTable2').html("");
             }
+            $('#section2 .radioHighlight2').removeClass("selected");
             inputTypeDisplay(radioValue);
         });
     });
@@ -206,11 +208,14 @@
     // ******* helper function to show / hide input methods   ************************
 
     function inputTypeDisplay(inputType) {
+      //
+        $("label[for='" + inputType + "']").addClass("selected");
         switch (inputType) {
             case "radio4":
                 $("#manualInputContainer").hide(300);
                 $("#databaseSelectDiv").hide(300);
                 $("#rawSorts").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
                 $("#pasteExcelDataDiv").show(300);
                 $(".analysisDataDiv").show(300);
                 break;
@@ -218,6 +223,7 @@
                 $("#manualInputContainer").hide(300);
                 $("#databaseSelectDiv").hide(300);
                 $("#pasteExcelDataDiv").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
                 $("#rawSorts").show(300);
                 $(".analysisDataDiv").show(300);
                 break;
@@ -225,13 +231,24 @@
                 $("#databaseSelectDiv").hide(300);
                 $("#rawSorts").hide(300);
                 $("#pasteExcelDataDiv").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
                 $("#manualInputContainer").show(300);
                 $(".analysisDataDiv").show(300);
                 break;
+            case "radio5":
+                $("#databaseSelectDiv").hide(300);
+                $("#rawSorts").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $("#manualInputContainer").hide(300);
+                $(".analysisDataDiv").show(300);
+                $(".firebaseDataInputDiv").show(300);
+                break;
+
             default:
                 $("#manualInputContainer").hide(300);
                 $("#rawSorts").hide(300);
                 $("#pasteExcelDataDiv").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
                 $("#databaseSelectDiv").show(300);
         }
     }

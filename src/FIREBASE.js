@@ -150,7 +150,7 @@
             sortHeaders.push(counter1);
         }
         var headerArray2 = headerArray.concat(sortHeaders);
-        headerArray2.unshift("ID");
+        headerArray2.unshift("Id");
         // alert(headerArray2);
         csvBody.push(headerArray2);
 

@@ -8,7 +8,7 @@
 
 
 // JSlint declarations
-/* global numeric, CENTROID, window, clearTimeout, setTimeout, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
+/* global window, clearTimeout, setTimeout, download, alasql, Blob, saveAs, PASTE, QAV, $, document, UTIL, localStorage, _ */
 
 (function (INPUT, QAV, undefined) {
 
@@ -1038,7 +1038,6 @@
     $("#pyramidShape17, #pos10state, #label10").show();
     $("#pyramidShape18, #pos11state, #label11").show();
     $("#pyramidShape19, #pos12state, #label12").show();
-
     $("#pyramidShape20, #pos13state, #label13").hide();
   }
 

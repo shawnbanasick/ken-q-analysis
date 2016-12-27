@@ -7,13 +7,13 @@
 //    (at your option) any later version.
 
 // JSlint declarations
-/* global numeric, CENTROID, resources, d3, VIEW, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
+/* global resources, d3, VIEW, d3_save_svg, CORR, alasql, window, QAV, $, document, evenRound, UTIL, _  */
 
 (function (OUTPUT, QAV, undefined) {
 
     // ************************************************************************  view
     // ******  Preliminary Results 1 - draw factor synthetic Q-sorts visuals ********
-    // ******************************************************************************
+    //  ******************************************************************************
     OUTPUT.showPreliminaryOutput1 = function () {
         // add synthetic factors visualizations
         // $("#synFactorVizTitle").append("<h4>" + synFactorVizTitleText + "</h4>");
@@ -21,7 +21,7 @@
         var distStatementDataVizArray = QAV.getState("distStatementDataVizArray");
         var outputForDataViz = QAV.getState("outputForDataViz");
         var userSelectedFactors = QAV.getState("userSelectedFactors");
-        var language = QAV.getState("language");
+        // var language = QAV.getState("language");
         var vizConfig = QAV.getState("vizConfig") || {};
 
         // loop through userSelectedFactors to get each synFactorViz
@@ -1307,9 +1307,7 @@
 
     OUTPUT.pullFlaggedFactorLoadings = function () {
         var numberFactorsExtracted = parseInt(QAV.getState("numberFactorsExtracted"));
-
         var results = QAV.getState("results");
-
         var jLoopLen = (numberFactorsExtracted * 2) + 3;
         var significantLoadingsArray = [];
         var i,
@@ -1321,7 +1319,6 @@
         // todo check to see if this can be removed see bind dump button function
         var iLoopLen = results.length;
         var factorLabelsArray = QAV.getState("factorLabelsArray");
-
         var loadingSortCheckArray = [];
         var userSelectedFactors = QAV.getState("userSelectedFactors");
 
@@ -1397,6 +1394,8 @@
     };
 
     function computeFactorWeights(significantLoadingsArray) {
+        // source code line 4440
+
         for (var i = 0; i < significantLoadingsArray.length; i++) {
             var f = evenRound((significantLoadingsArray[i][2]), 8);
             var f2 = evenRound((f * f), 8);
@@ -1851,7 +1850,7 @@
 
             for (j = 0; j < (factorMatrixTransposed[i].length - 1); j++) {
                 k = j + 1;
-                tempObj[appendText3 + " " + k] = factorMatrixTransposed[i][k];
+                tempObj[appendText3 + " " + k] = evenRound((factorMatrixTransposed[i][k]), 4);
             }
             centroidsArray.push(tempObj);
         }
@@ -2043,11 +2042,17 @@
         for (i = 0; i < iLoopLen; i++) {
             for (j = 0; j < jLoopLen; j++) {
                 temp = results[i][j];
+
+
                 if (temp === "true") {
                     results[i][j] = appendText2;
                 } else if (temp === "false") {
                     results[i][j] = "";
+                } else if (j !== 0 && !isNaN(temp)) {
+                    results[i][j] = evenRound((temp), 4);
                 }
+
+
             }
             formattedResults.push(results[i]);
         }
@@ -2535,11 +2540,13 @@
                         }
 
                         if (Math.abs(analysisOutput[j][k].zScore - analysisOutput[m][k].zScore) >= (sedComparisonValue * 1.96)) {
+                            analysisOutput[j][k].zScore = evenRound((analysisOutput[j][k].zScore), 2);
                             sig05 = true;
                             sig05Array.push(sig05);
                         }
 
                         if (Math.abs(analysisOutput[j][k].zScore - analysisOutput[m][k].zScore) >= (sedComparisonValue * 2.58)) {
+                            analysisOutput[j][k].zScore = evenRound((analysisOutput[j][k].zScore), 2);
                             sig01 = true;
                             sig01Array.push(sig01);
                         }

@@ -8,7 +8,7 @@
 
 
 // JSlint declarations
-/* global numeric, VARIMAX, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
+/* global numeric, VARIMAX, window, performance, ROTA, QAV, $, resources, document, JQuery, evenRound, UTIL, localStorage, _ */
 
 (function (VARIMAX, QAV, undefined) {
 
@@ -34,6 +34,7 @@
         var temp3;
         var temp;
         var i, j;
+        var t0 = performance.now();
 
         // calculate original communalities
         for (i = 0; i < factorMatrix[0].length; i++) {
@@ -78,12 +79,14 @@
         var tableResults = calculateVarianceForFactorMatrix(standarizedFactorMatrix, sumSquares);
 
         var language = QAV.getState("language");
-        var appendText = resources[language]["translation"]["Varimax rotation applied"];
-        var appendText2 = resources[language]["translation"]["Undo"];
+        var appendText = resources[language].translation["Varimax rotation applied"];
+        var appendText2 = resources[language].translation.Undo;
         // the "varimax called" class is for toggling color of varimax button 
         $("#rotationHistoryList").append('<li>' + appendText + '<button class="deleteButton  varimaxCalled">' + appendText2 + '</button></li>');
 
-        console.timeEnd("varimax rotation");
+        var t1 = performance.now();
+
+        console.log('%c Varimax rotations completed in ' + (t1 - t0).toFixed(0) + ' milliseconds', 'background: #0c7fd7; color: white');
 
         return tableResults;
     }

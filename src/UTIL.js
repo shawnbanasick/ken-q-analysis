@@ -27,9 +27,9 @@ function evenRound(num, decimalPlaces) {
     return d ? r / m : r;
 }
 
-(function(UTIL, QAV, undefined) {
+(function (UTIL, QAV, undefined) {
 
-    UTIL.drawDatatable = function(configObj) {
+    UTIL.drawDatatable = function (configObj) {
         $(configObj.domElement).DataTable({
             "fixedColumns": configObj.fixed,
             "retrieve": true,
@@ -48,18 +48,18 @@ function evenRound(num, decimalPlaces) {
 
         var table = $(configObj.domElement).DataTable();
         $(configObj.domElement + ' tbody')
-            .on('mouseenter', 'td', function() {
+            .on('mouseenter', 'td', function () {
                 var colIdx = table.cell(this).index().column;
                 $(table.cells().nodes()).removeClass('highlight');
                 $(table.column(colIdx).nodes()).addClass('highlight');
             })
-            .on('mouseleave', function() {
+            .on('mouseleave', function () {
                 $(table.cells().nodes()).removeClass('highlight');
                 $(table.columns().nodes()).removeClass('highlight');
             });
     };
 
-    UTIL.addFactorSelectCheckboxesRotation = function(loopLength) {
+    UTIL.addFactorSelectCheckboxesRotation = function (loopLength) {
 
         // clear checkboxes if previously added to DOM
         var checkboxFrameCheck = $("#checkboxFrame");
@@ -94,7 +94,7 @@ function evenRound(num, decimalPlaces) {
     // ***************************************************************   model
     // ***** check for unique names and sanitize  ****************************
     // ***********************************************************************
-    UTIL.checkUniqueName = function(namesFromExistingData) {
+    UTIL.checkUniqueName = function (namesFromExistingData) {
         var namesUniqueArrayTest2 = _.cloneDeep(namesFromExistingData);
         var namesUniqueArrayTest = _.uniq(namesUniqueArrayTest2);
 
@@ -115,7 +115,7 @@ function evenRound(num, decimalPlaces) {
         return namesFromExistingData;
     };
 
-    UTIL.calculateSortTriangleShape = function(pyramidShapeNumbers) {
+    UTIL.calculateSortTriangleShape = function (pyramidShapeNumbers) {
 
         var sortPossibleValues = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
 
@@ -128,7 +128,7 @@ function evenRound(num, decimalPlaces) {
         QAV.setState("qavSortTriangleShape", qavSortTriangleShape);
     };
 
-    UTIL.sanitizeUserInputText = function(input) {
+    UTIL.sanitizeUserInputText = function (input) {
         var output = input.replace(/<script[^>]*?>.*?<\/<\/script>/gi, '').
         replace(/<[\/\!]*?[^<>]*?>/gi, '').
         replace(/<style[^>]*?>.*?<\/style>/gi, '').
@@ -137,7 +137,7 @@ function evenRound(num, decimalPlaces) {
     };
 
     // helper function for export routines
-    UTIL.threeDigitPadding = function(e) {
+    UTIL.threeDigitPadding = function (e) {
         if (e < 0) {
             return " " + e;
         } else if (e < 10) {
@@ -149,7 +149,7 @@ function evenRound(num, decimalPlaces) {
         }
     };
 
-    UTIL.currentDate1 = function() {
+    UTIL.currentDate1 = function () {
         var currentDate = new Date();
         var Day = currentDate.getDate();
         if (Day < 10) {
@@ -164,7 +164,7 @@ function evenRound(num, decimalPlaces) {
         return fullDate;
     };
 
-    UTIL.currentTime1 = function() {
+    UTIL.currentTime1 = function () {
         var currentTime = new Date();
         var Minutes = currentTime.getMinutes();
         if (Minutes < 10) {
@@ -180,37 +180,49 @@ function evenRound(num, decimalPlaces) {
         return Time;
     };
 
-    UTIL.checkIfValueIsNumber = function(value, inputBoxId) {
-      if (isNaN(value)) {
-                  $("#" + inputBoxId).css("border", "red solid 3px");
-            } else {
-                $("#" + inputBoxId).css("border", "lightgray solid 1px");
-            }
+    UTIL.checkIfValueIsNumber = function (value, inputBoxId) {
+        if (isNaN(value)) {
+            $("#" + inputBoxId).css("border", "red solid 3px");
+        } else {
+            $("#" + inputBoxId).css("border", "lightgray solid 1px");
+        }
     };
 
-// todo - check if still used or delete
-    UTIL.checkIfValueIsHex = function(hexCodeValue, inputBoxId) {
-    var box = $("#" + inputBoxId);
-      if (hexCodeValue.length > 6) {
-      var isOk = Boolean(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(hexCodeValue));
-      if (isOk === true) {
-          box.css("border", "lightgray solid 1px");
-          box.css("background-color", hexCodeValue);
-          return hexCodeValue;
-      } else {
-          box.css("background-color", "#ffffff");
-          box.css("border", "red solid 3px");
-      }} else {
-          box.css("background-color", "#ffffff");
-          box.css("border", "lightgray solid 1px");
-      }
+    //Function to convert hex format to a rgb color
+    UTIL.rgb2hex = function (rgb) {
+        console.log(rgb);
+        rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+        return (rgb && rgb.length === 4) ? "#" +
+            ("0" + parseInt(rgb[1], 10).toString(16)).slice(-2) +
+            ("0" + parseInt(rgb[2], 10).toString(16)).slice(-2) +
+            ("0" + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
+    };
+
+
+    // todo - check if still used or delete
+    UTIL.checkIfValueIsHex = function (hexCodeValue, inputBoxId) {
+        var box = $("#" + inputBoxId);
+        if (hexCodeValue.length > 6) {
+            var isOk = Boolean(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/i.test(hexCodeValue));
+            if (isOk === true) {
+                box.css("border", "lightgray solid 1px");
+                box.css("background-color", hexCodeValue);
+                return hexCodeValue;
+            } else {
+                box.css("background-color", "#ffffff");
+                box.css("border", "red solid 3px");
+            }
+        } else {
+            box.css("background-color", "#ffffff");
+            box.css("border", "lightgray solid 1px");
+        }
     };
 
     // *************************************************************  Data Model
     // **********  Archive function to allow undo of rotations *****************
     // *************************************************************************
 
-    UTIL.archiveFactorScoreStateMatrixAndDatatable = function() {
+    UTIL.archiveFactorScoreStateMatrixAndDatatable = function () {
 
         // saveRotationArchieveCounter is reset to 1 on centroid extraction function call
 
@@ -248,7 +260,7 @@ function evenRound(num, decimalPlaces) {
     //    })();
     //
 
-    UTIL.drawScreePlot = function(dataArray) {
+    UTIL.drawScreePlot = function (dataArray) {
         var i, data, chartSize, margin, width, height;
         var tempArray, maxValue, xTicks;
 
@@ -306,10 +318,10 @@ function evenRound(num, decimalPlaces) {
 
         // Define the line
         var valueline = d3.svg.line()
-            .x(function(d) {
+            .x(function (d) {
                 return x(d.factor);
             })
-            .y(function(d) {
+            .y(function (d) {
                 return y(d.eigen);
             });
 
@@ -325,7 +337,7 @@ function evenRound(num, decimalPlaces) {
 
         // Scale the range of the data
         x.domain([0, 8]);
-        y.domain([0, d3.max(data, function(d) {
+        y.domain([0, d3.max(data, function (d) {
             return d.eigen < 10 ? maxValue : d.eigen;
         })]);
 
@@ -384,10 +396,10 @@ function evenRound(num, decimalPlaces) {
             .data(data)
             .enter().append("circle")
             .attr("class", "dot2")
-            .attr("cx", function(data) {
+            .attr("cx", function (data) {
                 return x(data.factor);
             })
-            .attr("cy", function(data) {
+            .attr("cy", function (data) {
                 return y(data.eigen);
             })
             .attr("r", 3.5);

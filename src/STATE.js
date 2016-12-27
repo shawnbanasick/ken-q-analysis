@@ -8,20 +8,20 @@
 
 
 // JSlint declarations
-/* global window, $, localStorage, _, document, CENTROID, VIEW, PCA, QAV, UTIL, performance*/
+/* global window, $, _ */
 
 // QAV is the global state data store
-(function(QAV, undefined) {
+(function (QAV, undefined) {
 
     // set default language
     QAV.language = "en-us";
 
-    QAV.setState = function(key, value) {
+    QAV.setState = function (key, value) {
         var value2 = _.cloneDeep(value);
         QAV[key] = value2;
     };
 
-    QAV.getState = function(key) {
+    QAV.getState = function (key) {
         var value = _.cloneDeep(QAV[key]);
         return value;
     };
@@ -37,6 +37,13 @@
     QAV.vizConfig.shouldIndicateDistinguishing = true;
     QAV.vizConfig.shouldUseUnicode = true;
     QAV.vizConfig.shouldShowZscoreArrows = true;
+
+    QAV.rotChartConfig = {};
+    QAV.rotChartConfig.significanceColorAPrep = "aquamarine";
+    QAV.rotChartConfig.significanceColorBPrep = "#ffe4b2";
+    QAV.rotChartConfig.significanceColorA = "aquamarine";
+    QAV.rotChartConfig.significanceColorB = "#ffe4b2";
+    QAV.rotChartConfig.identifierNumber = true;
 
     $('#prependStateNoDiv .vizButtonYes').addClass("active");
     $('#showSignificanceSymbolsDiv .vizButtonYes').addClass("active");

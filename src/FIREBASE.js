@@ -150,8 +150,8 @@
             sortHeaders.push(counter1);
         }
         var headerArray2 = headerArray.concat(sortHeaders);
+        // do not change to ID - will throw error when opening in MS Excel
         headerArray2.unshift("Id");
-        // alert(headerArray2);
         csvBody.push(headerArray2);
 
         for (var i = 0, iLen = keys.length; i < iLen; i++) {

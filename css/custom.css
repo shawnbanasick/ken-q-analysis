@@ -38,7 +38,8 @@ div.two.columns {
 
 /*D3 styling*/
 
-.axis path, .axis line {
+.axis path,
+.axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
@@ -638,7 +639,7 @@ MODAL WINDOW CSS
 .modal header {
     height: 55px;
     position: relative;
-    width: 350px;
+    width: 380px;
     margin-bottom: 5px;
 }
 
@@ -646,6 +647,16 @@ MODAL WINDOW CSS
     text-align: center;
     position: relative;
     width: 350px;
+}
+
+.modal h3 {
+    margin-left: -25px;
+}
+
+.modal span {
+    font-size: 20px;
+    margin-right: 5px;
+    text-align: center;
 }
 
 .modal .close {
@@ -684,6 +695,10 @@ MODAL WINDOW CSS
     font-size: 20px;
 }
 
+#rotationChartOptionsModal .modal>div>input[type="button"] {
+    display: inline-block;
+}
+
 .successModal {
     background-color: #E0FDE0;
 }
@@ -716,6 +731,10 @@ MODAL WINDOW CSS
 
 .manualInputModal {
     background-color: #E0FDE0;
+}
+
+#rotationChartOptionsModal {
+    width: 500px !important;
 }
 
 .analysisDataDiv {
@@ -1202,14 +1221,14 @@ div.d3Tooltip {
     text-decoration: none !important;
 }
 
-
 #section4 path {
     stroke: black;
     stroke-width: 2;
     fill: none;
 }
 
-#section4 .axis path, #section4 .axis line {
+#section4 .axis path,
+#section4 .axis line {
     fill: none;
     stroke: grey;
     stroke-width: 1;
@@ -1276,7 +1295,7 @@ div.d3Tooltip {
 }
 
 .marginTopAdjustor {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .defaultOptionsText {
@@ -1292,7 +1311,6 @@ div.d3Tooltip {
     display: inline-block;
 }
 
-
 #showDisplayPanelButton {
     width: 125px;
     height: auto;
@@ -1300,7 +1318,6 @@ div.d3Tooltip {
     margin-left: -80px !important;
     margin-top: 2px;
 }
-
 
 .factorVizOptionsHeaderDivText {
     margin-top: 3px !important;
@@ -1310,34 +1327,34 @@ div.d3Tooltip {
 }
 
 .vizInput3 {
-    width:416px !important;
+    width: 416px !important;
 }
 
 .vizInput4 {
-  width:80px !important;
+    width: 80px !important;
 }
 
 .displayPanelIntroText {
-  padding-left: 5px;
-  margin-top: 20px;
-  font-size: 25px;
-  margin-left: 10px;
+    padding-left: 5px;
+    margin-top: 20px;
+    font-size: 25px;
+    margin-left: 10px;
 }
 
 #vizPanelHideContainer {
     display: none;
 }
 
-#section7 input[type='text']{
-text-align:right;
+#section7 input[type='text'] {
+    text-align: right;
 }
 
-#section7 input[type='text']:focus{
-text-align:left;
+#section7 input[type='text']:focus {
+    text-align: left;
 }
 
 .customNameBox {
-text-align:left !important;
+    text-align: left !important;
 }
 
 .panelIntroTextSpanDiv {
@@ -1350,12 +1367,12 @@ text-align:left !important;
 }
 
 .vizButtonYes.active {
-  background-color: #38acec !important;
-  color: white !important;
+    background-color: #38acec !important;
+    color: white !important;
 }
 
 .vizButtonNo.active {
-  background-color: transparent; !important;
+    background-color: transparent !important;
 }
 
 .updateVizButton {
@@ -1397,7 +1414,6 @@ text-align:left !important;
     /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
 }
 
-
 #section2 label.selected {
     background-color: #38acec;
     color: white;
@@ -1432,10 +1448,72 @@ text-align:left !important;
 }
 
 .jsonDownloadPQ {
-  margin-top: 3px;
-  margin-right: 5px;
+    margin-top: 3px;
+    margin-right: 5px;
 }
 
 .u-right-margin {
-  margin-right: 20px;
+    margin-right: 20px;
+}
+
+#rotationChartOptionsModal h3 {
+    margin-left: 40px;
+}
+
+#rotationChartOptionsModal label {
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    width: auto;
+    font-size: 18px;
+    font-weight: 800;
+    color: #555;
+    height: 28px;
+    line-height: 28px;
+    padding: 5px 15px 5px 15px;
+    /*letter-spacing: .1rem;*/
+    /*float: left;*/
+    background-color: #eeeeee;
+    border: 1px solid #bbb;
+}
+
+#rotationChartOptionsModal label:first-child {
+    border-left-width: 1px;
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+#rotationChartOptionsModal label:last-child {
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+}
+
+#rotationChartOptionsModal label:hover {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#rotationChartOptionsModal label.selected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
+}
+
+#rotationChartOptionsModal label.warning.selected {
+    background-color: red;
+    border-color: darkred;
+}
+
+#rotationChartOptionsModal input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
+#rotationChartOptionsModal p {
+    text-align: left;
+    width: auto;
+    margin-right: 10px;
 }

@@ -8,13 +8,13 @@
 
 
 // JSlint declarations
-/* global numeric, CENTROID, window, d3, sessionStorage, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
+/* global window, d3, performance, sessionStorage, QAV, $, resources, LOAD, document, evenRound, UTIL, _ */
 
-(function(ROTA, QAV, undefined) {
+(function (ROTA, QAV, undefined) {
 
 
     // reset 'has split factor' marker on page load
-    (function() {
+    (function () {
         var hasSplitFactor = 0;
         QAV.setState("hasSplitFactor", hasSplitFactor);
     })();
@@ -23,7 +23,7 @@
     // **********  re-initialize chart after save rotation or varimax *************
     // ****************************************************************************
 
-    ROTA.reInitializePlotAndChart = function() {
+    ROTA.reInitializePlotAndChart = function () {
         // data to initialize D3 chart
 
         var testVar = $.fn.dataTable.isDataTable('#twoFactorDisplayTable');
@@ -47,7 +47,7 @@
     // ****************************************************************************
 
     // always reset to zero on centroid extraction (in centroid.js file)
-    ROTA.saveRotationArchiveCounter = function(option) {
+    ROTA.saveRotationArchiveCounter = function (option) {
         var saveRotationCounter = QAV.getState("saveRotationCounter");
         if (option === "increase") {
             saveRotationCounter = saveRotationCounter + 1;
@@ -66,7 +66,7 @@
     // ****  Rotation button state    ***************************************
     // **********************************************************************
 
-    ROTA.saveRotationButtonColor = function(rotationDegreeDisplayValue) {
+    ROTA.saveRotationButtonColor = function (rotationDegreeDisplayValue) {
         var saveRotButton = $("#saveRotationButton");
         if (rotationDegreeDisplayValue !== 0) {
             saveRotButton.removeClass("saveRotationButtonGray");
@@ -90,7 +90,7 @@
     // ************************************************************  view controller
     // *************    SAVE SELECTED factors for rotation   ***********************
     // *****************************************************************************
-    ROTA.setRotationFactorsFromCheckbox = function() {
+    ROTA.setRotationFactorsFromCheckbox = function () {
 
         // get the factors to send to 2 factor chart
         var pullFactors = [];
@@ -117,7 +117,7 @@
     // *******************************************************************************
 
     // CALLED BY "DISPLAY FACTORS FOR ROTATION BUTTON"
-    ROTA.doD3ChartDataPrep = function(rotFacStateArray) {
+    ROTA.doD3ChartDataPrep = function (rotFacStateArray) {
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
         var step4 = QAV.getState("qavRespondentNames");
@@ -162,12 +162,44 @@
     // *******  draw D3 Chart  ***************************************************
     // ***************************************************************************
 
-    ROTA.drawD3Chart = function(dataValuesArray) {
+    ROTA.drawD3Chart = function (dataValuesArray) {
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
-        var data;
+        var rotChartConfig = QAV.getState("rotChartConfig");
+        var significanceColorA, significanceColorB, dotStrokeColor, identifier;
+        var data, defaultDotColor, customFontSize;
 
         d3.select("#d3_scatterchart svg").remove();
+
+        // remove highlighting from circles
+        if (rotChartConfig.removeCircleHighlight === true) {
+            significanceColorA = "rgba(33, 33, 33, 0.0)";
+            significanceColorB = "rgba(33, 33, 33, 0.0)";
+            defaultDotColor = "rgba(33, 33, 33, 0.0)";
+        } else {
+            significanceColorA = rotChartConfig.significanceColorAPrep;
+            significanceColorB = rotChartConfig.significanceColorBPrep;
+            defaultDotColor = "#d8d8d8";
+        }
+
+        if (rotChartConfig.removeCircles === true) {
+            dotStrokeColor = "rgba(33, 33, 33, 0.0)";
+        } else {
+            dotStrokeColor = "#000000";
+        }
+
+        if (rotChartConfig.identifierNumber === true) {
+            identifier = "number";
+        } else {
+            identifier = "name";
+        }
+
+        if (rotChartConfig.changeFontSize === true) {
+            customFontSize = rotChartConfig.customFontSize + "px";
+        } else {
+            customFontSize = "9px";
+        }
+
 
         // var significanceLevel = ROTA.calculateFactorLoadingSignificanceLevel();
 
@@ -196,21 +228,21 @@
          */
 
         // setup x
-        var xValue = function(d) {
+        var xValue = function (d) {
                 return d.factor2;
             }, // data -> value
             xScale = d3.scale.linear().range([0, width]), // value -> display
-            xMap = function(d) {
+            xMap = function (d) {
                 return xScale(xValue(d));
             }, // data -> display
             xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(2).tickSize(-height, 0, 0).tickPadding(10);
 
         // setup y
-        var yValue = function(d) {
+        var yValue = function (d) {
                 return d.factor1;
             }, // data -> value
             yScale = d3.scale.linear().range([height, 0]), // value -> display
-            yMap = function(d) {
+            yMap = function (d) {
                 return yScale(yValue(d));
             }, // data -> display
             yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(2).tickSize(-width, 0, 0).tickPadding(10);
@@ -256,7 +288,7 @@
 
 
         // confirm number format
-        data.forEach(function(d) {
+        data.forEach(function (d) {
             d.factor1 = +d.factor1;
             d.factor2 = +d.factor2;
             d.factor1Sig = d.factor1Sig + '';
@@ -344,13 +376,13 @@
         /*  drawing dots and circles based on http://jsfiddle.net/eamonnmag/Q567s/   */
 
         /*    telling D3 that all nodes (g elements with class node) will have data attached to them. The 'key' used (to let D3 know the uniqueness of items) will be the "num" */
-        var index = svg.selectAll("g.node").data(data, function(d) {
+        var index = svg.selectAll("g.node").data(data, function (d) {
             return d.num;
         });
 
         /* 'enter' the data, making the SVG group (to contain a circle and text) with a class node. This corresponds with what we told the data it should be above. */
         var indexGroup = index.enter().append("g").attr("class", "node")
-            .attr('transform', function(d) {
+            .attr('transform', function (d) {
                 return "translate(" + xMap(d) + "," + yMap(d) + ")";
             });
 
@@ -358,17 +390,17 @@
         indexGroup.append("circle")
             .attr("r", 9)
             .attr("class", "dot")
-            .style("fill", "#83cafe")
-            .style("fill", function(d) {
+            .style("stroke", dotStrokeColor)
+            .style("fill", function (d) {
                 if (d.factor1Sig === "true") {
-                    return "#ffe4b2";
+                    return (significanceColorA); //"#ffe4b2";
                 } else if (d.factor2Sig === "true") {
-                    return "aquamarine";
+                    return (significanceColorB);
                 } else {
-                    return "#d8d8d8";
+                    return (defaultDotColor);
                 }
             })
-            .on("mouseover", function(d) {
+            .on("mouseover", function (d) {
                 div.transition()
                     .duration(100)
                     .style("opacity", 1);
@@ -376,7 +408,7 @@
                     .style("left", (d3.event.pageX + 10) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
             })
-            .on("mouseout", function() {
+            .on("mouseout", function () {
                 div.transition()
                     .duration(500)
                     .style("opacity", 0);
@@ -387,12 +419,16 @@
             .style("text-anchor", "middle")
             .attr("class", "dotText")
             .attr("font-family", "Arial")
-            .attr("font-size", "9px")
+            .attr("font-size", customFontSize)
             .attr("dy", 3)
-            .text(function(d) {
-                return d.num;
+            .text(function (d) {
+                if (identifier === "number") {
+                    return d.num;
+                } else {
+                    return d.respondent;
+                }
             })
-            .on("mouseover", function(d) {
+            .on("mouseover", function (d) {
                 div.transition()
                     .duration(100)
                     .style("opacity", 1);
@@ -400,7 +436,7 @@
                     .style("left", (d3.event.pageX + 10) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
             })
-            .on("mouseout", function() {
+            .on("mouseout", function () {
                 div.transition()
                     .duration(500)
                     .style("opacity", 0);
@@ -426,7 +462,7 @@
     // ********  calc significance Levels  **********************************
     //***********************************************************************
 
-    ROTA.calculateFactorLoadingSignificanceLevel = function() {
+    ROTA.calculateFactorLoadingSignificanceLevel = function () {
         var totalStatements = QAV.getState("qavOriginalSortSize");
         var significanceLevel = evenRound((1.96 * (1 / Math.sqrt(totalStatements))), 5);
         return significanceLevel;
@@ -436,7 +472,7 @@
     // **********  calc h2 communalities  ***********************************
     //***********************************************************************
 
-    ROTA.calculateCommunalities = function(currentFactorData) {
+    ROTA.calculateCommunalities = function (currentFactorData) {
         var calculateCommunalityArray = _.cloneDeep(currentFactorData);
 
         // calculateCommunalityArray.shift();
@@ -448,9 +484,9 @@
         var communalitiesArray = [];
         var fSigCriterion = [];
 
-        _.forEach(calculateCommunalityArray, function(n) {
+        _.forEach(calculateCommunalityArray, function (n) {
             temp = (_.map(n, square));
-            temp2 = temp.reduce(function(a, b) {
+            temp2 = temp.reduce(function (a, b) {
                 return a + b;
             }, 0);
             temp3 = evenRound((temp2), 5);
@@ -482,7 +518,7 @@
 
 
     // todo - relocate function?
-    ROTA.calculatefSigCriterionValues = function(addFlag) {
+    ROTA.calculatefSigCriterionValues = function (addFlag) {
         var fSigCriterionArray = QAV.getState("fSigCriterion");
         var sigLevel2 = ROTA.calculateFactorLoadingSignificanceLevel();
         var sigLevel = sigLevel2 * sigLevel2;
@@ -498,7 +534,7 @@
             for (j = 0; j < arrayLength2; j++) {
                 array = _.clone(temp1);
                 testValue = _.pullAt(array, j);
-                others2 = array.reduce(function(a, b) {
+                others2 = array.reduce(function (a, b) {
                     return a + b;
                 }, 0);
                 others = evenRound((others2), 5);
@@ -525,7 +561,7 @@
     // ******  Rotation procedure  ********************************************
     // ************************************************************************
 
-    ROTA.calculateRotatedFactors = function(rotationDegree) {
+    ROTA.calculateRotatedFactors = function (rotationDegree) {
 
         var time0 = performance.now();
 
@@ -648,6 +684,8 @@
         var isNewSelection = false;
         ROTA.updateDatatable1(prepTwoFactorTable, isNewSelection);
 
+        console.log('%c Factor rotation calcs completed in  ' + (time1 - time0).toFixed(3) + ' milliseconds', 'background: aquamarine; color: black');
+
         QAV.setState("calculateRotationsArray", rotatedFactors);
         QAV.setState("tempRotFacStateArray", tempRotFacStateArray);
     };
@@ -656,7 +694,7 @@
     // ************************************************************* model
     // ****  prep two factor and create initial rot array ****************
     // *******************************************************************
-    ROTA.prepTwoFactorUpdateHandsontable = function(chartData) {
+    ROTA.prepTwoFactorUpdateHandsontable = function (chartData) {
 
         var twoFactorTableArray = [];
         var step1, i, step3, tempObj;
@@ -685,7 +723,7 @@
     // **************************************************************  model
     // **** initial array for two factor table ****************************
     // ********************************************************************
-    ROTA.setTwoFactorRotationalArray = function(chartData) {
+    ROTA.setTwoFactorRotationalArray = function (chartData) {
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
         var ilen = chartData.length;
@@ -708,7 +746,7 @@
     // *************************************************************** view
     // ******  draw two factors table  ************************************
     // ********************************************************************
-    ROTA.updateDatatable1 = function(newData, isNewSelection) {
+    ROTA.updateDatatable1 = function (newData, isNewSelection) {
 
         // todo - fix error on baselinedata setting after displaying factors once
         var i, baseLineData, tempArray1, temp1, temp1a, temp2, temp2b, temp2a;
@@ -725,6 +763,14 @@
         var facBName = "Fac. " + facB;
         var facBChange = "Chg. " + facB;
         var newHeaderArray = ["Res.", "Name", facAName, facAChange, facBName, facBChange];
+        var rotChartConfig = QAV.getState("rotChartConfig");
+        var significanceColorA = rotChartConfig.significanceColorA;
+        var significanceColorB = rotChartConfig.significanceColorB;
+
+        if (rotChartConfig.removeCircleHighlight === true) {
+            significanceColorA = "rgba(33, 33, 33, 0.0)";
+            significanceColorB = "rgba(33, 33, 33, 0.0)";
+        }
 
         if (testVar === true) { //
 
@@ -769,19 +815,7 @@
             }
             table.rows.add(new2FactorDataArray).draw();
 
-            // $(selector).find('thead tr th').remove();
-
-            //$('#twoFactorDisplayTable').DataTable();
-
         } else {
-
-            // if (testVar === true) {
-            //     // var table1 = $('#twoFactorDisplayTable').DataTable();
-            //     // table1.clear();
-            //     $('#twoFactorDisplayTable').find('thead tr th').remove();
-            //
-            //     // $('#twoFactorDisplayTable').empty();
-            // }
 
             baseLineData = QAV.getState("baseLineData");
 
@@ -858,17 +892,17 @@
                     "visible": false
                 }, {
                     'targets': [2],
-                    "createdCell": function(td, cellData, rowData, row, col) {
+                    "createdCell": function (td, cellData, rowData) { // row col
 
                         if (rowData[6] === "true") {
-                            $(td).css('background', '#ffe4b2');
+                            $(td).css('background', significanceColorA); //'#ffe4b2');
                         }
                     }
                 }, {
                     'targets': [4],
-                    "createdCell": function(td, cellData, rowData, row, col) {
+                    "createdCell": function (td, cellData, rowData) { // row col
                         if (rowData[7] === "true") {
-                            $(td).css('background', 'aquamarine');
+                            $(td).css('background', significanceColorB);
                         }
                     }
                 }],
@@ -895,6 +929,7 @@
                 }, ],
             });
 
+            table.fixedHeader.adjust();
             // TODO -  FOR COLUMN HIGHLIGHTING - FIND ERROR AND RESTORE
             //        var lastIdx = null;
             //        $('#twoFactorDisplayTable tbody')
@@ -913,7 +948,7 @@
     // **************************************************************************** model
     // **********  save D3 rotated factors to state matrix array  ***********************
     // **********************************************************************************
-    ROTA.saveRotation = function() {
+    ROTA.saveRotation = function () {
         var rotationDegree = sessionStorage.getItem("rotationDegreeDisplayValue");
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
@@ -961,7 +996,7 @@
     //******************************************************************   model
     //******* for rotated factors table data  handsontable version *************
     //**************************************************************************
-    ROTA.calculateEigenvaluesAndVariance = function() {
+    ROTA.calculateEigenvaluesAndVariance = function () {
         var numberSorts = QAV.getState("qavTotalNumberSorts");
         var factorMatrix = QAV.getState("rotFacStateArray");
         var factorMatrix2 = _.cloneDeep(factorMatrix);
@@ -985,7 +1020,7 @@
             for (var k = 0; k < num.length; k++) {
                 num[k] = evenRound((num[k] * num[k]), 8);
             }
-            eigen = evenRound((_.reduce(num, function(sum, num2) {
+            eigen = evenRound((_.reduce(num, function (sum, num2) {
                 return sum + num2;
             })), 5);
 
@@ -1012,7 +1047,7 @@
     //***************************************************************   model
     //**** for rotated factors table data - datatables version **************
     //***********************************************************************
-    ROTA.calculateEigenvaluesAndVariance2 = function() {
+    ROTA.calculateEigenvaluesAndVariance2 = function () {
         var numberSorts = QAV.getState("qavTotalNumberSorts");
         var factorMatrix = QAV.getState("rotFacStateArray");
         var factorMatrix2 = _.cloneDeep(factorMatrix);
@@ -1032,7 +1067,7 @@
             for (var k = 0; k < num.length; k++) {
                 num[k] = evenRound((num[k] * num[k]), 8);
             }
-            eigen = evenRound((_.reduce(num, function(sum, num2) {
+            eigen = evenRound((_.reduce(num, function (sum, num2) {
                 return sum + num2;
             })), 5);
 

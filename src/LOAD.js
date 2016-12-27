@@ -8,7 +8,7 @@
 
 
 // JSlint declarations
-/* global numeric, ROTA, jQuery, alasql, CENTROID, VIEW, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
+/* global numeric, ROTA, jQuery, resources, alasql, CENTROID, VIEW, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
 
 (function(LOAD, QAV, undefined) {
 

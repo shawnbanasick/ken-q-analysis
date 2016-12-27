@@ -8,7 +8,7 @@
 
 
 // JSlint declarations
-/* global numeric, performance, window, QAV, $, VIEW, evenRound, UTIL, localStorage, _ */
+/* global performance, window, QAV, $, document, resources, evenRound, UTIL, _ */
 
 (function (CENTROID, QAV, undefined) {
 
@@ -18,15 +18,12 @@
     // *****************************************************************
     // todo - refactor onclick handler from html
     CENTROID.fireFactorExtraction = function () {
-        console.time("total factor extraction time is ");
+        var t0 = performance.now(),
+            t1;
         var factors = document.getElementById("factorSelect");
         var selectedNumberFactors = factors.options[factors.selectedIndex].value;
         var loopLength = parseInt(selectedNumberFactors);
-        QAV.setState("numberFactorsExtracted", loopLength);
         var dataArray = QAV.getState("originalCorrelationValues");
-
-        QAV.numFactorsExtracted = loopLength;
-
         var factorMatrix = [];
         var factorDisplayNameArray = [];
         var d3ChartFactorNames = [];
@@ -34,22 +31,28 @@
         var factorMatrix1, numberSorts, num, eigen;
         var eigenvalues = [];
         var explainedVariance = [];
-        var respondentNames, totalVariance;
+        var respondentNames, totalVariance, table, language, facText;
+        var isRotatedFactorsTableUpdate;
+        QAV.setState("numberFactorsExtracted", loopLength);
+        QAV.numFactorsExtracted = loopLength;
+        var i, j, jLen, q, qLen;
+        var iLen = loopLength + 1;
+        var factorMatrixToFixed5, factorMatrixTransposed, varText, eigenText;
+        var expVar2, rotFacStateArrayPrep1, rotFacStateArrayPrep2;
 
         // determine if is this is a rotation table re-draw or not
-        var isRotatedFactorsTableUpdate;
-        var table = $('#factorRotationTable2 tr').length; //
+        table = $('#factorRotationTable2 tr').length; //
         if (table > 0) {
             isRotatedFactorsTableUpdate = "destroy";
         } else {
             isRotatedFactorsTableUpdate = "no";
         }
 
-        var language = QAV.getState("language");
-        var facText = resources[language].translation.Factor;
+        language = QAV.getState("language");
+        facText = resources[language].translation.Factor;
 
         // used for section 6 text labels
-        for (var i = 1; i < (loopLength + 1); i++) {
+        for (i = 1; i < iLen; i++) {
             factorName = facText + " " + i;
             d3FactorName = facText + " " + i;
             // added for D3 because of unknown comma insertion in factorDispalyNameArray
@@ -75,9 +78,9 @@
         numberSorts = QAV.getState("qavTotalNumberSorts");
 
         // eigenvalue calculations
-        for (var j = 0; j < factorMatrix1.length; j++) {
+        for (j = 0, jLen = factorMatrix1.length; j < jLen; j++) {
             num = factorMatrix1[j];
-            for (var q = 0; q < num.length; q++) {
+            for (q = 0, qLen = num.length; q < qLen; q++) {
                 num[q] = evenRound((num[q] * num[q]), 8);
             }
             eigen = evenRound((_.reduce(num, function (sum, num2) {
@@ -91,7 +94,7 @@
         }
 
         // shift data to fixed 5
-        var factorMatrixToFixed5 = [];
+        factorMatrixToFixed5 = [];
         _(factorMatrix).forEach(function (arrayFrag) {
             var tableFormatFragment = _.map(arrayFrag, function (a) {
                 return (evenRound(a, 5));
@@ -102,11 +105,11 @@
 
         factorMatrixToFixed5.unshift(respondentNames);
 
-        var factorMatrixTransposed = _.zip.apply(_, factorMatrixToFixed5);
+        factorMatrixTransposed = _.zip.apply(_, factorMatrixToFixed5);
 
         // var language = QAV.getState("language");
-        var varText = resources[language].translation["% explained variance"];
-        var eigenText = resources[language].translation.Eigenvalues;
+        varText = resources[language].translation["% explained variance"];
+        eigenText = resources[language].translation.Eigenvalues;
 
 
         eigenvalues.unshift(eigenText);
@@ -120,19 +123,21 @@
         factorMatrixTransposed.unshift(factorDisplayNameArray);
 
 
-        var expVar2 = factorMatrixTransposed.pop();
+        expVar2 = factorMatrixTransposed.pop();
         QAV.setState("expVarCentroid", expVar2);
 
-        // add to qav - used in results download cumulative commonalities section
+        // add to QAV - used in results download cumulative commonalities section
         QAV.setState("factorMatrixTransposed", factorMatrixTransposed);
 
-        console.timeEnd("total factor extraction time is ");
+        t1 = performance.now();
+
+        console.log('%c Centroid factor extraction completed in  ' + (t1 - t0).toFixed(0) + ' milliseconds', 'background: #FF5733; color: white');
+
 
         // todo - clean up this array prep mess - refactor to function
-
-        var rotFacStateArrayPrep1 = _.cloneDeep(factorMatrixToFixed5);
+        rotFacStateArrayPrep1 = _.cloneDeep(factorMatrixToFixed5);
         rotFacStateArrayPrep1.shift();
-        var rotFacStateArrayPrep2 = _.zip.apply(_, rotFacStateArrayPrep1);
+        rotFacStateArrayPrep2 = _.zip.apply(_, rotFacStateArrayPrep1);
         QAV.centroidFactors = rotFacStateArrayPrep2;
     };
 
@@ -141,25 +146,21 @@
         var reflectedArray1 = reflectedArray[0]; // reflected array
         var reflectedArrayColumnTotals = reflectedArray[1]; // column totals
         var reflectedRowCol = reflectedArray[2];
-
         var factorLoads1 = calculateFactor(reflectedArray1, reflectedArrayColumnTotals);
-
         var subtractArray = removeCorrelations(reflectedArray1, factorLoads1);
-
         var undoPositiveManifold = undoReflection(subtractArray, factorLoads1, reflectedRowCol);
-
         var factorSubtractedArray = undoPositiveManifold[0];
         var factorFactorScores = undoPositiveManifold[1];
-
         var results = [factorFactorScores, factorSubtractedArray];
         return results;
     }; // end function fireCalculateFactors
 
     CENTROID.drawExtractedFactorsTable = function () {
-
         var centroidFactors = QAV.getState("centroidFactors");
-        var i, j, k, names;
+        var i, iLen, j, k, names;
         var temp1, loopLen, targets, slicedTargets, headers;
+        var language, facText, respondText, appendText;
+        var configObj = {};
 
         names = QAV.getState("respondentNames") || [];
 
@@ -167,15 +168,15 @@
             names.shift();
         }
 
-        for (i = 0; i < centroidFactors.length; i++) {
+        for (i = 0, iLen = centroidFactors.length; i < iLen; i++) {
             j = i + 1;
             centroidFactors[i].unshift(j, names[i]);
         }
 
-        var language = QAV.getState("language");
-        var facText = resources[language].translation.Factor;
-        var respondText = resources[language].translation.Respondent;
-        var appendText = resources[language].translation["Centroid Factors Extracted"];
+        language = QAV.getState("language");
+        facText = resources[language].translation.Factor;
+        respondText = resources[language].translation.Respondent;
+        appendText = resources[language].translation["Centroid Factors Extracted"];
 
         headers = [{
             title: "Num."
@@ -195,7 +196,6 @@
         targets = [2, 3, 4, 5, 6, 7, 8, 9];
         slicedTargets = targets.slice(0, loopLen);
 
-        var configObj = {};
         configObj.domElement = "#factorRotationTable1";
         configObj.fixed = false;
         configObj.data = centroidFactors;
@@ -210,7 +210,7 @@
                              },
             {
                 targets: '_all',
-                "createdCell": function (td, cellData, rowData, row, col) {
+                "createdCell": function (td, cellData) { // , rowData, row, col
                     if (cellData < 0) {
                         $(td).css('color', 'red');
                     }
@@ -230,6 +230,11 @@
         var data = [];
         var tempArray = [];
         var tempObj = {};
+        var value = 0;
+        var language = QAV.getState("language");
+        var cumVarText = resources[language].translation["Cum % Expln Var"];
+        var tempObj2 = tempObj;
+        var configObj = {};
 
         eigenValues = QAV.getState("centroidEigenvalues");
         eigenValues.unshift("");
@@ -237,25 +242,20 @@
         percentExplainedVariance.unshift("");
         loopLen1 = percentExplainedVariance.length;
 
-        var value = 0;
         for (m = 2; m < loopLen1; m++) {
             value = value + percentExplainedVariance[m];
             tempArray.push(value);
         }
 
-        var language = QAV.getState("language");
-        var cumVarText = resources[language].translation["Cum % Expln Var"];
         tempArray.unshift("", cumVarText);
 
         data.push(eigenValues, percentExplainedVariance, tempArray);
 
         headers2 = headers.slice(2, headers.length);
         tempObj.title = "";
-        var tempObj2 = tempObj;
 
         headers2.unshift(tempObj, tempObj2);
 
-        var configObj = {};
         configObj.domElement = "#factorRotationTable1Footer";
         configObj.fixed = false;
         configObj.data = data;
@@ -271,7 +271,7 @@
                              },
             {
                 targets: '_all',
-                "createdCell": function (td, cellData, rowData, row, col) {
+                "createdCell": function (td, cellData) { // , rowData, row, col
                     if (cellData < 0) {
                         $(td).css('color', 'red');
                     }
@@ -582,23 +582,22 @@
     // returns column total minus 1
 
     // todo - check to see if this is used anywhere now
-    function getDataColumnTotals(dataArray) {
-        var columnTotals = [];
-        var sum;
-        var sum1;
-        var j, i;
-        var loopLen = dataArray.length;
-
-        for (j = 0; j < loopLen; j++) {
-            sum = 0;
-            for (i = 0; i < loopLen; i++) {
-                sum += dataArray[i][j];
-            }
-            sum = sum - 1;
-            sum1 = evenRound((sum), 8);
-            columnTotals.push(sum1);
-        }
-        return columnTotals;
-    }
-
+    //    function getDataColumnTotals(dataArray) {
+    //        var columnTotals = [];
+    //        var sum;
+    //        var sum1;
+    //        var j, i;
+    //        var loopLen = dataArray.length;
+    //
+    //        for (j = 0; j < loopLen; j++) {
+    //            sum = 0;
+    //            for (i = 0; i < loopLen; i++) {
+    //                sum += dataArray[i][j];
+    //            }
+    //            sum = sum - 1;
+    //            sum1 = evenRound((sum), 8);
+    //            columnTotals.push(sum1);
+    //        }
+    //        return columnTotals;
+    //    }
 }(window.CENTROID = window.CENTROID || {}, QAV));

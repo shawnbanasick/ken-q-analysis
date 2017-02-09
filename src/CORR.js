@@ -8,9 +8,9 @@
 
 
 // JSlint declarations
-/* global window, $, _, setTimeout, evenRound, d3, CENTROID, QAV, UTIL, performance*/
+/* global window, $, _, setTimeout, evenRound, CENTROID, QAV, UTIL, performance*/
 
-// QAV is the global state data store 
+// QAV is the global state data store
 (function (CORR, QAV, undefined) {
 
     CORR.createCorrelationTable = function () {
@@ -41,9 +41,9 @@
 
             var sortsFromExistingData = QAV.getState("qavRespondentSortsFromDbStored");
 
-            var sortsAsNumbers2 = CENTROID.convertSortsTextToNumbers(sortsFromExistingData, originalSortSize2);
+            var sortsAsNumbers2 = CORR.convertSortsTextToNumbers(sortsFromExistingData, originalSortSize2);
 
-            var createCorrelationTable = _.cloneDeep(calculateCorrelations(sortsAsNumbers2, namesFromExistingData));
+            var createCorrelationTable = calculateCorrelations(sortsAsNumbers2, namesFromExistingData);
 
             createDisplayTableJQUERY(createCorrelationTable, 'correlationTable');
 
@@ -53,6 +53,57 @@
         var t1 = performance.now();
         console.log('%c Correlation Table completed in ' + (t1 - t0).toFixed(0) + ' milliseconds', 'background: black; color: white');
     };
+
+
+    /* *******************************************************************  model
+    // ************ convert sorts and shift to positive values **********************
+    // ******************************************************************************
+    */
+    CORR.convertSortsTextToNumbers = function (sortsTextFromDb, originalSortSize) {
+        console.time("convertNumbers");
+        var sortsAsNumbers = [];
+        var maxArrayValue;
+
+        // skip conversion if data coming from somewhere other than pasted data
+        if (_.isArray(sortsTextFromDb[0]) === false) {
+            _(sortsTextFromDb).forEach(function (element) {
+                var startPoint = 0;
+                var endPoint = 2;
+                var tempArray = [];
+                var loopLen = originalSortSize;
+                var i, numberFragment, convertedNumber;
+
+                for (i = 0; i < loopLen; i++) {
+                    numberFragment = element.slice(startPoint, endPoint);
+                    convertedNumber = +numberFragment;
+                    tempArray.push(convertedNumber);
+                    startPoint = startPoint + 2;
+                    endPoint = endPoint + 2;
+                }
+                sortsAsNumbers.push(tempArray);
+            }).value();
+
+            // continue if not pasted text -
+        } else {
+            sortsAsNumbers = _.cloneDeep(sortsTextFromDb);
+        }
+        QAV.setState("sortsAsNumbers", sortsAsNumbers);
+
+        // shift sorts to positive range
+        maxArrayValue = _.max(sortsAsNumbers[0]);
+        _(sortsAsNumbers).forEach(function (element) {
+            var j;
+            var loopLen = originalSortSize;
+
+            for (j = 0; j < loopLen; j++) {
+                element[j] = element[j] + maxArrayValue + 1;
+            }
+        }).value();
+        QAV.setState("positiveShiftedRawSorts", sortsAsNumbers);
+        console.timeEnd("convertNumbers");
+        return sortsAsNumbers;
+    };
+
 
     //*****************************************************************  model
     //****  calculate PQMethod type correlations    **************************
@@ -115,7 +166,7 @@
     };
 
     //*********************************************************************   model
-    //******* create Correlation Table ********************************************
+    //******* correlations calcs       ********************************************
     //*****************************************************************************
     function calculateCorrelations(sortsAsNumbers, names) {
 
@@ -174,6 +225,11 @@
 
         return correlationTableArrayFormatted;
     }
+
+
+    //*********************************************************************   model
+    //******* create Correlation Table ********************************************
+    //*****************************************************************************
 
     // example had node listed in parameters
     function createDisplayTableJQUERY(dataSet) {
@@ -252,20 +308,5 @@
             });
     }
 
-    //    (function () {
-    //        // radviz zoom
-    //        $("#zoomFactorRadioSelect :radio").on('click', function () {
-    //            var button = $(this);
-    //
-    //            $('#zoomFactorRadioSelect input:not(:checked)').parent().removeClass("selected");
-    //            button.parent().addClass("selected");
-    //            var zoomFactor = button.val();
-    //
-    //            d3.select(".radvizContainer1 svg").remove();
-    //
-    //            CORR.drawRawSortsRadviz(zoomFactor);
-    //        });
-    //
-    //    })();
 
 }(window.CORR = window.CORR || {}, QAV));

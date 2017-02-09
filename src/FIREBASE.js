@@ -7,18 +7,19 @@
 //    (at your option) any later version.
 
 // JSlint declarations
-/* global numeric, CENTROID, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
+/* global window, QAV, $, FileReader, UTIL, document */
 
-(function(FIREBASE, QAV, undefined) {
+(function (FIREBASE, QAV, undefined) {
 
-    FIREBASE.filePickedJSON = function(evt) {
+    FIREBASE.filePickedJSON = function (evt) {
+        var JsonObj;
         var files = evt.target.files; // FileList object
-        f = files[0];
+        var f = files[0];
         var reader = new FileReader();
 
         // Closure to capture the file information.
-        reader.onload = (function(theFile) {
-            return function(e) {
+        reader.onload = (function () { // theFile
+            return function (e) {
                 // Render thumbnail.
                 JsonObj = e.target.result;
                 var jsonObjFile = JSON.parse(JsonObj);
@@ -33,7 +34,7 @@
         reader.readAsText(f);
     };
 
-    FIREBASE.setRespondentId = function(JsonObj) {
+    FIREBASE.setRespondentId = function (JsonObj) {
         $(".jsonSelect").show();
         $(".downloadCsvDataDiv").show();
         var keys = Object.keys(JsonObj);
@@ -41,31 +42,38 @@
         var projectName = JsonObj[keys[0]].name;
         QAV.setState("qavProjectName", projectName);
         $(".jsonFileName").html('"' + projectName + '" loaded');
-        $.each(responseObjectKeys, function(key, value) {
-          $('#jsonIdSelect')
-          .append($('<option>', { value : key })
-          .text(value));
-});
+        $.each(responseObjectKeys, function (key, value) {
+            $('#jsonIdSelect')
+                .append($('<option>', {
+                        value: key
+                    })
+                    .text(value));
+        });
 
     };
 
-    FIREBASE.stageJsonData = function() {
-        var arr, array1, j, k, m, id, JsonObj, temp5, keys, i, sort0, temp1, tempString1, sortArray, iLen, kLen, sort2, sort3, jLen, replaced, replaced2, replaced3, prev;
-        var qavRespondentNames = [], qavRespondentSortsFromDbStored = [], qavSortTriangleShape = [], multiplierArray = [];
+    FIREBASE.stageJsonData = function () {
+        var arr, array1, j, k, m, id, JsonObj, temp5, keys, i, sort0, temp1, tempString1, sortArray, iLen, mLen, kLen, sort2, sort3, jLen, replaced, prev, statementInput; // replaced2, replaced3,
+        var qavRespondentNames = [],
+            qavRespondentSortsFromDbStored = [],
+            qavSortTriangleShape = [],
+            multiplierArray = [];
 
         $("#existingDatabaseStatementList").empty();
         $("#existingDatabaseRespondentList").empty();
 
         // to stage statements
         statementInput = document.getElementById("statementsInputBoxJson").value;
-         arr = statementInput.split(/\r\n|\r|\n/g);
+        arr = statementInput.split(/\r\n|\r|\n/g);
         // remove empty strings created by extra new line at end of pasted data
-         array1 = arr.filter(function(e){return e;});
-         QAV.setState("qavCurrentStatements", array1);
-         QAV.setState("qavOriginalSortSize", array1.length);
-         QAV.setState("originalSortSize", array1.length);
+        array1 = arr.filter(function (e) {
+            return e;
+        });
+        QAV.setState("qavCurrentStatements", array1);
+        QAV.setState("qavOriginalSortSize", array1.length);
+        QAV.setState("originalSortSize", array1.length);
 
-        for (k=0, kLen= array1.length; k<kLen; k++) {
+        for (k = 0, kLen = array1.length; k < kLen; k++) {
             $("#existingDatabaseStatementList").append("<li>" + array1[k] + "</li>");
         }
 
@@ -73,8 +81,8 @@
         id = $("#jsonIdSelect :selected").text();
         JsonObj = QAV.getState("JsonObj");
         keys = Object.keys(JsonObj);
-        for (i=0, iLen=keys.length; i<iLen; i++ ) {
-            if (id === "ID" ) {
+        for (i = 0, iLen = keys.length; i < iLen; i++) {
+            if (id === "ID") {
                 // create unique id from key
                 temp1 = keys[i].slice(-10);
                 qavRespondentNames.push(temp1);
@@ -101,24 +109,24 @@
             temp5 = +sort3[j];
             qavSortTriangleShape.push(temp5);
         }
-        qavSortTriangleShape.sort(function(a,b){
+        qavSortTriangleShape.sort(function (a, b) {
             return a - b;
         });
 
         // calculate multiplierArray
-        for (m = 0, mLen = qavSortTriangleShape.length; m < mLen; m++ ) {
-        if ( qavSortTriangleShape[m] !== prev ) {
-            multiplierArray.push(1);
-        } else {
-            multiplierArray[multiplierArray.length-1]++;
-        }
-          prev = qavSortTriangleShape[m];
+        for (m = 0, mLen = qavSortTriangleShape.length; m < mLen; m++) {
+            if (qavSortTriangleShape[m] !== prev) {
+                multiplierArray.push(1);
+            } else {
+                multiplierArray[multiplierArray.length - 1]++;
+            }
+            prev = qavSortTriangleShape[m];
         }
 
         // pad the multiplierArray
         var leadValue = qavSortTriangleShape[0];
         var minLeadValue = -6;
-        var padding = Math.abs(minLeadValue-leadValue);
+        var padding = Math.abs(minLeadValue - leadValue);
         for (var p = 0; p < padding; p++) {
             multiplierArray.unshift(0);
         }
@@ -136,7 +144,7 @@
     };
 
 
-    FIREBASE.convertToData = function(JsonObj) {
+    FIREBASE.convertToData = function (JsonObj) {
         var csvBody = [];
         var sortHeaders = [];
 
@@ -156,7 +164,7 @@
 
         for (var i = 0, iLen = keys.length; i < iLen; i++) {
             var tempArray1 = [];
-            var tempArray2 = [];
+            // var tempArray2 = [];
 
             // get index
             var temp4 = keys[i];
@@ -187,7 +195,7 @@
         return csvBody;
     };
 
-    FIREBASE.downloadJsonData = function() {
+    FIREBASE.downloadJsonData = function () {
 
         var data = QAV.getState("JsonObj");
         var projectName = QAV.getState("qavProjectName");
@@ -195,16 +203,16 @@
         var csvRows = [];
 
         for (var i = 0, l = csvBody.length; i < l; ++i) {
+            for (var k = 0, kLen = csvBody[i].length; k < kLen; k++) {
+                csvBody[i][k] = UTIL.sanitizeUserInputText(csvBody[i][k]);
+            }
             csvRows.push(csvBody[i].join(','));
         }
 
-        var csvString = csvRows.join("%0A");
-        var a = document.createElement('a');
-        a.href = 'data:attachment/csv,' + csvString;
-        a.target = '_blank';
-        a.download = projectName + '.csv';
-        document.body.appendChild(a);
-        a.click();
+        // export the file
+        UTIL.exportToCsv(projectName + '.csv', csvBody);
+
+
     };
 
 }(window.FIREBASE = window.FIREBASE || {}, QAV));

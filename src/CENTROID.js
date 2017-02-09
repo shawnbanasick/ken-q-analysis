@@ -10,14 +10,14 @@
 // JSlint declarations
 /* global performance, window, QAV, $, document, resources, evenRound, UTIL, _ */
 
-(function (CENTROID, QAV, undefined) {
+(function(CENTROID, QAV, undefined) {
 
     // todo - fix parseInt by adding second value
     // ******************************************************  controller
     // ***** controller for factor extraction **************************
     // *****************************************************************
     // todo - refactor onclick handler from html
-    CENTROID.fireFactorExtraction = function () {
+    CENTROID.fireFactorExtraction = function() {
         var t0 = performance.now(),
             t1;
         var factors = document.getElementById("factorSelect");
@@ -83,7 +83,7 @@
             for (q = 0, qLen = num.length; q < qLen; q++) {
                 num[q] = evenRound((num[q] * num[q]), 8);
             }
-            eigen = evenRound((_.reduce(num, function (sum, num2) {
+            eigen = evenRound((_.reduce(num, function(sum, num2) {
                 return sum + num2;
             })), 5);
 
@@ -95,8 +95,8 @@
 
         // shift data to fixed 5
         factorMatrixToFixed5 = [];
-        _(factorMatrix).forEach(function (arrayFrag) {
-            var tableFormatFragment = _.map(arrayFrag, function (a) {
+        _(factorMatrix).forEach(function(arrayFrag) {
+            var tableFormatFragment = _.map(arrayFrag, function(a) {
                 return (evenRound(a, 5));
             });
             factorMatrixToFixed5.push(tableFormatFragment);
@@ -141,7 +141,7 @@
         QAV.centroidFactors = rotFacStateArrayPrep2;
     };
 
-    CENTROID.calculateFactorLoadings = function (dataArray) {
+    CENTROID.calculateFactorLoadings = function(dataArray) {
         var reflectedArray = checkPositiveManifold(dataArray);
         var reflectedArray1 = reflectedArray[0]; // reflected array
         var reflectedArrayColumnTotals = reflectedArray[1]; // column totals
@@ -155,7 +155,7 @@
         return results;
     }; // end function fireCalculateFactors
 
-    CENTROID.drawExtractedFactorsTable = function () {
+    CENTROID.drawExtractedFactorsTable = function() {
         var centroidFactors = QAV.getState("centroidFactors");
         var i, iLen, j, k, names;
         var temp1, loopLen, targets, slicedTargets, headers;
@@ -203,19 +203,20 @@
         configObj.colDefs = [{
                 targets: [0, 1],
                 className: 'dt-head-center dt-body-center dt-body-name'
-        },
+            },
             {
                 targets: slicedTargets,
                 className: 'dt-head-center dt-body-right'
-                             },
+            },
             {
                 targets: '_all',
-                "createdCell": function (td, cellData) { // , rowData, row, col
+                "createdCell": function(td, cellData) { // , rowData, row, col
                     if (cellData < 0) {
                         $(td).css('color', 'red');
                     }
                 }
-                             }];
+            }
+        ];
 
         UTIL.drawDatatable(configObj);
 
@@ -225,7 +226,7 @@
 
     };
 
-    CENTROID.createFooterTable = function (headers, slicedTargets) {
+    CENTROID.createFooterTable = function(headers, slicedTargets) {
         var eigenValues, percentExplainedVariance, loopLen1, m, headers2;
         var data = [];
         var tempArray = [];
@@ -264,68 +265,21 @@
         configObj.colDefs = [{
                 targets: [0, 1],
                 className: 'dt-head-center dt-body-center dt-body-name'
-        },
+            },
             {
                 targets: slicedTargets,
                 className: 'dt-head-center dt-body-right'
-                             },
+            },
             {
                 targets: '_all',
-                "createdCell": function (td, cellData) { // , rowData, row, col
+                "createdCell": function(td, cellData) { // , rowData, row, col
                     if (cellData < 0) {
                         $(td).css('color', 'red');
                     }
                 }
-                             }];
-        UTIL.drawDatatable(configObj);
-    };
-
-    /* *******************************************************************  model
-    // ************ convert sorts and shift to positive values **********************
-    // ******************************************************************************
-    */
-    CENTROID.convertSortsTextToNumbers = function (sortsTextFromDb, originalSortSize) {
-
-        console.time("convertNumbers");
-        var sortsAsNumbers = [];
-        var maxArrayValue;
-
-        // skip conversion if data coming from somewhere other than pasted data
-        if (_.isArray(sortsTextFromDb[0]) === false) {
-            _(sortsTextFromDb).forEach(function (element) {
-                var startPoint = 0;
-                var endPoint = 2;
-                var tempArray = [];
-                var loopLen = originalSortSize;
-                var i, numberFragment, convertedNumber;
-
-                for (i = 0; i < loopLen; i++) {
-                    numberFragment = element.slice(startPoint, endPoint);
-                    convertedNumber = +numberFragment;
-                    tempArray.push(convertedNumber);
-                    startPoint = startPoint + 2;
-                    endPoint = endPoint + 2;
-                }
-                sortsAsNumbers.push(tempArray);
-            }).value();
-        } else {
-            sortsAsNumbers = _.cloneDeep(sortsTextFromDb);
-        }
-        QAV.setState("sortsAsNumbers", sortsAsNumbers);
-
-        // shift sorts to positive range
-        maxArrayValue = _.max(sortsAsNumbers[0]);
-        _(sortsAsNumbers).forEach(function (element) {
-            var j;
-            var loopLen = originalSortSize;
-
-            for (j = 0; j < loopLen; j++) {
-                element[j] = element[j] + maxArrayValue + 1;
             }
-        }).value();
-        QAV.setState("positiveShiftedRawSorts", sortsAsNumbers);
-        console.timeEnd("convertNumbers");
-        return sortsAsNumbers;
+        ];
+        UTIL.drawDatatable(configObj);
     };
 
     // ***********************************************************************   model
@@ -342,17 +296,17 @@
             colTotalsAndMeanSum.push(evenRound((columnTotals[i] + 0.5), 8)); // 0.5 as used in PQMethod
         }
 
-        totalsSums = _.reduce(colTotalsAndMeanSum, function (sum, num) {
+        totalsSums = _.reduce(colTotalsAndMeanSum, function(sum, num) {
             return sum + num;
         });
 
         totalsSumsSqrt = evenRound((Math.sqrt(totalsSums)), 8);
 
-        factorLoad1 = _.map(colTotalsAndMeanSum, function (num) {
+        factorLoad1 = _.map(colTotalsAndMeanSum, function(num) {
             return evenRound((num / totalsSumsSqrt), 8);
         });
 
-        factorLoad1Sqrd = _.map(factorLoad1, function (num) {
+        factorLoad1Sqrd = _.map(factorLoad1, function(num) {
             return evenRound((num * num), 8);
         }); // comparison 2
 
@@ -364,21 +318,21 @@
         var maxDiff = _.max(diffDiagonalEstimateandFactorLoad);
 
         function totalSumsFunction(newDiagonalEstimate) {
-            var totalsSums = _.reduce(newDiagonalEstimate, function (sum, num) {
+            var totalsSums = _.reduce(newDiagonalEstimate, function(sum, num) {
                 return evenRound((sum + num), 8);
             });
             return totalsSums;
         }
 
         function factorLoad1Function(newDiagonalEstimate) {
-            factorLoad1 = _.map(newDiagonalEstimate, function (num) {
+            factorLoad1 = _.map(newDiagonalEstimate, function(num) {
                 return evenRound((num / totalsSumsSqrt), 8);
             }); // Math.round10
             return factorLoad1;
         }
 
         function factorLoad1SqrdFunction(factorLoad1) {
-            factorLoad1Sqrd = _.map(factorLoad1, function (num) {
+            factorLoad1Sqrd = _.map(factorLoad1, function(num) {
                 return evenRound((num * num), 8);
             });
             return factorLoad1Sqrd;
@@ -427,7 +381,7 @@
         var factorCorrelations = [];
 
         function helper1(factorLoadings) {
-            _(factorLoadings).forEach(function (num) {
+            _(factorLoadings).forEach(function(num) {
                 var temp = num * factorLoadings[i];
                 newArrayFrag.push(evenRound((temp), 8));
             }).value();
@@ -466,7 +420,7 @@
     // *************************************************************************
     function undoReflection(subtractedArray, factorLoadings, reflectedRowCol) {
 
-        _(reflectedRowCol).forEach(function (rowcolnumber) {
+        _(reflectedRowCol).forEach(function(rowcolnumber) {
             for (var i = 0; i < subtractedArray.length; i++) {
                 subtractedArray[i][rowcolnumber] = subtractedArray[i][rowcolnumber] * -1;
             }

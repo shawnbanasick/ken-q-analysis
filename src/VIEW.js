@@ -8,33 +8,33 @@
 
 
 // JSlint declarations
-/* global window, LOAD, $, localStorage, QAV, setTimeout, PCA, document, performance*/
+/* global window, LOAD, $, localStorage, QAV, d3, resources, document*/
 
 
-(function(VIEW, QAV, undefined) {
+(function (VIEW, QAV, undefined) {
 
 
     // ************************************************************  view
     // ******* SECTION 1 - intro   ******+++++++++++++++*****************
     // ******************************************************************
 
-    $(function() {
+    $(function () {
         // Single Page navigation
         $('.single-page-nav').singlePageNav({
             offset: $('.single-page-nav').outerHeight(),
             filter: ':not(.external)',
             updateHash: true,
-            beforeStart: function() {},
-            onComplete: function() {}
+            beforeStart: function () {},
+            onComplete: function () {}
         });
     });
 
     // auto scroll to top of page on reload
-    $(function() {
+    $(function () {
         $("#heroSection")[0].click();
     });
 
-    $(function() {
+    $(function () {
         // display the first div by default.
         $("#accordion div").first().css('display', 'block');
 
@@ -42,7 +42,7 @@
         var link = $("#accordion a");
 
         // On clicking of the links open / close.
-        link.on('click', function(e) {
+        link.on('click', function (e) {
             e.preventDefault();
             var a = $(this).attr("href");
             $(a).slideDown('fast');
@@ -56,20 +56,21 @@
     // ************************************************************  view
     // ******* SECTION 2 - persist radio button selections     **********
     // ******************************************************************
+    // DATA SECTION
 
-    $(function() {
-        $('#section2 input[type=radio]').each(function() {
+    $(function () {
+        $('#section2 input[type=radio]').each(function () {
             var state = JSON.parse(localStorage.getItem('radio_' + this.id));
             if (state) {
                 this.checked = state.checked;
                 var radioValue = $("input[name='radio']:checked").attr("id");
-                $("#"+radioValue).parent().addClass("selected");
+                $("#" + radioValue).parent().addClass("selected");
                 inputTypeDisplay(radioValue);
-            }
+            } 
         });
 
-        $(window).bind('unload', function() {
-            $('#section2 input[type=radio]').each(function() {
+        $(window).bind('unload', function () {
+            $('#section2 input[type=radio]').each(function () {
                 localStorage.setItem(
                     'radio_' + this.id, JSON.stringify({
                         checked: this.checked
@@ -78,7 +79,7 @@
             });
         });
 
-        $("#section2 input[type='radio']").click(function() {
+        $("#section2 input[type='radio']").click(function () {
             var radioValue = $("input[name='radio']:checked").attr("id");
             $("#existingDatabaseStatementList").empty();
             $("#existingDatabaseRespondentList").empty();
@@ -94,7 +95,7 @@
     });
 
     // **** SECTION 3 **** //
-    VIEW.destroyExtractionTables = function() {
+    VIEW.destroyExtractionTables = function () {
 
         var language = QAV.getState("language");
         var centFacButText = resources[language].translation["Extract centroid factors"];
@@ -133,8 +134,8 @@
     // ******* control D3 checkboxes       *****************************************
     // *****************************************************************************
 
-    $(function() {
-        $("input[name=radioCheck]").change(function() {
+    $(function () {
+        $("input[name=radioCheck]").change(function () {
             var max = 2;
             if ($("input[name=radioCheck]:checked").length == max) {
                 $("input[name=radioCheck]").attr('disabled', 'disabled');
@@ -144,7 +145,7 @@
             }
 
             var tempArrayChartFactors = [];
-            $('input[name="radioCheck"]:checked').each(function() {
+            $('input[name="radioCheck"]:checked').each(function () {
                 var numberify = parseInt((this.value), 10);
                 tempArrayChartFactors.push(numberify);
                 localStorage.chartSelectedFactors = JSON.stringify(tempArrayChartFactors);
@@ -152,7 +153,7 @@
         });
     });
 
-    VIEW.clearSections_4_5_6 = function() {
+    VIEW.clearSections_4_5_6 = function () {
 
         $("#judgementalRotationContainer").hide();
 
@@ -198,58 +199,63 @@
         $("#clearStorageButton").hide();
     };
 
-    VIEW.showDisabledFunctionsAfterSplitModal = function() {
-        $('.functionDisabledModal').toggleClass('active');
-        setTimeout(function() {
-            $('.functionDisabledModal').toggleClass('active');
-        }, 1500);
-    };
+
 
     // ******* helper function to show / hide input methods   ************************
 
     function inputTypeDisplay(inputType) {
-      //
+        //
         $("label[for='" + inputType + "']").addClass("selected");
         switch (inputType) {
-            case "radio4":
-                $("#manualInputContainer").hide(300);
-                $("#databaseSelectDiv").hide(300);
-                $("#rawSorts").hide(300);
-                $(".firebaseDataInputDiv").hide(300);
-                $("#pasteExcelDataDiv").show(300);
-                $(".analysisDataDiv").show(300);
-                break;
-            case "radio3": // pqmethod pasted data
-                $("#manualInputContainer").hide(300);
-                $("#databaseSelectDiv").hide(300);
-                $("#pasteExcelDataDiv").hide(300);
-                $(".firebaseDataInputDiv").hide(300);
-                $("#rawSorts").show(300);
-                $(".analysisDataDiv").show(300);
-                break;
-            case "radio2":
-                $("#databaseSelectDiv").hide(300);
-                $("#rawSorts").hide(300);
-                $("#pasteExcelDataDiv").hide(300);
-                $(".firebaseDataInputDiv").hide(300);
-                $("#manualInputContainer").show(300);
-                $(".analysisDataDiv").show(300);
-                break;
-            case "radio5":
-                $("#databaseSelectDiv").hide(300);
-                $("#rawSorts").hide(300);
-                $("#pasteExcelDataDiv").hide(300);
-                $("#manualInputContainer").hide(300);
-                $(".analysisDataDiv").show(300);
-                $(".firebaseDataInputDiv").show(300);
-                break;
+        case "radio4":
+            $("#manualInputContainer").hide(300);
+            $("#databaseSelectDiv").hide(300);
+            $("#rawSorts").hide(300);
+            $(".firebaseDataInputDiv").hide(300);
+            $("#pasteExcelDataDiv").show(300);
+            $(".analysisDataDiv").show(300);
+            $(".pqmButton").hide();
+            break;
 
-            default:
-                $("#manualInputContainer").hide(300);
-                $("#rawSorts").hide(300);
-                $("#pasteExcelDataDiv").hide(300);
-                $(".firebaseDataInputDiv").hide(300);
-                $("#databaseSelectDiv").show(300);
+        case "radio3": // pqmethod pasted data
+            $("#manualInputContainer").hide(300);
+            $("#databaseSelectDiv").hide(300);
+            $("#pasteExcelDataDiv").hide(300);
+            $(".firebaseDataInputDiv").hide(300);
+            $("#rawSorts").show(300);
+            $(".analysisDataDiv").show(300);
+            $(".pqmButton").hide();
+            break;
+
+        case "radio2":
+            $("#databaseSelectDiv").hide(300);
+            $("#rawSorts").hide(300);
+            $("#pasteExcelDataDiv").hide(300);
+            $(".firebaseDataInputDiv").hide(300);
+            $("#manualInputContainer").show(300);
+            $(".analysisDataDiv").show(300);
+            $(".pqmButton").hide();
+            break;
+
+        case "radio1":  // radio5
+            $("#databaseSelectDiv").hide(300);
+            $("#rawSorts").hide(300);
+            $("#pasteExcelDataDiv").hide(300);
+            $("#manualInputContainer").hide(300);
+            $(".analysisDataDiv").show(300);
+            $(".firebaseDataInputDiv").show(300);
+            $(".pqmButton").hide();
+            break;
+
+        default:
+            $("#manualInputContainer").hide(300);
+            $("#rawSorts").hide(300);
+            $("#pasteExcelDataDiv").hide(300);
+            $(".firebaseDataInputDiv").hide(300);
+            $(".analysisDataDiv").show(300);
+            $("#databaseSelectDiv").show(300);
+            $(".pqmButton").hide();
+            //$("#radio_radio1").parent().addClass("selected");
         }
     }
 
@@ -258,66 +264,11 @@
     // ******************************************************************
 
 
-    // ***********************************************************************  view
-    // ******* modal boxes *********************************************************
-    // *****************************************************************************
-
-    $(function() {
-        $('#invertModal .button-submit').on('click', function(e) {
-            e.preventDefault();
-            var inputValue = $("#invertModal input").val();
-            if (inputValue === false || inputValue === "") {
-                return false;
-            }
-            // todo - change to list of available factors and remove max and min from index.html
-            if (inputValue > 8 || inputValue < 1) {
-                return false;
-            } else {
-                var currentRotationTable = QAV.getState("rotFacStateArray");
-                LOAD.factorInvertFunction(inputValue, currentRotationTable);
-                $('#invertModal').toggleClass('active');
-                $('.successModal').toggleClass('active');
-                setTimeout(function() {
-                    $('.successModal').toggleClass('active');
-                }, 2000);
-            }
-        });
-    });
-
-    $(function() {
-        $('#splitModal .button-submit').on('click', function(e) {
-            e.preventDefault();
-            var inputValue = $("#splitModal input").val();
-            if (inputValue === false || inputValue === "") {
-                return false;
-            }
-            // todo - change to list of available factors and remove max and min from index.html
-            if (inputValue > 8 || inputValue < 1) {
-                return false;
-            } else {
-                LOAD.factorSplitFunction(inputValue);
-                $('#splitModal').toggleClass('active');
-                $('.successModal').toggleClass('active');
-                setTimeout(function() {
-                    $('.successModal').toggleClass('active');
-                }, 2000);
-            }
-        });
-    });
-
-    // cancel and close button across all modal windows
-    $(function() {
-        $('.button-cancel').on('click', function(e) {
-            e.preventDefault();
-            $(this).closest("div.modal").toggleClass('active');
-        });
-    });
-
     // ************************************************************  view
     // ******* SECTION 6 - output tables  *******************************
     // ******************************************************************
 
-    VIEW.removeOutputFactorCheckboxes = function() {
+    VIEW.removeOutputFactorCheckboxes = function () {
         var temp = document.getElementById("selectFactorsForOutputDiv");
         if (temp) {
             while (temp.firstChild) {
@@ -331,7 +282,7 @@
     // *****************************************************************************
     // todo - dry and clean-up this block
 
-    VIEW.clearPreviousTables = function() {
+    VIEW.clearPreviousTables = function () {
 
         var temp99 = $('#synSortSvgNo1');
         if (temp99) {
@@ -351,6 +302,202 @@
         if ($temp2) {
             $temp2.empty();
         }
+    };
+
+
+
+
+    // ***********************************************************************  view
+    // ******* control iziModal Displays      *****************************************
+    // *****************************************************************************
+
+
+    // ***********************************************************************  view
+    // ******* old modal box controllers  ******************************************
+    // *****************************************************************************
+
+    // SUBMIT BUTTON event listeners
+    $(function () {
+        $('#invertModal').on('click', '.button-submit', function (e) {
+            e.preventDefault();
+            var inputValue = $("#invertModal input").val();
+            if (inputValue === false || inputValue === "") {
+                return false;
+            }
+            // todo - change to list of available factors and remove max and min from index.html
+            if (inputValue > 8 || inputValue < 1) {
+                return false;
+            } else {
+                var currentRotationTable = QAV.getState("rotFacStateArray");
+                LOAD.factorInvertFunction(inputValue, currentRotationTable);
+                $('#invertModal').iziModal('close');
+            }
+        });
+    });
+
+    // SUBMIT BUTTON event listeners
+    $(function () {
+        $('#splitModal').on('click', '.button-submit', function (e) {
+            e.preventDefault();
+            var inputValue = $("#splitModal input").val();
+            if (inputValue === false || inputValue === "") {
+                return false;
+            }
+            // todo - change to list of available factors and remove max and min from index.html
+            if (inputValue > 8 || inputValue < 1) {
+                return false;
+            } else {
+                LOAD.factorSplitFunction(inputValue);
+                $('#splitModal').iziModal('close');
+            }
+        });
+    });
+
+    // cancel and close button across all modal windows
+    $(function () {
+        $('.button-cancel').on('click', function (e) {
+            e.preventDefault();
+            $(this).closest("div.modal").toggleClass('active');
+        });
+    });
+
+
+    VIEW.showDisabledFunctionsAfterSplitModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation.Warning;
+
+        $('#functionDisabledModal').iziModal({
+            title: title,
+            subtitle: '',
+            headerColor: '#ffff00', // '#88A0B9',
+            theme: 'light', // light
+            attached: '', // bottom, top
+            width: '80%',
+            padding: 20,
+            radius: 3,
+        });
+        $("#functionDisabledModal").iziModal('open');
+    };
+
+    VIEW.showNoSortsFlaggedOnFactorModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation.Error;
+        $('#noFactorLoadingModal').iziModal({
+            title: title,
+            headerColor: '#e50000', // '#88A0B9',
+            width: '80%',
+            padding: 20,
+            radius: 3,
+        });
+        $("#noFactorLoadingModal").iziModal('open');
+    };
+
+    VIEW.showSortFlaggedOnMultipleFactorsModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation.Error;
+        $('#sortLoadingMultipleFactorsModal').iziModal({
+            title: title,
+            subtitle: '',
+            headerColor: '#e50000', // '#88A0B9',
+            theme: '', // light
+            attached: '', // bottom, top
+            width: '80%',
+            padding: 20,
+            radius: 3,
+        });
+        $("#sortLoadingMultipleFactorsModal").iziModal('open');
+    };
+
+    VIEW.showInvertModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation["Select Factor to Invert"];
+
+        $('#invertModal').iziModal({
+            title: title,
+            subtitle: '',
+            headerColor: '#6d7d8d', // '#88A0B9',
+            width: '80%',
+            bodyOverflow: true,
+            closeOnEscape: true,
+            overlay: true,
+            timeout: false, // or false
+            timeoutProgressbar: false,
+            pauseOnHover: false,
+            timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+        });
+        $('#invertModal').iziModal('open');
+    };
+
+    VIEW.showlocalDataDeleteSuccessModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation["Permanently delete all locally-stored data"];
+        $('#localDataDeleteSuccessfulModal').iziModal({
+            title: title,
+            subtitle: '',
+            headerColor: '#4CBB17', // '#88A0B9',
+            width: '80%',
+            padding: 20,
+            overlay: true,
+            timeout: 1500, // or false
+            timeoutProgressbar: true,
+            pauseOnHover: true,
+            timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+        });
+        $('#localDataDeleteSuccessfulModal').iziModal('open');
+    };
+
+
+    VIEW.showDeleteKenqData = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation["Delete local data"];
+        $('#deleteLocalDataModal').iziModal({
+            title: title,
+            subtitle: '',
+            padding: 20,
+            headerColor: '#e50000', // '#88A0B9',
+            width: '80%',
+        });
+        $('#deleteLocalDataModal').iziModal('open');
+    };
+
+    VIEW.showSplitBipolarFactorModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation["Split Bipolar Factor"];
+        $('#splitModal').iziModal({
+            title: title,
+            subtitle: '',
+            headerColor: '#6d7d8d', // '#88A0B9',
+            width: '80%',
+            padding: 20,
+        });
+        $('#splitModal').iziModal('open');
+    };
+
+    VIEW.showRotationChartOptionsModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation["Rotation Chart Options"];
+        $('#rotationChartOptionsModal').iziModal({
+            title: title,
+            headerColor: '#6d7d8d', // '#88A0B9',
+            width: '80%',
+            padding: 20,
+            radius: 3,
+        });
+        $("#rotationChartOptionsModal").iziModal('open');
+    };
+
+    VIEW.showGenericErrorModal = function () {
+        var language = QAV.getState("language");
+        var title = resources[language].translation.Error;
+        $('#genericErrorModal').iziModal({
+            title: title,
+            subtitle: '',
+            padding: 20,
+            headerColor: '#e50000', // '#88A0B9',
+            width: '80%',
+        });
+        $('#genericErrorModal').iziModal('open');
+
     };
 
 }(window.VIEW = window.VIEW || {}, QAV));

@@ -97,7 +97,7 @@
         QAV.setState("respondentNames", names2);
 
         // format pasted data
-        var sortsAsNumbers = CENTROID.convertSortsTextToNumbers(sorts, originalSortSize);
+        var sortsAsNumbers = CORR.convertSortsTextToNumbers(sorts, originalSortSize);
 
         for (j = 0; j < sortsAsNumbers.length; j++) {
             var sortItem = sortsAsNumbers[j];
@@ -137,7 +137,7 @@
             return '_';
         }
         return qavProjectName2.replace(/[^a-zA-Z0-9.-]/g, function () {
-            return '_'; // + match[0].charCodeAt(0).toString(16) + '_'; 
+            return '_'; // + match[0].charCodeAt(0).toString(16) + '_';
         });
     }
 

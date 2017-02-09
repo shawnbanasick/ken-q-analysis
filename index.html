@@ -26,7 +26,7 @@
 
     <!-- Favicon
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 
 
     <!-- load other CSS libraries -->
@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="css/datatables.min.css">
     <link rel="stylesheet" type="text/css" href="css/fixedColumns.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="css/synSortSvg.css">
-
+    <link rel="stylesheet" type="text/css" href="css/iziModal.css">
 
 </head>
 
@@ -95,7 +95,13 @@
                 </div>
                 <h1 class="singleLine vertical"><strong>Ken-Q Analysis</strong></h1>
                 <h2 data-i18n="A Web Application for Q Methodology"></h2>
-                <h5><i>Beta Version 0.8.1 Test Release (December 28, 2016)</i></h5>
+                <div class="row">
+                    <h5><i data-i18n="versionNumber"></i></h5>
+                    <!-- <div class="helpImageDiv vertical u-pull-right rightMargin">
+                        <a href="https://shawnbanasick.github.io/ken-q-analysis-help/index.html" target="_blank" style="target-new: tab;"></a>
+                        <p class="helpImageDivText"><strong>?</strong></p>
+                    </div> -->
+                </div>
                 <br>
                 <ul>
                     <li>Ken-Q Analysis requires an up-to-date browser - Tested on:
@@ -104,24 +110,39 @@
                             <li>Mac OSX El Capitan --&gt Chrome (version 50), Firefox (version 46)</li>
                             <li>Linux (Lubuntu 14.04) --&gt Chromium (version 50), Firefox (version 46)</li>
                         </ul>
-                        older Chrome and Firefox versions are not tested and <strong>not recommended</strong>. Principal Component Analysis takes substantially more time to calculate on Firefox (about 2 minutes for large datasets) compared to Chrome (about 10 seconds). Firefox will give "unresponsive script" error messages while calculating Principal Components. Click "continue" to finish the calculations.
+                        older Chrome and Firefox versions are not tested and <strong>not recommended</strong>. Principal Component Analysis takes substantially more time to calculate on Firefox (about 2 minutes for large datasets) compared to Chrome (about
+                        10 seconds). Firefox will give "unresponsive script" error messages while calculating Principal Components. Click "continue" to finish the calculations.
                     </li>
                     <li>CAUTION - Ken-Q Analysis saves data locally inside the browser. If you are using a shared computer in a computer lab or internet cafe you should delete all locally-stored data after you download the results of your analysis</li>
                     <li>Ken-Q Analysis is open source - you can <a class="linkUnderline" target="_blank" style="target-new: tab;" href="https://github.com/shawnbanasick/ken-q-analysis/tree/gh-pages">download and view the source files.</a></li>
                     <li>Functionality not yet implemented:</li>
                     <ul style="list-style-type:circle">
                         <li>Alternative (Horst) centroid factor extraction</li>
-                        <li>Analysis of Free-distribution Q-sorts</li>
                         <li>Factor loading adjustment for Heywood case (communality equal to or greater than 1.0)</li>
                     </ul>
-                    <li>Worried about data privacy? Want to work offline? <a class="linkUnderline" target="_blank" style="target-new: tab;" href="https://github.com/shawnbanasick/ken-q-analysis/archive/gh-pages.zip">Download Ken-Q Analysis </a> and run it locally from your computer. (after downloading the file, unzip it and double-click on the "index.html" file to start the web app.)</li>
+                    <li>Worried about data privacy? Want to work offline? <a class="linkUnderline" target="_blank" style="target-new: tab;" href="https://github.com/shawnbanasick/ken-q-analysis/archive/gh-pages.zip">Download Ken-Q Analysis </a> and run it
+                        locally from your computer. (after downloading the file, unzip it and double-click on the "index.html" file to start the web app.)</li>
                 </ul>
             </div>
             <div id="accordionDiv">
                 <h5>Change Log</h5>
                 <div id="accordion">
+                    <a href="#twelve" class="first" data-i18n="versionNumber"></a>
+                    <div id="twelve">
+                        <ul>
+                            <li>Added support for projecs with unrestrained Q-sorts</li>
+                            <li>Improved Excel file import and added support for import of statement-ordered Q-sorts</li>
+                            <li>Improved modal messaging</li>
+                            <li>Fixed bug in JSON csv file export that removed spaces between words</li>
+                            <li>Changed color picker to native OS</li>
+                            <li>Dropped alasql dependency</li>
+                            <li>Improved output formatting in Excel</li>
+                            <li>Added audio feedback to manual input of Q-sorts</li>
+                            <li>Added Watts and Stenner-type crib sheets to Excel output file</li>
+                        </ul>
+                    </div>
 
-                    <a href="#eleven" class="first">Beta Version 0.8.1 Test Release (December 28, 2016)</a>
+                    <a href="#eleven">Beta Version 0.8.1 Test Release (December 28, 2016)</a>
                     <div id="eleven">
                         <ul>
                             <li>Added visualization options for Judgemental Rotation Chart</li>
@@ -220,14 +241,8 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
-
-
         <!-- end section1 div     -->
-
-
         <!-- Section SELECT DATA Layout ***************************
 –––––––––––––––––––––––––––––––––––––––––––––––––– -->
         <div class="section" id="section2">
@@ -261,21 +276,25 @@
                 </div>
                 <div class="dataSelectionLabelDiv">
                     <div>
-                        <input type="radio" name="radio" id="radio5" />
-                        <label for="radio5" class="radioHighlight2 vertical" data-i18n="JSON File"></label>
+                        <input type="radio" name="radio" id="radio1" />
+                        <label for="radio1" class="radioHighlight2 vertical" data-i18n="JSON File"></label>
                     </div>
                 </div>
                 <div class="dataSelectionLabelDiv">
                     <div>
-                        <input type="radio" name="radio" id="radio1" />
-                        <label for="radio1" class="radioHighlight2 vertical" data-i18n="Demo Data"></label>
+                        <input type="radio" name="radio" id="radio5" />
+                        <label for="radio5" class="radioHighlight2 vertical" data-i18n="Demo Data"></label>
                     </div>
+                </div>
+
+                <div class="helpImageDiv u-pull-right rightMargin">
+                    <a href="https://shawnbanasick.github.io/ken-q-analysis-help/data.html" target="_blank" style="target-new: tab;"></a>
+                    <p class="helpImageDivText"><strong>?</strong></p>
                 </div>
                 <!-- end three column div     -->
             </div>
+
             <!-- end skeleton row div     -->
-
-
 
             <!-- Subsection USE EXISTING DATA SET Layout ***************************––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
@@ -298,12 +317,8 @@
 –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
             <div id="manualInputContainer">
-
                 <br>
                 <div class="row">
-
-
-
                     <div class="six columns">
                         <form role="form" id="inputForm" way-data="formData" way-persistent="true">
                             <!--   opening data range selection div     -->
@@ -340,7 +355,7 @@
                                 <div>
                                     <!--   opening data range selection div     -->
                                     <h4 data-i18n="Q-sort range"></h4>
-                                    <select id="dataRangeSelect" name="dataRangeSelect">
+                                    <select id="dataRangeSelect" autocomplete="off" name="dataRangeSelect">
                                         <option disabled selected> -- select -- </option>
                                         <option value="-3,3"> -3 to +3</option>
                                         <option value="-4,4"> -4 to +4</option>
@@ -359,9 +374,6 @@
                                 </div>
                             </div>
                             <!-- end dropdown selection div     -->
-                            <!--                        </div>-->
-                            <!-- end dropdown selection div     -->
-
                             <br>
                             <br>
                             <br>
@@ -369,8 +381,6 @@
                             <br>
                             <br>
                             <br>
-
-
 
                             <h4 data-i18n="Number of statements in each q-sort column"></h4>
 
@@ -380,7 +390,7 @@
                                 <div id="pyramidShape1" class="statementSelectorDiv">
                                     <p>-6
                                     </p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-6" id="pyramidShape-6">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-6" autocomplete="off" id="pyramidShape-6">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -399,7 +409,7 @@
                                 <div id="pyramidShape2" class="statementSelectorDiv">
                                     <p>-5
                                     </p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-5" id="pyramidShape-5">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-5" autocomplete="off" id="pyramidShape-5">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -417,7 +427,7 @@
 
                                 <div id="pyramidShape3" class="statementSelectorDiv">
                                     <p>-4</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-4" id="pyramidShape-4">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-4" autocomplete="off" id="pyramidShape-4">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -435,7 +445,7 @@
 
                                 <div id="pyramidShape4" class="statementSelectorDiv">
                                     <p>-3</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-3" id="pyramidShape-3">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-3" autocomplete="off" id="pyramidShape-3">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -453,7 +463,7 @@
 
                                 <div id="pyramidShape5" class="statementSelectorDiv">
                                     <p>-2</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-2" id="pyramidShape-2">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-2" autocomplete="off" id="pyramidShape-2">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -471,9 +481,10 @@
 
                                 <div id="pyramidShape6" class="statementSelectorDiv">
                                     <p>-1</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-1" id="pyramidShape-1">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-1" autocomplete="off" id="pyramidShape-1">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
+                                        <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                         <option value="4">4</option>
@@ -488,9 +499,10 @@
 
                                 <div id="pyramidShape7" class="statementSelectorDiv">
                                     <p>0</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-0" id="pyramidShape-0">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape-0" autocomplete="off" id="pyramidShape-0">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
+                                        <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                         <option value="4">4</option>
@@ -505,9 +517,10 @@
 
                                 <div id="pyramidShape8" class="statementSelectorDiv">
                                     <p>+1</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" id="select0" name="pyramidShape+1">
+                                    <select class="pyramidShaper useLocal useLocalSelect" autocomplete="off" id="select0" name="pyramidShape+1">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
+                                        <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                         <option value="4">4</option>
@@ -522,7 +535,7 @@
 
                                 <div id="pyramidShape9" class="statementSelectorDiv">
                                     <p>+2</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+2" id="pyramidShape+2">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+2" autocomplete="off" id="pyramidShape+2">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -540,7 +553,7 @@
 
                                 <div id="pyramidShape10" class="statementSelectorDiv">
                                     <p>+3</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+3" id="pyramidShape+3">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+3" autocomplete="off" id="pyramidShape+3">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -558,7 +571,7 @@
 
                                 <div id="pyramidShape11" class="statementSelectorDiv">
                                     <p>+4</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+4" id="pyramidShape+4">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+4" autocomplete="off" id="pyramidShape+4">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -576,7 +589,7 @@
 
                                 <div id="pyramidShape12" class="statementSelectorDiv">
                                     <p>+5</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+5" id="pyramidShape+5">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+5" autocomplete="off" id="pyramidShape+5">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -594,7 +607,7 @@
 
                                 <div id="pyramidShape13" class="statementSelectorDiv">
                                     <p>+6</p>
-                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+6" id="pyramidShape+6">
+                                    <select class="pyramidShaper useLocal useLocalSelect" name="pyramidShape+6" autocomplete="off" id="pyramidShape+6">
                                         <option disabled>?</option>
                                         <option selected value="0">0</option>
                                         <option value="1">1</option>
@@ -748,110 +761,63 @@
                     <div class="flex-container" id="stack1">
                         <div class="row" id="rstack1"></div>
                     </div>
-                    <!-- end stack 1  -->
-
                     <div class="flex-container" id="stack2">
                         <div class="row" id="rstack2"></div>
                     </div>
-                    <!-- end stack 2  -->
-
                     <div class="flex-container" id="stack3">
                         <div class="row" id="rstack3"></div>
                     </div>
-                    <!-- end stack 3  -->
-
                     <div class="flex-container" id="stack4">
                         <div class="row" id="rstack4"></div>
                     </div>
-                    <!-- end stack 4  -->
-
                     <div class="flex-container" id="stack5">
                         <div class="row" id="rstack5"></div>
                     </div>
-                    <!-- end stack 5  -->
-
                     <div class="flex-container" id="stack6">
                         <div class="row" id="rstack6"></div>
                     </div>
-                    <!-- end stack 6  -->
-
-
                     <div class="flex-container" id="stack7">
                         <div class="row" id="rstack7"></div>
                     </div>
-                    <!-- end stack 7  -->
-
                     <div class="flex-container" id="stack8">
                         <div class="row" id="rstack8"></div>
                     </div>
-                    <!-- end stack 8  -->
-
                     <div class="flex-container" id="stack9">
                         <div class="row" id="rstack9"></div>
                     </div>
-                    <!-- end stack 9  -->
-
                     <div class="flex-container" id="stack10">
                         <div class="row" id="rstack10"></div>
                     </div>
-                    <!-- end stack 10  -->
-
-
                     <div class="flex-container" id="stack11">
                         <div class="row" id="rstack11"></div>
                     </div>
-                    <!-- end stack 11  -->
-
-
                     <div class="flex-container" id="stack12">
                         <div class="row" id="rstack12"></div>
                     </div>
-                    <!-- end stack 12  -->
-
                     <div class="flex-container" id="stack13">
                         <div class="row" id="rstack13"></div>
                     </div>
-                    <!-- end stack 13  -->
-
-
                     <div class="flex-container" id="stack14">
                         <div class="row" id="rstack14"></div>
                     </div>
-                    <!-- end stack 14  -->
-
                     <div class="flex-container" id="stack15">
                         <div class="row" id="rstack15"></div>
                     </div>
-                    <!-- end stack 15  -->
-
                     <div class="flex-container" id="stack16">
                         <div class="row" id="rstack16"></div>
                     </div>
-                    <!-- end stack 16  -->
-
                     <div class="flex-container" id="stack17">
                         <div class="row" id="rstack17"></div>
                     </div>
-                    <!-- end stack 17  -->
-
-
                     <div class="flex-container" id="stack18">
                         <div class="row" id="rstack18"></div>
                     </div>
-                    <!-- end stack 18  -->
-
-
                     <div class="flex-container" id="stack19">
                         <div class="row" id="rstack19"></div>
                     </div>
-                    <!-- end stack 19  -->
-
                     <div class="flex-container" id="stack20">
                         <div class="row" id="rstack20"></div>
                     </div>
-                    <!-- end stack 20  -->
-
-
                 </div>
                 <!-- end pyramid container-->
 
@@ -863,13 +829,15 @@
                         <div class="form-group">
 
                             <div class="row">
-                                <div class="eleven columns" style="white-space:nowrap">
-                                    <label style="width:600px" data-i18n="Respondent id"><span style="color:#a6a6a6" data-i18n="Names are truncated to 8 characters for PQMethod export"></span>
-                                    </label>
+                                <div id="inputDisableButtonsDiv">
+                                    <input type="button" id="disableErrorSoundButton" class=" blackHover" data-i18n="[value]Disable Audio Error Warning" />
+                                </div>
+
+                                <div id="resIdDiv" class="twelve columns" style="white-space:nowrap">
+                                    <label data-i18n="Respondent id - (IDs are truncated to 8 characters for PQMethod Export)"></label>
                                     <div id="respondentNameInput">
                                         <input type="text" class="form-control tabable" name="name" id="respondentNameInput1" placeholder="Name" autocomplete="off">
                                     </div>
-
                                 </div>
 
                             </div>
@@ -985,29 +953,11 @@
                                     </ul>
                                 </div>
 
-                                <!--
-                                <div id="manualInputSuccessDiv">
-                                    <h4>Sort is symmetric! </h4>
-                                </div>
--->
                             </div>
                             <!--   end submit button div-->
-
-
                         </div>
                         <!-- end form group div -->
                     </form>
-
-                    <div class="modal manualInputModal" id="addSortModal">
-                        <header>
-                            <h2 data-i18n="Sort Added"></h2>
-                        </header>
-                    </div>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
                     <br>
                     <br>
                     <div>
@@ -1016,8 +966,6 @@
                         </div>
                         <div id="sortExportButtonDiv">
                             <input type="button" id="beginMIAnalysis" class="blackHover" data-i18n="[value]Stage data for analysis" />
-                            <!--                            <input type="button" id="exportSortsExcel" class=" blackHover" value="Export to Excel" />-->
-                            <input type="button" id="exportSortsPQM" class=" blackHover" data-i18n="[value]Export to pqmethod dat file" />
                         </div>
                     </div>
                     <div>
@@ -1065,33 +1013,28 @@
             <!-- Subsection PASTE EXCEL DATA Layout    ***************************––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
             <div id="pasteExcelDataDiv">
-
-
                 <br>
                 <div id="excelActionButtonsContainerDiv">
                     <div class="choose_file">
-                        <span data-i18n="Upload user-coded excel file"></span>
+                        <span data-i18n="TYPE 1　 EXCEL FILE WITH DATA SORTED BY Q-SORT VALUE"></span>
                         <input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="fileSelect" type="file" />
                     </div>
                     <div class="choose_file">
-                        <span data-i18n="Upload ken-q results file"></span>
-                        <input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="fileSelectKenq" type="file" />
+                        <span data-i18n="TYPE 2　 EXCEL FILE WITH DATA SORTED BY STATEMENT NUMBER"></span>
+                        <input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="fileSelectUnforced" type="file" />
                     </div>
-                    <div id="excelActionButtonsDiv">
-                        <!--                       <input type="button" id="beginExcelAnalysis" class="button-primary blackHover" value="Begin Analysis" />-->
-                        <input type="button" id="exportExcelSortsPQM" class=" blackHover" data-i18n="[value]Export q-sorts to pqmethod" />
+                    <div class="choose_file">
+                        <span data-i18n="TYPE 3　 KEN-Q OUTPUT FILE FROM PREVIOUS SESSION"></span>
+                        <input accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" id="fileSelectKenq" type="file" />
                     </div>
                 </div>
                 <br>
                 <div class="row">
-                    <a class="helperText u-pull-right rightMargin linkUnderline" href="https://docs.google.com/spreadsheets/d/1mT6VWxG7Dde8ltIwTR7s0LP56k23Mmk_Ryj2g7a61_8/edit?usp=sharing" target="_blank" style="target-new: tab;" data-i18n="Download a user-coded excel example file here"></a>
+                    <p class="helperText u-pull-right rightMargin">
+                        Click on the yellow button above for a tutorial on how to import Excel data.
+                    </p>
+                    <!-- <a class="helperText u-pull-right rightMargin linkUnderline" href="https://docs.google.com/spreadsheets/d/1mT6VWxG7Dde8ltIwTR7s0LP56k23Mmk_Ryj2g7a61_8/edit?usp=sharing" target="_blank" style="target-new: tab;" data-i18n="Download an example Excel file for Type 1"></a> -->
                 </div>
-
-                <div id="excelUploadErrorDiv">
-                    <h3></h3>
-                    <ul></ul>
-                </div>
-
 
                 <div class="divBlock">
 
@@ -1115,15 +1058,15 @@
                 </div>
                 <div class="jsonSelect hidden">
                     <br />
-                    <h5 class="pastePQM" data-i18n="Select respondent ID:"></h5>
+                    <h5 class="pastePQM" data-i18n="Select Respondent ID"></h5>
                     <select id="jsonIdSelect" autocomplete="off" class="singleLIne vertical selectBox">
                         <!--  <option disabled="disabled" selected="selected">Choose option</option>-->
                         <option value="id" selected="selected">ID</option>
                     </select>
                     <br />
-                    <h5 class="pastePQM" data-i18n="Paste Q-sort statements"></h5>
+                    <h5 class="pastePQM" data-i18n="Paste q-sort statements"></h5>
                     <textarea id="statementsInputBoxJson" class="textbox inputBoxAutoWidth" name="rawStatementsJson" rows="40"></textarea>
-                    <input type="button" class="blackHover vertical" id="stageJsonData" data-i18n="[value]STAGE DATA FOR ANALYSIS">
+                    <input type="button" class="blackHover vertical" id="stageJsonData" data-i18n="[value]Stage data for analysis">
                 </div>
             </div>
 
@@ -1131,13 +1074,19 @@
             <div class="analysisDataDiv">
                 <div class="factorVizOptionsDivHeader">
                     <h4 data-i18n="Analysis data" class="pastePQM"></h4>
-                    <div class="jsonDownloadPQ hidden pastePQM u-pull-right">
+                    <div class="jsonDownloadPQ hidden pastePQM pqmButton u-pull-right">
                         <input type="button" id="exportJsonSortsPQM" class="vertical downloadHover" data-i18n="[value]Export q-sorts to pqmethod" />
                     </div>
+                    <div class="jsonDownloadPQ pastePQM u-pull-right">
+                        <input type="button" class="blackHover" name="clearAnalysisDataPanel" id="clearAnalysisDataButton" data-i18n="[value]Clear Analysis Data" />
+                    </div>
+
                 </div>
                 <ol id="existingDatabaseStatementList"></ol>
                 <br>
                 <ul id="existingDatabaseRespondentList"></ul>
+                <br>
+                <div id="nonSymmetricSortsDiv"></div>
             </div>
 
 
@@ -1151,7 +1100,13 @@
             <div class="bigNumberDiv">
                 <p>2</p>
             </div>
-            <h4 class="specialH4" data-i18n="Correlation matrix"></h4>
+            <div class="row">
+                <h4 class="specialH4" data-i18n="Correlation matrix"></h4>
+                <!-- <div class="helpImageDiv vertical u-pull-right rightMargin">
+                    <a href="https://shawnbanasick.github.io/ken-q-analysis-help/correlations.html" target="_blank" style="target-new: tab;"></a>
+                    <p class="helpImageDivText"><strong>?</strong></p> -->
+                <!-- </div> -->
+            </div>
             <div class="specialH4" id="correlationsSpinner"></div>
             <div id="localDataButtonDiv">
                 <input type="button" class="blackHover" id="beginAnalysisLocalData" data-i18n="[value]Create correlation table">
@@ -1172,7 +1127,13 @@
             <div class="bigNumberDiv">
                 <p>3</p>
             </div>
-            <h4 class="singleLine" data-i18n="Factor extraction"></h4>
+            <div class="row">
+                <h4 class="singleLine" data-i18n="Factor extraction"></h4>
+                <!-- <div class="helpImageDiv vertical u-pull-right rightMargin">
+                    <a href="https://shawnbanasick.github.io/ken-q-analysis-help/extractions.html" target="_blank" style="target-new: tab;"></a>
+                    <p class="helpImageDivText"><strong>?</strong></p>
+                </div> -->
+            </div>
             <div class="row">
                 <div class="singleLine">
                     <select id="factorSelect" autocomplete="off" class="singleLIne vertical">
@@ -1225,9 +1186,13 @@
             <div class="bigNumberDiv">
                 <p>4</p>
             </div>
-            <h4 class="singleLine" data-i18n="Factor rotation"></h4>
-
-
+            <div class="row">
+                <h4 class="singleLine" data-i18n="Factor rotation"></h4>
+                <!-- <div class="helpImageDiv vertical u-pull-right rightMargin">
+                    <a href="https://shawnbanasick.github.io/ken-q-analysis-help/rotation.html" target="_blank" style="target-new: tab;"></a>
+                    <p class="helpImageDivText"><strong>?</strong></p>
+                </div> -->
+            </div>
             <br>
             <div class="row">
                 <h5 id="judgementFactorSelectText" class=" vertical singleLine" data-i18n="How many factors to keep for rotation"></h5>
@@ -1313,63 +1278,6 @@
 
                 <input class="rotationChartOptionsButton blackHover" name="optionsRotationChartButton" type="button" data-i18n="[value]Rotation Chart Options" />
 
-                <div class="modal" id="rotationChartOptionsModal">
-                    <header>
-                        <h3 data-i18n="Rotation Chart Options"></h3>
-                    </header>
-                    <br>
-                    <div>
-                        <div class="row">
-                            <span class="singleLine" data-i18n="Factor Color A"></span>
-                            <input class="vizInput4 jscolor {position:'left', closable:true, hash:true, closeText:'Select'}" id="factorACustomColorInputBox" value="#7fffd4" autocomplete="off" style="display: inline-block; left:300px;" />
-                        </div>
-
-                        <div class="row">
-                            <span class="singleLine" data-i18n="Factor Color B"></span>
-                            <input class="vizInput4 jscolor {position:'left', closable:true, hash:true, closeText:'Select'}" id="factorBCustomColorInputBox" value="#FFE4C4" autocomplete="off" style="display: inline-block; left:300px;" />
-                        </div>
-
-                        <div class="row" id="removeCircleHighlightDiv">
-                            <p class="" data-i18n="Remove circle highlighting"></p>
-                            <label for="removeCircleHighlightYes" class="radioHighlight2 vertical vizButtonYes" data-i18n="YES"></label>
-                            <input id="removeCircleHighlightYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
-                            <label for="removeCircleHighlightNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="NO"></label>
-                            <input id="removeCircleHighlightNo" name="legend" type="radio" autocomplete="off" value="No" />
-                        </div>
-
-                        <div class="row" id="removeCirclesDiv">
-                            <p class="" data-i18n="Remove circles"></p>
-                            <label for="removeCircleYes" class="radioHighlight2 vertical vizButtonYes" data-i18n="YES"></label>
-                            <input id="removeCircleYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
-                            <label for="removeCircleNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="NO"></label>
-                            <input id="removeCircleNo" name="legend" type="radio" autocomplete="off" value="No" />
-                        </div>
-
-                        <div class="row" id="changeFontSizeDiv">
-                            <p class="" data-i18n="Adjust font size?"></p>
-                            <label for="changeFontSizeYes" class="radioHighlight2 vertical vizButtonYes" data-i18n="YES"></label>
-                            <input id="changeFontSizeYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
-                            <label for="changeFontSizeNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="NO"></label>
-                            <input id="changeFontSizeNo" name="legend" type="radio" autocomplete="off" value="No" />
-                            <input type="text" name="chartFontSizeInput" autocomplete="off" id="chartFontSizeInputBox" class="vizInput" placeholder="9">
-                        </div>
-
-
-                        <div class="row" id="chartIdentifierDiv">
-                            <p class="" data-i18n="Chart identifier"></p>
-                            <label for="chartIdentifierNumberYes" class="radioHighlight2 vertical vizButtonYes" data-i18n="Number"></label>
-                            <input id="chartIdentifierNumberYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
-                            <label for="chartIdentifierNumberNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="Respondent"></label>
-                            <input id="chartIdentifierNumberNo" name="legend" type="radio" autocomplete="off" value="No" />
-                        </div>
-
-                    </div>
-                    <br>
-                    <div>
-                        <button class="button-cancel u-pull-left" data-i18n="Cancel"></button>
-                        <button class="button-submit u-pull-right applyChanges" data-i18n="Apply"></button>
-                    </div>
-                </div>
 
             </div>
         </div>
@@ -1384,7 +1292,13 @@
                 <div class="bigNumberDiv">
                     <p>5</p>
                 </div>
-                <h4 class="singleLine" data-i18n="Factor loadings – flagging"></h4>
+                <div class="row">
+                    <h4 class="singleLine" data-i18n="Factor loadings – flagging"></h4>
+                    <!-- <div class="helpImageDiv vertical u-pull-right rightMargin">
+                        <a href="https://shawnbanasick.github.io/ken-q-analysis-help/loadings.html" target="_blank" style="target-new: tab;"></a>
+                        <p class="helpImageDivText"><strong>?</strong></p>
+                    </div> -->
+                </div>
                 <div id="factorLoadingContainerDiv" class="hidden">
                     <div class="row">
                         <input type="button" class="blackHover u-pull-right rightMargin" id="autoflagButton" autocomplete="off" data-i18n="[value]Auto flag factor loadings">
@@ -1424,53 +1338,12 @@
                             <input type="button" class="blackHover" id="invertFactorButton" data-i18n="[value]Invert factor">
                         </div>
                         <div class="three columns">
-                            <input type="button" class="blackHover" id="splitFactorButton" data-i18n="[value]Split bipolar factor">
+                            <input type="button" class="blackHover" id="splitFactorButton" data-i18n="[value]Split Bipolar Factor">
                         </div>
                     </div>
                     <br>
-                    <div class="modal" id="invertModal">
-                        <header>
-                            <h2 data-i18n="Invert factor"></h2>
-
-                        </header>
-                        <div>
-                            <p data-i18n="Please Input a Factor Number"></p>
-                            <input type="number" class="u-pull-full input-inside" max="8" min="1" name="invertFactorInput">
-                        </div>
-                        <br>
-                        <div>
-                            <button class="button-cancel u-pull-left" data-i18n="Cancel"></button>
-                            <button class="button-submit u-pull-right" data-i18n="Submit"></button>
-                        </div>
-                    </div>
-                    <div class="modal successModal">
-                        <header>
-                            <h2 data-i18n="Success"></h2>
-                        </header>
-                    </div>
-                    <div class="modal functionDisabledModal">
-                        <header>
-                            <h2 data-i18n="This functionality is disabled after splitting a bipolar factor"></h2>
-                        </header>
-                    </div>
-
                     <br>
                     <br>
-                    <div class="modal" id="splitModal">
-                        <header>
-                            <h2 data-i18n="Split bipolar factor"></h2>
-                        </header>
-                        <div>
-                            <p data-i18n="Input the Number of"></p>
-                            <p data-i18n="the Factor to Split"></p>
-                            <input type="number" class="u-pull-full input-inside" max="8" min="1" name="splitFactorInput">
-                        </div>
-                        <br>
-                        <div>
-                            <button class="button-cancel u-pull-left" data-i18n="Cancel"></button>
-                            <button class="button-submit u-pull-right" data-i18n="Submit"></button>
-                        </div>
-                    </div>
                     <br>
                     <div class="row">
                         <div class="eleven columns">
@@ -1504,10 +1377,15 @@
             <div class="bigNumberDiv">
                 <p>6</p>
             </div>
-            <h4 class="singleLine" data-i18n="Results"></h4>
+            <div class="row">
+                <h4 class="singleLine" data-i18n="Results"></h4>
+                <!-- <div class="helpImageDiv vertical u-pull-right rightMargin">
+                    <a href="https://shawnbanasick.github.io/ken-q-analysis-help/results.html" target="_blank" style="target-new: tab;"></a>
+                    <p class="helpImageDivText"><strong>?</strong></p>
+                </div> -->
+            </div>
             <br>
             <br>
-
             <div>
                 <input type="button" class="blackHover" name="displayFactorSelection" id="selectFactorsForOutputButton" data-i18n="[value]Choose factors for output">
             </div>
@@ -1522,65 +1400,11 @@
 
                 <input type="button" class="downloadHover" name="outputResults" id="downloadResultsButton" autocomplete="off" data-i18n="[value]Download complete output">
 
-                <input type="button" class="deleteHover u-pull-right" name="clearStorage" autocomplete="off" id="clearStorageButton" data-i18n="[value]Permanently delete all locally-stored data">
-            </div>
-
-            <div class="modal" id="deleteLocalDataModal">
-                <header>
-                    <h2 data-i18n="Delete Ken-Q Data"></h2>
-                    <!--<button class="close toggleModal">Close</button>-->
-                </header>
-                <div>
-                    <p data-i18n="Delete all locally-saved data"></p>
-                    <br>
-                    <br>
-                    <p><strong data-i18n="The data will be permanently deleted and cannot be recovered"></strong></p>
-                    <br>
-                    <br>
-                    <p data-i18n="Are you sure you want to delete this data"></p>
-                </div>
-                <div>
-                    <button class="button-cancel u-pull-left" data-i18n="No, keep data"></button>
-                </div>
-                <div>
-                    <button id="deleteLocalDataConfirmButton" class="button-error u-pull-right" data-i18n="Delete"></button>
-                </div>
-            </div>
-            <div class="modal successDeleteModal">
-                <header>
-                    <h2 data-i18n="Data Deleted"></h2>
-                </header>
+                <input type="button" class="deleteHover u-pull-right rightMargin" name="clearStorage" autocomplete="off" id="clearStorageButton" data-i18n="[value]Permanently delete all locally-stored data">
             </div>
 
             <br>
             <br>
-            <div class="modal" id="noFactorLoadingModal">
-                <header>
-                    <h2 class="u-full-width" data-i18n="Error"></h2>
-                    <!--<button class="close toggleModal">Close</button>-->
-                </header>
-                <div>
-                    <p data-i18n="One of the selected factors has no flagged sort. Please re-select the factors for analysis"></p>
-                </div>
-                <div>
-                    <button class="button-cancel" data-i18n="Cancel"></button>
-                </div>
-            </div>
-
-
-            <div class="modal" id="sortLoadingMultipleFactorsModal">
-                <header>
-                    <h2 class="u-full-width" data-i18n="Error"></h2>
-                    <!--<button class="close toggleModal">Close</button>-->
-                </header>
-                <br>
-                <div id="multipleFlagModalMessageDiv"></div>
-                <div>
-                    <button class="button-cancel" data-i18n="Cancel"></button>
-                </div>
-
-
-            </div>
 
             <div id="factorVizOptionsDiv">
                 <div class="row factorVizOptionsDivHeader">
@@ -1595,7 +1419,8 @@
                 <div id="vizPanelHideContainer">
                     <br />
                     <div class="panelIntroTextSpanDiv">
-                        <span class="displayPanelIntroText" data-i18n="panelText1"></span><span class="displayPanelIntroText" data-i18n="panelText2"></span><span class="displayPanelIntroText" data-i18n="panelText3"></span><span class="displayPanelIntroText" data-i18n="panelText4"></span><span class="displayPanelIntroText" style="background-color: #FFFFb2" data-i18n="panelText5"></span>
+                        <span class="displayPanelIntroText" data-i18n="panelText1"></span><span class="displayPanelIntroText" data-i18n="panelText2"></span><span class="displayPanelIntroText" data-i18n="panelText3"></span>
+                        <span class="displayPanelIntroText" data-i18n="panelText4"></span><span class="displayPanelIntroText" style="background-color: #FFFFb2" data-i18n="panelText5"></span>
                     </div>
                     <br />
                     <p class="factorVizOptionsHeaderText" data-i18n="General"></p>
@@ -1734,7 +1559,7 @@
                         <label for="setConsensusSymbolNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="STRIPE"></label>
                         <input id="setConsensusSymbolNo" name="legend" type="radio" autocomplete="off" value="STRIPE" />
                         <p class="factorVizOptionsText" data-i18n="Set custom color?"></p>
-                        <input class="vizInput4 jscolor {position:'left', closable:true, hash:true, closeText:'Select'}" id="consensusCustomColorInputBox" value="#D6D6D6" autocomplete="off" style="display: inline-block; left:300px;" />
+                        <input class="vizInput4" type="color" name="consensusCustomColor" id="consensusCustomColorInputBox" value="#D6D6D6" autocomplete="off" style="display: inline-block; left:300px;" />
                     </div>
 
                     <div class="row">
@@ -1775,7 +1600,7 @@
                             <label for="setMatchCountCautionIndicatorNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="STRIPE"></label>
                             <input id="setMatchCountCautionIndicatorNo" name="legend" type="radio" autocomplete="off" value="STRIPE" />
                             <p class="factorVizOptionsText" data-i18n="Set custom color?"></p>
-                            <input class="vizInput4 jscolor {position:'left', closable:true, hash:true, closeText:'Select'}" id="matchCountCustomColorInputBox" value="#D6D6D6" autocomplete="off" style="display: inline-block; left:300px;" />
+                            <input class="vizInput4" type="color" name="matchCountCustomColor" id="matchCountCustomColorInputBox" value="#D6D6D6" autocomplete="off" style="display: inline-block; left:300px;" />
                         </div>
 
                         <div class="row" id="setMatchConsensusOverlapIndicatorDiv">
@@ -1785,7 +1610,7 @@
                             <label for="setMatchConsensusOverlapIndicatorNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="CROSSHATCH"></label>
                             <input id="setMatchConsensusOverlapIndicatorNo" name="legend" type="radio" autocomplete="off" value="CROSSHATCH" />
                             <p class="factorVizOptionsText" data-i18n="Set custom color?"></p>
-                            <input class="vizInput4 jscolor {position:'left', closable:true, hash:true, closeText:'Select'}" id="matchCountOverlapColorInputBox" value="#D6D6D6" autocomplete="off" style="display: inline-block; left:300px;" />
+                            <input type="color" class="vizInput4" name="overlapCustomColor" id="matchCountOverlapColorInputBox" value="#D6D6D6" autocomplete="off" style="display: inline-block; left:300px;" />
                         </div>
 
 
@@ -1858,18 +1683,154 @@
                 <br>
                 <h5 class="eleven columns">Libraries:</h5>
                 <ul class="eleven columns">
+                    <li>SheetJS (Apache license, Version 2.0)</li>
+                    <li>iziModal (Apache license, Version 2.0)</li>
                     <li>D3.js (BSD license)</li>
-                    <li>AlaSQL (MIT license)</li>
                     <li>Datatables JQuery Plug-in (MIT license)</li>
                     <li>Iscroll-Lite (MIT license)</li>
                     <li>JQuery (MIT license)</li>
                     <li>Lo-Dash (MIT license)</li>
+                    <li>Filesaver.js - (MIT license)</li>
                     <li>numeric.js - Copyright (C) 2011 by Sébastien Loisel</li>
-                    <li>jscolor (GNU GPL license v3)</li>
+                    <li>Blob.js - Copyright (C) 2014 by Eli Grey</li>
                 </ul>
             </div>
         </div>
         <!-- end of section 7 nav div -->
+
+        <!-- MODAL DIVS  -->
+        <!-- MODAL DIVS  -->
+        <!-- MODAL DIVS  -->
+        <!-- Manual Input Succes  -->
+        <div class="iziModal inputSuccess" id="addSortModal">
+        </div>
+
+        <!-- Judgemental Rotation Options Panel  -->
+        <div class="iziModal kenqModal" id="rotationChartOptionsModal">
+            <div>
+                <div id="rotationChartOptionsModalADiv">
+                    <span class="singleLine" data-i18n="Factor Color A"></span>
+                    <input type="color" name="significanceColorAPrep" class="vizInput4 color-input vertical" data-huebee id="factorACustomColorInputBox" value="#7fffd4" autocomplete="off" style="display: inline-block; left:300px;" />
+                </div>
+
+                <div id="rotationChartOptionsModalBDiv">
+                    <span class="singleLine" data-i18n="Factor Color B"></span>
+                    <input type="color" name="significanceColorBPrep" class="vizInput4 color-input vertical" data-huebee id="factorBCustomColorInputBox" value="#FFE4C4" autocomplete="off" style="display: inline-block; left:300px;" />
+                </div>
+
+                <div id="removeCircleHighlightDiv">
+                    <p class="" data-i18n="Remove circle highlighting"></p>
+                    <label for="removeCircleHighlightYes" class="radioHighlight2 vertical vizButtonYes" data-i18n="YES"></label>
+                    <input id="removeCircleHighlightYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="removeCircleHighlightNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="NO"></label>
+                    <input id="removeCircleHighlightNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+
+                <div id="removeCirclesDiv">
+                    <p class="" data-i18n="Remove Circles"></p>
+                    <label for="removeCircleYes" class="radioHighlight2 vertical vizButtonYes" data-i18n="YES"></label>
+                    <input id="removeCircleYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="removeCircleNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="NO"></label>
+                    <input id="removeCircleNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+
+                <div id="changeFontSizeDiv">
+                    <p class="" data-i18n="Adjust font size?"></p>
+                    <label for="changeFontSizeYes" class="radioHighlight2 vertical vizButtonYes" data-i18n="YES"></label>
+                    <input id="changeFontSizeYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="changeFontSizeNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="NO"></label>
+                    <input id="changeFontSizeNo" name="legend" type="radio" autocomplete="off" value="No" />
+                    <input type="text" name="chartFontSizeInput" autocomplete="off" id="chartFontSizeInputBox" class="vizInput" placeholder="9">
+                </div>
+
+
+                <div id="chartIdentifierDiv">
+                    <p class="" data-i18n="Chart identifier"></p>
+                    <label for="chartIdentifierNumberYes" class="radioHighlight2  vizButtonYes" data-i18n="Number"></label>
+                    <input id="chartIdentifierNumberYes" name="legend" type="radio" autocomplete="off" value="Yes" checked />
+                    <label for="chartIdentifierNumberNo" class="radioHighlight2 vertical vizButtonNo" data-i18n="Respondent"></label>
+                    <input id="chartIdentifierNumberNo" name="legend" type="radio" autocomplete="off" value="No" />
+                </div>
+
+            </div>
+            <br>
+            <div>
+                <button class="button-cancel blackHover u-pull-left" data-i18n="Close"></button>
+                <button class="u-pull-right blackHover applyChanges u-right-margin" data-i18n="Apply"></button>
+            </div>
+        </div>
+
+        <!-- Invert Factors  -->
+        <div class="iziModal" id="invertModal">
+            <div>
+                <p data-i18n="Please Input a Factor Number"></p>
+                <input type="number" class="u-pull-full input-inside" max="8" min="1" name="invertFactorInput">
+            </div>
+            <br>
+            <div>
+                <button class="button-submit blackHover u-pull-right" data-i18n="Submit"></button>
+            </div>
+        </div>
+
+        <!-- Function Disabled after Bipolar Factor Split  -->
+        <div class="iziModal" id="functionDisabledModal">
+            <p data-i18n="This functionality is disabled after splitting a bipolar factor"></p>
+        </div>
+
+        <!-- Split Factor Modal  -->
+        <div class="iziModal" id="splitModal">
+            <div>
+                <p data-i18n="Input the Number of the Factor to Split"></p>
+                <input type="number" class="u-pull-full input-inside" max="8" min="1" name="splitFactorInput">
+            </div>
+            <br>
+            <div>
+                <button class="button-submit u-pull-right" data-i18n="Submit"></button>
+            </div>
+        </div>
+
+        <!-- Delete Local Data Modal  -->
+        <div class="iziModal" id="deleteLocalDataModal">
+            <div>
+                <p data-i18n="Delete all locally-saved data"></p>
+                <br>
+                <br>
+                <p><strong data-i18n="The data will be permanently deleted and cannot be recovered"></strong></p>
+                <br>
+                <br>
+                <p data-i18n="Are you sure you want to delete this data"></p>
+            </div>
+            <div>
+                <button class="button-cancel blackHover u-pull-left" data-i18n="No, keep data"></button>
+            </div>
+            <div>
+                <button id="deleteLocalDataConfirmButton" class="button-error deleteHover u-pull-right" data-i18n="Delete"></button>
+            </div>
+        </div>
+
+        <!-- Data Successfully Deleted Modal  -->
+        <div class="iziModal successDeleteModal" id="localDataDeleteSuccessfulModal">
+            <p data-i18n="Data Deleted"></p>
+        </div>
+
+        <!-- Factor without flagged sort Modal  -->
+        <div class="iziModal" id="noFactorLoadingModal">
+            <div>
+                <p data-i18n="One of the selected factors has no flagged sort"></p>
+                <p data-i18n="Please re-select the factors for analysis"></p>
+            </div>
+        </div>
+
+        <!-- Sort flagged on multiple factors Modal  -->
+        <div class="iziModal" id="sortLoadingMultipleFactorsModal">
+            <div id="multipleFlagModalMessageDiv"></div>
+        </div>
+
+        <!-- Target Modal for assorted error messaging -->
+        <div class="iziModal" id="genericErrorModal">
+            <div class="errorPanel"></div>
+        </div>
+
 
     </div>
     <!-- end skeleton document container div -->
@@ -1878,21 +1839,20 @@
 
 
     <!-- load Libraries -->
-    <script type="text/javascript" src="lib/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="lib/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="lib/iscroll-lite.js"></script>
     <script type="text/javascript" src="lib/lodash.js"></script>
     <script type="text/javascript" src="lib/jquery.singlePageNav.min.js"></script>
     <script type="text/javascript" src="lib/FileSaver.min.js"></script>
     <script type="text/javascript" src="lib/d3.min.js"></script>
-    <script type="text/javascript" src="lib/alasql.min.js"></script>
     <script type="text/javascript" src="lib/xlsx.core.min.js"></script>
     <script type="text/javascript" src="lib/datatables.min.js"></script>
     <script type="text/javascript" src="lib/dataTables.fixedColumns.js"></script>
     <script type="text/javascript" src="lib/numeric-1.2.6.min.js"></script>
     <script type="text/javascript" src="lib/i18next-1.6.3.min.js"></script>
     <script type="text/javascript" src="lib/d3-save-svg.min.js"></script>
-    <script type="text/javascript" src="lib/jscolor.min.js"></script>
-
+    <script type="text/javascript" src="lib/iziModal.min.js"></script>
+    <script type="text/javascript" src="lib/Blob.js"></script>
 
     <!-- load custom JS -->
     <script type="text/javascript" src="src/STATE.js"></script>
@@ -1909,14 +1869,15 @@
     <script type="text/javascript" src="src/DEMO.js"></script>
     <script type="text/javascript" src="src/ROTA.js"></script>
     <script type="text/javascript" src="src/OUTPUT.js"></script>
+    <script type="text/javascript" src="src/PRELIMOUT.js"></script>
     <script type="text/javascript" src="src/CENTROID.js"></script>
     <script type="text/javascript" src="src/FIREBASE.js"></script>
     <script type="text/javascript" src="src/CONTROLERS.js"></script>
 
     <script>
-        (function (i, s, o, g, r, a, m) {
+        (function(i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
+            i[r] = i[r] || function() {
                 (i[r].q = i[r].q || []).push(arguments)
             }, i[r].l = 1 * new Date();
             a = s.createElement(o),

@@ -95,8 +95,7 @@
 
 /* retina screens */
 
-@media (-webkit-min-device-pixel-ratio: 2),
-(min-resolution: 192dpi) {
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     .container {
         position: relative;
         /*
@@ -111,8 +110,7 @@ max-width: 1200px;
     }
 }
 
-.container .column,
-.container .columns {
+.container .column, .container .columns {
     float: left;
     width: 100%;
     box-sizing: border-box;
@@ -125,8 +123,7 @@ max-width: 1200px;
 */
 }
 
-.row .column:first-child,
-.row .columns:first-child {
+.row .column:first-child, .row .columns:first-child {
     margin-left: 0;
 }
 
@@ -134,12 +131,10 @@ max-width: 1200px;
 /* For devices larger than 550px */
 
 @media (min-width: 550px) {
-    .container .column,
-    .container .columns {
+    .container .column, .container .columns {
         margin-left: 4%;
     }
-    .container .one.column,
-    .container .one.columns {
+    .container .one.column, .container .one.columns {
         width: 8.66666666667%;
     }
     .container .two.columns {
@@ -259,7 +254,7 @@ body {
     color: #222;
 }
 
-body > .container {
+body>.container {
     width: 90%;
 }
 
@@ -267,12 +262,7 @@ body > .container {
 /* Typography
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
     font-weight: 300;
     margin-top: 0;
     margin-bottom: 2rem;
@@ -359,11 +349,7 @@ a:hover {
 /* Buttons
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-.button,
-button,
-input[type="submit"],
-input[type="reset"],
-input[type="button"] {
+.button, button, input[type="submit"], input[type="reset"], input[type="button"] {
     display: inline-block;
     background-color: transparent;
     border-radius: 4px;
@@ -383,41 +369,19 @@ input[type="button"] {
     box-sizing: border-box;
 }
 
-.button:hover,
-button:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover,
-input[type="button"]:hover,
-.button:focus,
-button:focus,
-input[type="submit"]:focus,
-input[type="reset"]:focus,
-input[type="button"]:focus {
+.button:hover, button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover, .button:focus, button:focus, input[type="submit"]:focus, input[type="reset"]:focus, input[type="button"]:focus {
     border-color: #888;
     color: #333;
     outline: 0;
 }
 
-.button.button-primary,
-button.button-primary,
-input[type="submit"].button-primary,
-input[type="reset"].button-primary,
-input[type="button"].button-primary {
+.button.button-primary, button.button-primary, input[type="submit"].button-primary, input[type="reset"].button-primary, input[type="button"].button-primary {
     color: #FFF;
     border-color: #38acec;
     background-color: #38acec;
 }
 
-.button.button-primary:hover,
-button.button-primary:hover,
-input[type="submit"].button-primary:hover,
-input[type="reset"].button-primary:hover,
-input[type="button"].button-primary:hover,
-.button.button-primary:focus,
-button.button-primary:focus,
-input[type="submit"].button-primary:focus,
-input[type="reset"].button-primary:focus,
-input[type="button"].button-primary:focus {
+.button.button-primary:hover, button.button-primary:hover, input[type="submit"].button-primary:hover, input[type="reset"].button-primary:hover, input[type="button"].button-primary:hover, .button.button-primary:focus, button.button-primary:focus, input[type="submit"].button-primary:focus, input[type="reset"].button-primary:focus, input[type="button"].button-primary:focus {
     background-color: #38acec;
     border-color: #38acec;
     color: #FFF;
@@ -427,11 +391,7 @@ input[type="button"].button-primary:focus {
 /* Forms
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-input[type="email"],
-input[type="search"],
-input[type="password"],
-textarea,
-select {
+input[type="email"], input[type="search"], input[type="password"], textarea, select {
     border: 1px solid #D1D1D1;
     height: 36px;
     padding: 6px 10px;
@@ -455,10 +415,7 @@ input[type="text"] {
 
 /* Removes awkard default styles on some inputs */
 
-input[type="email"],
-input[type="search"],
-input[type="text"],
-textarea {
+input[type="email"], input[type="search"], input[type="text"], textarea {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -471,18 +428,12 @@ textarea {
     font-family: "Lucida Console", Monaco, monospace;
 }
 
-input[type="email"]:focus,
-input[type="search"]:focus,
-input[type="text"]:focus,
-input[type="password"]:focus,
-textarea:focus,
-select:focus {
+input[type="email"]:focus, input[type="search"]:focus, input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
     border: 1px solid #33C3F0;
     outline: 0;
 }
 
-label,
-legend {
+label, legend {
     display: inline-block;
     font-weight: 600;
     margin-bottom: .5rem;
@@ -493,12 +444,11 @@ fieldset {
     padding: 0;
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+input[type="checkbox"], input[type="radio"] {
     display: inline-block;
 }
 
-label > .label-body {
+label>.label-body {
     display: inline-block;
     font-weight: normal;
     margin-left: .5rem;
@@ -531,16 +481,12 @@ ol {
     margin-left: 10px;
 }
 
-ol,
-ul {
+ol, ul {
     margin-top: 0;
     padding-left: 0;
 }
 
-ul ul,
-ul ol,
-ol ol,
-ol ul {
+ul ul, ul ol, ol ol, ol ul {
     margin: 1.5rem 0 1.5rem 3rem;
     font-size: 90%;
 }
@@ -563,7 +509,7 @@ code {
     white-space: nowrap;
 }
 
-pre > code {
+pre>code {
     display: block;
     padding: 1rem 1.5rem;
     white-space: pre;
@@ -573,20 +519,17 @@ pre > code {
 /* Tables
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-th,
-td {
+th, td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #E1E1E1;
 }
 
-th:first-child,
-td:first-child {
+th:first-child, td:first-child {
     padding-left: 0;
 }
 
-th:last-child,
-td:last-child {
+th:last-child, td:last-child {
     padding-right: 0;
 }
 
@@ -594,28 +537,15 @@ td:last-child {
 /* Spacing
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-button,
-.button {
+button, .button {
     margin-bottom: 1rem;
 }
 
-input,
-textarea,
-select,
-fieldset {
+input, textarea, select, fieldset {
     margin-bottom: 1.5rem;
 }
 
-pre,
-blockquote,
-form,
-dl,
-figure,
-table,
-p,
-ul,
-ol,
-form {
+pre, blockquote, form, dl, figure, table, p, ul, ol, form {
     margin-bottom: 2.5rem;
 }
 
@@ -664,9 +594,7 @@ hr {
 
 /* Self Clearing Goodness */
 
-.container:after,
-.row:after,
-.u-cf {
+.container:after, .row:after, .u-cf {
     content: "";
     display: table;
     clear: both;
@@ -952,8 +880,7 @@ a {
     font-weight: 700;
 }
 
-.single-page-nav a:hover,
-.single-page-nav .current {
+.single-page-nav a:hover, .single-page-nav .current {
     color: #38acec;
 }
 
@@ -975,7 +902,7 @@ a {
 
 #section1 {
     padding-top: 5em;
-    height: 1450px;
+    height: 1600px;
     padding-left: 20px;
 }
 
@@ -1087,7 +1014,7 @@ input.radio:empty {
 
 /* style label */
 
-input.radio:empty ~ label {
+input.radio:empty~label {
     position: relative;
     float: left;
     line-height: 2.5em;
@@ -1100,7 +1027,7 @@ input.radio:empty ~ label {
     user-select: none;
 }
 
-input.radio:empty ~ label:before {
+input.radio:empty~label:before {
     position: absolute;
     display: block;
     top: 0;
@@ -1115,34 +1042,34 @@ input.radio:empty ~ label:before {
 
 /* toggle hover */
 
-input.radio:hover:not(:checked) ~ label:before {
+input.radio:hover:not(:checked)~label:before {
     content: '\2714';
     text-indent: .9em;
     color: #C2C2C2;
 }
 
-input.radio:hover:not(:checked) ~ label {
+input.radio:hover:not(:checked)~label {
     color: #888;
 }
 
 
 /* toggle on */
 
-input.radio:checked ~ label:before {
+input.radio:checked~label:before {
     content: '\2714';
     text-indent: .9em;
     color: #eee;
     background-color: #38acec;
 }
 
-input.radio:checked ~ label {
+input.radio:checked~label {
     color: #777;
 }
 
 
 /* radio focus */
 
-input.radio:focus ~ label:before {
+input.radio:focus~label:before {
     box-shadow: 0 0 0 3px #999;
 }
 

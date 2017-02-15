@@ -127,10 +127,17 @@
             <div id="accordionDiv">
                 <h5>Change Log</h5>
                 <div id="accordion">
-                    <a href="#twelve" class="first" data-i18n="versionNumber"></a>
+                    <a href="#thirteen" class="first" data-i18n="versionNumber"></a>
+                    <div id="thirteen">
+                        <ul>
+                            <li>Fixed bug in Excel Type 2 import function</li>
+                            <li>Added statement export to PQMethod format</li>
+                        </ul>
+                    </div>
+                    <a href="#twelve">Beta Version 0.9.0 Test Release (February 9, 2017)</a>
                     <div id="twelve">
                         <ul>
-                            <li>Added support for projecs with unrestrained Q-sorts</li>
+                            <li>Added support for projects with unforced Q-sorts</li>
                             <li>Improved Excel file import and added support for import of statement-ordered Q-sorts</li>
                             <li>Improved modal messaging</li>
                             <li>Fixed bug in JSON csv file export that removed spaces between words</li>
@@ -1030,9 +1037,7 @@
                 </div>
                 <br>
                 <div class="row">
-                    <p class="helperText u-pull-right rightMargin">
-                        Click on the yellow button above for a tutorial on how to import Excel data.
-                    </p>
+                    <p class="helperText u-pull-right rightMargin" data-i18n="Click on the yellow button above for a tutorial on how to import Excel data."></p>
                     <!-- <a class="helperText u-pull-right rightMargin linkUnderline" href="https://docs.google.com/spreadsheets/d/1mT6VWxG7Dde8ltIwTR7s0LP56k23Mmk_Ryj2g7a61_8/edit?usp=sharing" target="_blank" style="target-new: tab;" data-i18n="Download an example Excel file for Type 1"></a> -->
                 </div>
 
@@ -1075,6 +1080,7 @@
                 <div class="factorVizOptionsDivHeader">
                     <h4 data-i18n="Analysis data" class="pastePQM"></h4>
                     <div class="jsonDownloadPQ hidden pastePQM pqmButton u-pull-right">
+                        <input type="button" id="exportStatementsPQM" class="vertical downloadHover" data-i18n="[value]Export statements to pqmethod" />
                         <input type="button" id="exportJsonSortsPQM" class="vertical downloadHover" data-i18n="[value]Export q-sorts to pqmethod" />
                     </div>
                     <div class="jsonDownloadPQ pastePQM u-pull-right">

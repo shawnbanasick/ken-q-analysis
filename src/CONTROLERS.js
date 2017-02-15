@@ -162,6 +162,13 @@
         });
     })();
 
+    (function() {
+        $("#exportStatementsPQM").on("click", function(e) {
+            e.preventDefault();
+            EXCEL.exportStatementsToPqmethod();
+        });
+    })();
+
 
     (function() {
         $("#clearAnalysisDataButton").on("click", function(e) {

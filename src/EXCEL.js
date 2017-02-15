@@ -119,6 +119,29 @@
         $("#excelSortExportBox").html("");
     };
 
+    EXCEL.exportStatementsToPqmethod = function() {
+        var temp = QAV.getState("qavCurrentStatements");
+        var $exportBox = $("#excelSortExportBox");
+        for (var i = 0; i < temp.length; i++) {
+            $exportBox.append(temp[i], "\n");
+        }
+        var exportData = $exportBox.val();
+
+        var timeStamp = UTIL.currentDate1() + "-" + UTIL.currentTime1();
+
+        var blob = new Blob([exportData], {
+            type: "text/plain;charset=us-ascii"
+        });
+        saveAs(blob, "Ken-Q_PQMethod_Statements_" + timeStamp + ".STA");
+
+        // clear the hidden export box
+        $("#excelSortExportBox").html("");
+
+    };
+
+
+
+
     //
     // **************************************************************************  model
     // ***** Import Hand-Coded File ****************************************************
@@ -614,8 +637,6 @@
         var prev;
         var multiplierArray = [];
 
-        // console.log(JSON.stringify(data));
-
         // QAV #1
         var qavProjectName1 = data[0][0][1];
         var qavProjectName = qavProjectName1.toString().replace(/,/g, '');
@@ -624,10 +645,15 @@
         // QAV #2
         var qavSortTriangleShape1 = data[0][0][3];
         var qavSortTriangleShape2 = qavSortTriangleShape1.toString().replace(/,,/g, '');
+        qavSortTriangleShape2 = removeTrailingCommaFromText(qavSortTriangleShape2);
         var qavSortTriangleShape3 = qavSortTriangleShape2.replace(/Sort Pattern,/, '');
-        var qavSortTriangleShape = JSON.parse("[" + qavSortTriangleShape3 + "]");
-        var copyTriangleShape = _.cloneDeep(qavSortTriangleShape);
-        var testSortTriangleShapeArray = _.cloneDeep(qavSortTriangleShape);
+        var tempTriangle2 = qavSortTriangleShape3.split(",");
+        for (var a in tempTriangle2) {
+            tempTriangle2[a] = parseInt(tempTriangle2[a], 10);
+        }
+        var copyTriangleShape = _.cloneDeep(tempTriangle2);
+        var testSortTriangleShapeArray = _.cloneDeep(tempTriangle2);
+        var qavSortTriangleShape = _.cloneDeep(tempTriangle2);
 
         // calculate multiplierArray
         for (var i = 0, iLen = copyTriangleShape.length; i < iLen; i++) {
@@ -669,15 +695,19 @@
         var respondentSortsArray = [];
         for (var m = 6; m < data[0][0].length; m++) {
             var temp1 = data[0][0][m].toString().replace(/,,/g, '');
+            // to prevent from reading empty cells as data
+            if (temp1.length < 5) {
+                break;
+            }
             // convert from array of strings to array of numbers
             sortsForDisplay.push(temp1);
+            temp1 = removeTrailingCommaFromText(temp1);
             var temp3 = temp1.split(',');
             var temp4 = temp3.shift();
             var temp5 = temp3.toString();
-            var temp2 = temp3.map(Number);
             qavRespondentNames.push(temp4);
             respondentSortsArray.push(temp5);
-            symmetryCheckArray.push(temp2);
+            symmetryCheckArray.push(temp3);
         }
 
         // todo - fix double coverage of res names
@@ -780,6 +810,14 @@
     }
 
     // HELPER FUNCTIONS
+
+    function removeTrailingCommaFromText(string) {
+        var lastChar = string.slice(-1);
+        if (lastChar == ',') {
+            string = string.slice(0, -1);
+        }
+        return string;
+    }
 
     // strips everything but letters and numbers and "." "-"
     function sanitizeSortValues(value) {

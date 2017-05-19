@@ -47,6 +47,17 @@
         var lessC = QAV.getState("lessC");
         var greaterA = QAV.getState("greaterA");
         var greaterB = QAV.getState("greaterB");
+
+        /*
+        console.log("less than 0 = " + lessThanZeroCounter);
+        console.log("greater than 0 = " + greaterThanZeroCounter);
+        console.log("equals 0 = " + equalsZeroCounter);
+        console.log("lessA = " + lessA);
+        console.log("lessB = " + lessB);
+        console.log("lessC = " + lessC);
+        console.log("greaterA = " + greaterA);
+        console.log("greaterB = " + greaterB);
+        */
     };
 
 
@@ -160,21 +171,33 @@
                 aaArray = [];
                 bbArray = [];
                 for (j = 0; j < jLoopLen; j++) { // for each sort
+                    console.log("V(L) is " + arrayFrag[j]);
                     temp = evenRound((arrayFrag[j] * arrayFrag[j]), 8); // CC
+                    console.log("CC is " + temp);
                     aaArray.push(evenRound((temp), 8)); // AA
                     var tempBB = evenRound((temp * temp), 8);
+                    console.log("BB is " + tempBB);
                     bbArray.push(evenRound((tempBB), 8));
                 }
                 AA = evenRound((VARIMAX.sumArray(aaArray)), 8);
+                console.log("AA is " + AA);
                 BB = evenRound((VARIMAX.sumArray(bbArray)), 8);
+                console.log("BB is " + BB);
+                // FN is number factors, AA is total of sumSquares, BB is square of total of sumSquares, FFN is number factors squared
+                // (3745)
+                //console.log("FN is " + FN);
+                //console.log("FFN is " + FFN);
                 FNBB = evenRound((FN * BB), 8);
                 AASQ = evenRound((AA * AA), 8);
                 //TV = evenRound(((FN * BB - AA * AA) / FFN), 8);
                 TV = evenRound(((FNBB - AASQ) / FFN), 8);
+                console.log("TV iterate is " + TV);
                 tvArray.push(TV);
             }
 
             TV = evenRound((VARIMAX.sumArray(tvArray)), 8);
+            console.log("final TV is " + TV);
+
 
             if (!NV) {
                 NV = 1;
@@ -184,12 +207,22 @@
                 NV = NV + 1;
             }
 
+            // console.log("NV is " + NV);
+            console.log("Rotation #" + NV);
+            console.log("TV = " + TV);
+            // console.log("TVLT = " + TVLT);
+            // console.log("TV-LT = " + (TV - TVLT));
+
+
             // testing for convergence
             if ((Math.abs(TV - TVLT)) < 0.00000001) {
                 NC = NC + 1;
             } else {
                 NC = 0;
             }
+
+            // jlog("NV - 225 = ", NV);
+            // jlog("NC - 3 = ", NC);
 
             var intermediateRotation = varimaxIteration(factorMatrix);
 
@@ -252,9 +285,14 @@
 
 
         for (var i = 0, iLen = factorALength; i < iLen; i++) {
+
+            // console.log("factor A is " + factorA[i]);
+            // console.log("factor B is " + factorB[i]);
+
             // (3776)
             U = (factorA[i] + factorB[i]) * (factorA[i] - factorB[i]);
             uArray.push(U);
+            // console.log("U is " + U);
             // (3777)
             tPrep = factorA[i] * factorB[i];
 
@@ -273,15 +311,27 @@
 
         // (3779)
         CC = evenRound(VARIMAX.sumArray(ccArray), 17);
+        console.log("CC is " + CC);
         // (3780)
         DD = evenRound(VARIMAX.sumArray(ddArray), 17);
+        console.log("DD is " + DD);
         // (3781)
         AA = evenRound(VARIMAX.sumArray(uArray), 17);
+        console.log("AA is " + AA);
+
         // (3782)
         BB = evenRound(VARIMAX.sumArray(tArray), 17);
+        console.log("BB is " + BB);
+
+        console.log("loop number should be here");
+
         // (3784-3785)
         var T = evenRound((DD - evenRound((2 * AA * evenRound((BB / factorALength), 17)), 17)), 17);
         var B = evenRound((CC - evenRound(((AA * AA - BB * BB) / factorALength), 8)), 8);
+
+        console.log("T is " + T);
+        console.log("B is " + B);
+
         var CospAndSinp = getComparisonOfNumAndDen(T, B);
         rotatedFactors = doFactorRotations(CospAndSinp, factorA, factorB);
         return rotatedFactors;
@@ -305,16 +355,20 @@
         if (T < B) {
             lessThanZeroCounter = lessThanZeroCounter + 1;
             QAV.setState("lessThanZeroCounter", lessThanZeroCounter);
+            // console.log("less");
             TAN4T = evenRound((Math.abs(T) / Math.abs(B)), 5);
+            // console.log("TAN4T", TAN4T);
             if (TAN4T < 0.00116) {
                 if (B >= 0) {
                     lessA = lessA + 1;
                     QAV.setState("lessA", lessA);
+                    // console.log("less A");
                     shouldSkipRotation = true;
                     return [SINP, COSP, shouldSkipRotation];
                 } else {
                     lessB = lessB + 1;
                     QAV.setState("lessB", lessB);
+                    //   console.log("less B");
                     SINP = 0.7071066;
                     COSP = 0.7071066;
                     return [SINP, COSP, shouldSkipRotation];
@@ -323,38 +377,52 @@
                 // variables cascade to below
                 lessC = lessC + 1;
                 QAV.setState("lessC", lessC);
+                //   console.log("less C");
+
                 COS4T = evenRound((1.0 / evenRound(Math.sqrt(1.0 + TAN4T * TAN4T), 8)), 8);
                 SIN4T = evenRound((TAN4T * COS4T), 8);
             }
         } else if (T === B) {
+            // console.log("equals");
             equalsZeroCounter = equalsZeroCounter + 1;
             QAV.setState("equalsZeroCounter", equalsZeroCounter);
 
             if ((T + B) < 0.00116) {
+                //     console.log("equals skip");
                 shouldSkipRotation = true;
                 return [SINP, COSP, shouldSkipRotation];
             } else {
+                // variables cascade to below
+                //     console.log("equals B - constants");
                 COS4T = 0.7071066;
                 SIN4T = 0.7071066;
             }
         } else { // case (T > B)
+            // console.log("greater");
             greaterThanZeroCounter = greaterThanZeroCounter + 1;
             QAV.setState("greaterThanZeroCounter", greaterThanZeroCounter);
 
             CTN4T = evenRound((Math.abs(T / B)), 5);
+            // console.log("CTN4T = " + CTN4T);
             if (CTN4T < 0.00116) {
                 greaterA = greaterA + 1;
                 QAV.setState("greaterA", greaterA);
+                //    console.log("greater A");
+                // variables cascade to below                
                 COS4T = 0.0;
                 SIN4T = 1.0;
             } else {
                 greaterB = greaterB + 1;
                 QAV.setState("greaterB", greaterB);
+                //    console.log("greater B");
+                // variables cascade to below                
                 SIN4T = evenRound((1.0 / evenRound(Math.sqrt(1.0 + CTN4T * CTN4T), 8)), 8);
                 COS4T = evenRound((CTN4T * SIN4T), 8);
             }
         }
+
         // continue with casecade values to determine COS theta and SIN theta
+
         COS2T = evenRound(Math.sqrt(((1.0 + COS4T) / 2.0)), 8);
         SIN2T = evenRound(SIN4T / (2.0 * COS2T), 8);
         COST = evenRound(Math.sqrt(((1.0 + COS2T) / 2.0)), 8);
@@ -373,6 +441,7 @@
         if (T <= 0) {
             SINP = -SINP;
         }
+        // console.log(SINP, COSP);
         return [SINP, COSP, shouldSkipRotation];
     }
 

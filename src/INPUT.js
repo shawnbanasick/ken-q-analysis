@@ -12,9 +12,7 @@
 
 (function(INPUT, QAV, undefined) {
 
-
-
-    // to force number keypad on ipad
+    // to force number input types on mobile devices
     (function() {
         $('input[type="text"]').on('touchstart', function() {
             $(this).attr('type', 'number');
@@ -200,7 +198,8 @@
     // delete sort from respondent sort list
     (function() {
         $("#respondentList").on("click", "button", function(e) {
-            e.preventDefault();
+            // e.preventDefault();    
+            e.stopPropagation();
             $(this).parent().remove();
             //      var temp1 = $("#respondentList");
             //      localStorage.setItem('CurrentRespondentList', JSON.stringify(temp1));
@@ -210,26 +209,12 @@
 
 
     // click handlers respondent sort list
-
-    //    (function () {
-    //        $("#exportSortsPQM").on("click", function () {
-    //            exportSortsPQM();
-    //        });
-    //    })();
-
     (function() {
         $("#beginMIAnalysis").on("click", function() {
             beginMIAnalysis();
             $(".jsonDownloadPQ").show();
         });
     })();
-
-    //  (function () {
-    //    $("#beginAnalysisPqmethod").on("click", function (e) {
-    //      e.preventDefault();
-    //      beginAnalysisPqmethod();
-    //    });
-    //  })();
 
     // re-draw respondent list on page load
     (function() {
@@ -247,13 +232,12 @@
             }
         });
     })();
+
     // persist q sort statement paste textarea
     (function() {
         var input = document.getElementById('statementsInputBoxMI');
-
         // analysisVariable
         input.value = localStorage.getItem("statementsInputBoxMI");
-
         $('#statementsInputBoxMI').on('input propertychange change', function() {
             localStorage.setItem("statementsInputBoxMI", this.value);
         });
@@ -279,133 +263,6 @@
         snd.play();
     }
 
-
-
-    /**********************************************************************   model
-     ********* Export Functions ***************************************************
-     ******************************************************************************/
-
-    //
-    // function exportSortsExcel() {
-    //     var timeStamp = UTIL.currentDate1() + "-" + UTIL.currentTime1();
-    //     var projectName3 = $('#projectNameMI').val();
-    //     var projectName2 = UTIL.sanitizeUserInputText(projectName3);
-    //     var projectName = projectName2.replace(/ /g, "_");
-    //
-    //     // set sheetnames
-    //     var sheetNames = {
-    //         sheetid: "Sorts",
-    //         header: false,
-    //     };
-    //
-    //     //  pull output
-    //     var output = [];
-    //     $(".respondentList li").each(function() {
-    //         var temp1 = ($(this).text());
-    //         var temp2 = temp1.replace("delete sort", "");
-    //         var temp3 = temp2.split(',');
-    //         var temp4 = _.map(temp3, convertToNumber);
-    //         output.push(temp4);
-    //     });
-    //
-    //     function convertToNumber(n) {
-    //         if (isNaN(Number(n))) {
-    //             return n;
-    //         } else {
-    //             return Number(n);
-    //         }
-    //     }
-    //
-    //     console.log(JSON.stringify(output));
-    //
-    //     var fileName = 'SELECT INTO XLSX("Exported_Sorts_' + projectName + '_' + timeStamp + '.xlsx", ?) FROM ?';
-    //
-    //     var download = alasql(fileName, [sheetNames, output]);
-    // }
-
-
-    // todo - add clearing of export setup box on change to max sort range
-    // todo - add prompt for export filename
-    //    function exportSortsPQM() {
-    //        console.log("export clicked");
-    //
-    //        var output = [];
-    //        $(".respondentList li").each(function () {
-    //            var temp11 = ($(this).text());
-    //            var temp21 = temp11.replace("delete sort", "");
-    //            output.push(temp21);
-    //        });
-    //
-    //        // export file line #1
-    //        var temp1, temp1a, temp2, temp3, temp3a, temp3c, temp3b, temp3d;
-    //        temp1 = output.length;
-    //        temp1a = String(UTIL.threeDigitPadding(temp1));
-    //
-    //        temp2 = $("#projectNameMI").val();
-    //        temp3 = $("#statementsInputBoxMI").val();
-    //        temp3d = temp3.trim();
-    //        temp3c = temp3d.split("\n");
-    //        temp3a = temp3c.length;
-    //        temp3b = String(UTIL.threeDigitPadding(temp3a));
-    //
-    //        var temp5 = localStorage.getItem("maxRange");
-    //        var temp5a = temp5.split(",");
-    //        var temp5b = temp5a[0];
-    //        var temp5c = temp5a[1];
-    //        var temp5d = String(UTIL.threeDigitPadding(+temp5b));
-    //        var temp5e = String(UTIL.threeDigitPadding(+temp5c));
-    //
-    //        var temp6 = JSON.parse(localStorage.getItem("pyramidShapeArrayStored"));
-    //        console.log(JSON.stringify(temp6));
-    //        var temp6a = "";
-    //        var temp6b = "";
-    //        for (var i = 0; i < 20; i++) {
-    //            temp6a = String(UTIL.threeDigitPadding(temp6[i]));
-    //            temp6b += temp6a;
-    //        }
-    //
-    //        var line2 = temp5d + temp5e + temp6b;
-    //
-    //        $("#sortExportBox").append("  0" + temp1a + temp3b + " " + temp2);
-    //        $("#sortExportBox").append("\n");
-    //        $("#sortExportBox").append(line2);
-    //        $("#sortExportBox").append("\n");
-    //
-    //        for (var j = 0; j < output.length; j++) {
-    //            var temp8 = output[j].split(",");
-    //            var respondentName = temp8[0];
-    //            var temp8a = INPUT.sanitizeRespondentName(respondentName);
-    //            var temp8c = temp8.slice(1, temp8.length);
-    //            var temp8d = temp8c.toString();
-    //
-    //            var temp8e = temp8d.replace(/,/g, " ");
-    //            var temp8f = temp8e.replace(/ -/g, "-");
-    //            var temp8g = temp8f.replace(/[\[\]']+/g, '');
-    //
-    //            if (temp8[1] < 0) {
-    //                temp8g = "  " + temp8g;
-    //            } else {
-    //                temp8g = "   " + temp8g;
-    //            }
-    //            var temp9 = temp8a + temp8g;
-    //            $("#sortExportBox").append(temp9);
-    //            $("#sortExportBox").append("\n");
-    //        }
-    //
-    //        // todo - add check to match statements.length with pyramid sort entry sum
-    //
-    //        // pull data from export prep box
-    //        var exportData = $('#sortExportBox').val();
-    //
-    //        var timeStamp = UTIL.currentDate1() + "-" + UTIL.currentTime1();
-    //
-    //        var blob = new Blob([exportData], {
-    //            type: "text/plain;charset=us-ascii"
-    //        });
-    //        saveAs(blob, "Ken-Q_PQMethod_Export_" + timeStamp + ".DAT");
-    //
-    //        $("#sortExportBox").html("");
-    //    }
 
     function beginMIAnalysis() {
 
@@ -572,9 +429,6 @@
      ******************************************************************************/
 
     INPUT.isSortSymmetric = function() {
-
-        console.log("called");
-
         var valuesArray = [];
         var duplicateCheckArray1 = [];
 
@@ -669,15 +523,9 @@
     // *****************************************************************************
 
     function findMissingValues(duplicateCheckArray1) {
-
-        console.log("find missing values");
-
-        console.log(duplicateCheckArray1);
-
         var missingStatementCheckArray = _.cloneDeep(duplicateCheckArray1);
         //  var totalStatements = QAV.getState("qavTotalStatements");
         var totalStatements = localStorage.getItem("qavTotalStatements");
-
 
         var comparisonArray = [];
         for (var i = 0; i < totalStatements; i++) {
@@ -686,14 +534,12 @@
         }
 
         var missingValueCheckStep = _.xor(missingStatementCheckArray, comparisonArray);
-
         var incorrectStatementNumbers = _.filter(missingValueCheckStep, function(n) {
             return n > totalStatements;
         });
         var missingStatementNumbers = _.filter(missingValueCheckStep, function(n) {
             return n <= totalStatements;
         });
-
         var noMissingValues;
         if (missingStatementNumbers.length > 0) {
             noMissingValues = false;

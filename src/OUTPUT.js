@@ -10,7 +10,7 @@
 /* global resources, d3, VIEW, d3_save_svg, CORR, alasql, window, QAV, $, document, evenRound, UTIL, _  */
 
 (function(OUTPUT, QAV, undefined) {
-
+    'use strict';
     //     DOWNLOAD FUNCTIONS
 
     // todo - bug fix escape codes for "'" in statement listing
@@ -153,37 +153,18 @@
         colSizes.push(columns);
         QAV.setState("maxStatementLength", maxStatementLength);
 
-        // deletable
-        var statementsArray = [];
-        var tempObj;
-        for (var i = 0; i < statements.length; i++) {
-            tempObj = {};
-            tempObj[appendText2] = (i + 1);
-            tempObj[appendText1] = statements[i];
-            statementsArray.push(tempObj);
-        }
-        sheetNames.push(newSheet);
-        output.push(statementsArray);
-
         pushSortsToOutputArray(sheetNames, output, outputData, sheetNamesXlsx, colSizes);
     }
 
     function pushSortsToOutputArray(sheetNames, output, outputData, sheetNamesXlsx, colSizes) {
 
         var language = QAV.getState("language");
-        var appendText1 = resources[language].translation["Q-sorts"];
-        var appendText2 = resources[language].translation["Respondent"];
-        var appendText3 = resources[language].translation["Mean"];
+        var appendText2 = resources[language].translation.Respondent;
+        var appendText3 = resources[language].translation.Mean;
         var appendText4 = resources[language].translation["Standard Deviation"];
-        var appendText5 = resources[language].translation["Free Distribution Data Results"];
         var appendText6 = resources[language].translation["Q-sorts"];
 
-        // var newSheet = {
-        //     sheetid: appendText1,
-        //     header: true
-        // };
-        // sheetNames.push(newSheet);
-        sheetNamesXlsx.push(appendText1);
+        sheetNamesXlsx.push(appendText6);
 
         var sortsAsNumbers = QAV.getState("sortsAsNumbers");
         var respondentNames = QAV.getState("qavRespondentNames");
@@ -217,71 +198,17 @@
             "", ""
         ], headerArray);
 
-        // modify and delete this with old alasql code
-        var sortsAsNumbers2 = _.cloneDeep(sortsAsNumbers);
         // push in sorts, means, and standard devs
-        for (var kk = 0, kkLen = sortsAsNumbers2.length; kk < kkLen; kk++) {
-            var average3 = evenRound((UTIL.average(sortsAsNumbers2[kk])), 3);
-            stddev = evenRound((UTIL.standardDeviation(sortsAsNumbers2[kk])), 3);
-            sortsAsNumbers2[kk].unshift(respondentNames[kk]);
-            sortsAsNumbers2[kk].push(average3, stddev);
-            dataArray.push(sortsAsNumbers2[kk]);
+        for (var kk = 0, kkLen = sortsAsNumbers.length; kk < kkLen; kk++) {
+            var average3 = evenRound((UTIL.average(sortsAsNumbers[kk])), 3);
+            stddev = evenRound((UTIL.standardDeviation(sortsAsNumbers[kk])), 3);
+            sortsAsNumbers[kk].unshift(respondentNames[kk]);
+            sortsAsNumbers[kk].push(average3, stddev);
+            dataArray.push(sortsAsNumbers[kk]);
         }
         outputData.push(dataArray);
 
-        // deleteable
-        // free distribution data is stored in QAV for use in later function
-        var freeDistributionArray = [];
-
-        var sortsArray = [];
-        var tempObj,
-            tempObjFD;
-        // loop through sorts
-        for (var i = 0; i < sortsAsNumbers.length; i++) {
-            tempObj = {};
-            tempObjFD = {};
-            // get respondent names
-            tempObj[appendText2] = respondentNames[i];
-            tempObjFD[appendText2] = respondentNames[i];
-            // create header numbers of statements
-            for (var j = 0; j < sortsAsNumbers[0].length; j++) {
-                statementSort = "S" + (j + 1);
-                tempObj[statementSort] = sortsAsNumbers[i][j];
-            }
-            // get average of sorts
-            var average2 = evenRound((UTIL.average(sortsAsNumbers[i])), 3);
-            tempObj[appendText3] = average2;
-            tempObjFD[appendText3] = average2;
-            // get standard dev
-            stddev = evenRound((UTIL.standardDeviation(sortsAsNumbers[i])), 3);
-            tempObj[appendText4] = stddev;
-            tempObjFD[appendText4] = stddev;
-            sortsArray.push(tempObj);
-            freeDistributionArray.push(tempObjFD);
-        }
-        output.push(sortsArray);
-
-        var fdTitle = {};
-        fdTitle[appendText2] = appendText5;
-        //fdTitle[appendText3] = "";
-        // fdTitle[appendText4] = "";
-
-        var fdHeader = {};
-        fdHeader[appendText2] = appendText1;
-        fdHeader[appendText3] = appendText3;
-        fdHeader[appendText4] = appendText4;
-
-        var spacer = {};
-        spacer[appendText2] = "";
-        spacer[appendText3] = "";
-        spacer[appendText4] = "";
-
-        freeDistributionArray.unshift(spacer);
-        freeDistributionArray.unshift(fdHeader);
-        freeDistributionArray.unshift(spacer);
-        freeDistributionArray.unshift(fdTitle);
-
-        QAV.setState("freeDistributionArray", freeDistributionArray);
+        QAV.setState("freeDistributionArray", dataArray);
 
         pushCorrelationArray(sheetNames, output, outputData, sheetNamesXlsx, colSizes);
     }
@@ -292,17 +219,9 @@
         var appendText1 = resources[language].translation["Correlation matrix"];
         var appendText2 = resources[language].translation["between Q-sorts"];
 
-        // var newSheet = {
-        //     sheetid: appendText1,
-        //     headers: false
-        // };
-        //sheetNames.push(newSheet);
         sheetNamesXlsx.push(appendText1);
 
-        // delete after dropping alasql
-        var correlationTableArrayFormatted2 = QAV.getState("correlationTableArrayFormatted");
-
-        var correlationTableArrayFormatted3 = _.cloneDeep(correlationTableArrayFormatted2);
+        var correlationTableArrayFormatted3 = QAV.getState("correlationTableArrayFormatted");
 
         // get max respondent name length
         var respondentNameMaxLength = 0;
@@ -330,30 +249,12 @@
         ], [appendText1 + appendText2], ["", ""]);
         outputData.push(correlationTableArrayFormatted3);
 
-        output.push(correlationTableArrayFormatted2);
         pushUnrotatedFactorsTableToOutputArray(sheetNames, output, outputData, sheetNamesXlsx, colSizes);
     }
 
     function pushUnrotatedFactorsTableToOutputArray(sheetNames, output, outputData, sheetNamesXlsx, colSizes) {
-
-        var factorMatrixTransposed,
-            i,
-            j,
-            k,
-            m,
-            temp,
-            tempA,
-            temp1,
-            temp2,
-            temp2A;
-        var newSheet,
-            expVar,
-            centroidsArray,
-            tempObj,
-            respondentNames,
-            typeOfFactor,
-            numFactorsExtracted;
-
+        var factorMatrixTransposed, i, j, k, m, temp, tempA, temp1, temp2, temp2A;
+        var newSheet, expVar, centroidsArray, tempObj, respondentNames, typeOfFactor, numFactorsExtracted;
         var language = QAV.getState("language");
         var appendText1 = resources[language].translation["Unrotated Factor Matrix"];
         var appendText2 = resources[language].translation.Eigenvalues;
@@ -419,52 +320,17 @@
         ], [appendText1], ["", ""]);
         outputData.push(unrotatedFactors);
 
-        // deleteable code
-        // newSheet = {
-        //     sheetid: appendText1,
-        //     headers: true
-        // };
-        // sheetNames.push(newSheet);
-
-        // convert array to object
-        centroidsArray = [];
-        for (i = 1; i < factorMatrixTransposed.length; i++) {
-            tempObj = {};
-
-            tempObj[appendText4] = factorMatrixTransposed[i][0];
-
-            for (j = 0; j < (factorMatrixTransposed[i].length - 1); j++) {
-                k = j + 1;
-                tempObj[appendText3 + " " + k] = evenRound((factorMatrixTransposed[i][k]), 4);
-            }
-            centroidsArray.push(tempObj);
-        }
-        output.push(centroidsArray);
         pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, factorMatrixTransposed, outputData, sheetNamesXlsx, colSizes);
     }
 
     function pushCumulativeCommunalitiesMaxtrixToOutputArray(sheetNames, output, factorMatrixTransposed, outputData, sheetNamesXlsx, colSizes) {
-        var newSheet,
-            cumulCommMatrix9,
-            explnVarRow,
-            responderHeadersRow;
-        var i,
-            j,
-            k,
-            temp1,
-            temp2,
-            respondentName;
+        var newSheet, cumulCommMatrix9, explnVarRow, responderHeadersRow;
+        var i, j, k, temp1, temp2, respondentName;
         var language = QAV.getState("language");
         var appendText1 = resources[language].translation["Cumul Comm Matrix"];
         var appendText2 = resources[language].translation["cumulative % explained variance"];
         var appendText4 = resources[language].translation.Respondent;
         var appendText5 = resources[language].translation["Cumulative Communalities Matrix"];
-
-        // newSheet = {
-        //     sheetid: appendText1,
-        //     headers: false
-        // };
-        // sheetNames.push(newSheet);
 
         sheetNamesXlsx.push(appendText1);
 
@@ -534,8 +400,7 @@
 
         var formattedResults = [];
         var jLoopLen = results[0].length;
-        var i,
-            j;
+        var i, j;
         var iLoopLen = results.length;
         var temp;
         var tempArray = [];
@@ -594,6 +459,8 @@
         var appendText2 = resources[language].translation.Respondent;
         var appendText3 = resources[language].translation.Mean;
         var appendText4 = resources[language].translation["Standard Deviation"];
+        var appendText5 = resources[language].translation["Free Distribution Data Results"];
+        var qavCurrentStatements = QAV.getState("qavCurrentStatements");
 
         var newSheet = {
             sheetid: appendText1,
@@ -612,17 +479,15 @@
         colSizes.push(columns);
 
         var freeDistributionArray = QAV.getState("freeDistributionArray");
-        output.push(freeDistributionArray);
 
-        // converting object back to array - todo - change origin to array (230)
+        freeDistributionArray = freeDistributionArray.slice(3);
         var freeDistributionData = [];
+        var cutLength = freeDistributionArray[0].length - 3;
         for (var i = 0, iLen = freeDistributionArray.length; i < iLen; i++) {
-            var temp1 = freeDistributionArray[i];
-            var temp2 = [];
-            temp2.push(temp1[appendText2], temp1[appendText3], temp1[appendText4]);
-            freeDistributionData.push(temp2);
+            var tempCut = freeDistributionArray[i].splice(1, cutLength);
+            freeDistributionData.push(freeDistributionArray[i]);
         }
-        freeDistributionData.unshift(["", ""]);
+        freeDistributionData.unshift(["", ""], [appendText5], ["", ""]);
         outputData.push(freeDistributionData);
         pushFactorsToOutputArray(sheetNames, output, outputData, sheetNamesXlsx, colSizes);
     }
@@ -712,6 +577,7 @@
             }
             // output.push(factorWeightFactorArray);
             factorWeightFactorArrayHolder.push(factorWeightFactorArray);
+
 
             // FACTOR SCORE MINI CORRELATION TABLES STARTS FROM HERE
 
@@ -849,11 +715,11 @@
             rankingTempArray;
         var statementRankingArray = [];
 
-        var newSheet = {
-            sheetid: appendText1,
-            headers: false
-        };
-        sheetNames.push(newSheet);
+        // var newSheet = {
+        //     sheetid: appendText1,
+        //     headers: false
+        // };
+        // sheetNames.push(newSheet);
         sheetNamesXlsx.push(appendText1);
 
         var maxStatementLength = QAV.getState("maxStatementLength");
@@ -917,7 +783,7 @@
             }
         });
         for (var ww = 0, wwLen = compositeFactorMasterArray[0].length; ww < wwLen; ww++) {
-            tempArraymm1 = [];
+            var tempArraymm1 = [];
             tempArraymm1.push(compositeFactorMasterArray[0][ww][0]);
             tempArraymm1.push(compositeFactorMasterArray[0][ww][1]);
             tempArraymm1.push(compositeFactorMasterArray[0][ww][0]);
@@ -925,9 +791,9 @@
         }
 
         // cycle through user selected factors to get zScore and rank
-        for (var jj = 0, jjLen = compositeFactorMasterArray.length; jj < jjLen; jj++) {
+        for (var kk = 0, kkLen = compositeFactorMasterArray.length; kk < kkLen; kk++) {
             // sort by statement number
-            compositeFactorMasterArray[jj]
+            compositeFactorMasterArray[kk]
                 .sort(function(a, b) {
                     if (a[0] === b[0]) {
                         return 0;
@@ -938,14 +804,14 @@
                     }
                 });
             // insert zScore
-            for (var ii = 0, iiLen = compositeFactorMasterArray[jj].length; ii < iiLen; ii++) {
-                var tempZscore = evenRound(compositeFactorMasterArray[jj][ii][2], 2);
+            for (var ii = 0, iiLen = compositeFactorMasterArray[kk].length; ii < iiLen; ii++) {
+                var tempZscore = evenRound(compositeFactorMasterArray[kk][ii][2], 2);
                 factorScoreRanksArray[ii].push(tempZscore);
             }
             // re-sort by latest pushed zScore
             // var placeSetter = factorScoreRanksArray[0].length - 1;
             var placeSetter = 2;
-            compositeFactorMasterArray[jj].sort(function(a, b) {
+            compositeFactorMasterArray[kk].sort(function(a, b) {
                 if (a[placeSetter] === b[placeSetter]) {
                     return 0;
                 } else {
@@ -955,13 +821,13 @@
                 }
             });
 
-            for (var rr = 0, rrLen = compositeFactorMasterArray[jj].length; rr < rrLen; rr++) {
+            for (var rr = 0, rrLen = compositeFactorMasterArray[kk].length; rr < rrLen; rr++) {
                 var RankValue2 = (rr + 1);
-                compositeFactorMasterArray[jj][rr].push(RankValue2);
+                compositeFactorMasterArray[kk][rr].push(RankValue2);
             }
 
             // re-sort to statement number
-            compositeFactorMasterArray[jj]
+            compositeFactorMasterArray[kk]
                 .sort(function(a, b) {
                     if (a[0] === b[0]) {
                         return 0;
@@ -973,8 +839,8 @@
                 });
 
             // get and push ranking numbers
-            for (var pp = 0, ppLen = compositeFactorMasterArray[jj].length; pp < ppLen; pp++) {
-                var RankValue3 = compositeFactorMasterArray[jj][pp].pop();
+            for (var pp = 0, ppLen = compositeFactorMasterArray[kk].length; pp < ppLen; pp++) {
+                var RankValue3 = compositeFactorMasterArray[kk][pp].pop();
                 factorScoreRanksArray[pp].push(RankValue3);
             }
             // placeSetter = placeSetter + 2;
@@ -1018,53 +884,6 @@
 
         QAV.setState("statementRankingArray", statementRankingArray);
 
-        // since spacer is the first row, it must have data for all columns for them to be shown
-        var spacer2 = {};
-        spacer2.Num1 = "";
-        spacer2.Statement = "";
-        spacer2.Num2 = "";
-        spacer2.Zscore1 = "";
-        spacer2.Rank1 = "";
-        for (var r = 0, rLen = userSelectedFactors.length; r < rLen; r++) {
-            var counter2 = r + 1;
-            spacer2["Zscore" + counter2] = "";
-            spacer2["Rank" + counter2] = "";
-        }
-
-        var header2 = {};
-        header2.Num1 = "No.";
-        header2.Statement = appendText4;
-        header2.Num2 = "No.";
-        for (var p = 0, pLen = userSelectedFactors.length; p < pLen; p++) {
-            var temp1 = userSelectedFactors[p];
-            var counter1 = p + 1;
-            var facNumber = temp1.substr(temp1.length - 2);
-            header2["Zscore" + counter1] = facNumber;
-            header2["Rank" + counter1] = facNumber;
-        }
-        factorScoreComparisonArray.unshift(header2, spacer2);
-
-        var header1 = {};
-        header1.Num1 = "";
-        header1.Statement = "";
-        header1.Num2 = "";
-        header1.Zscore1 = "";
-        header1.Rank1 = appendText2;
-
-        var header0 = {};
-        header0.Num1 = "";
-        header0.Statement = appendText6;
-        header0.Num2 = "";
-        header0.Zscore1 = "";
-        header0.Rank1 = "";
-
-        factorScoreComparisonArray.unshift(spacer, header0, header1);
-
-        // console.log(JSON.stringify(factorScoreComparisonArray, null, 2));
-
-        output.push(factorScoreComparisonArray);
-
-        //pushFactorPowerSetDiffsToOutputArray(sheetNames, output);
         pushFactorScoreCorrelationsToOutputArray(sheetNames, output, outputData, sheetNamesXlsx, colSizes);
     }
 
@@ -1073,20 +892,13 @@
         var language = QAV.getState("language");
         var appendText1 = resources[language].translation["Factor score correlations"];
 
-        // var newSheet = {
-        //     sheetid: appendText1,
-        //     headers: false
-        // };
-        // sheetNames.push(newSheet);
         sheetNamesXlsx.push(appendText1);
 
         var analysisOutput = QAV.getState("analysisOutput");
         var userSelectedFactors = QAV.getState("userSelectedFactors");
         var analysisOutput2 = _.cloneDeep(analysisOutput);
         var factorScoresCorrelationArray2 = [];
-        var temp1,
-            temp2,
-            tempArray;
+        var temp1, temp2, tempArray;
 
         var columns = [{
             wch: 7
@@ -1177,14 +989,16 @@
     function insertFactorsIntoOutputArray(sheetNames, output, analysisOutput, outputData, sheetNamesXlsx, colSizes) {
 
         var language = QAV.getState("language");
-        //var appendText1 = resources[language].translation["Sorts Weight"];
-        // var appendText2 = resources[language].translation["Sorts Corr"];
+        var appendText1 = resources[language].translation["Sorts Weight"];
+        var appendText2 = resources[language].translation["Sorts Corr"];
         var appendText3 = resources[language].translation["Statement Number"];
         var appendText4 = resources[language].translation.Statement;
         var appendText5 = resources[language].translation["Z-score"];
         // var appendText6 = resources[language].translation["Sort Values"];
         var appendText7 = resources[language].translation["Raw Sort"];
         var appendText8 = resources[language].translation["Sort Values"];
+        var appendText9 = resources[language].translation["Sorts Correlations"];
+        var appendText10 = resources[language].translation["Factor Scores for "];
 
         var sheetNamesHolder1 = QAV.getState("sheetNamesHolder1");
         var sheetNamesHolder2 = QAV.getState("sheetNamesHolder2");
@@ -1215,7 +1029,7 @@
             colSizes.push(columns);
 
             // set weights sheet
-            factorWeightFactorArray[ii].unshift(spacer);
+            factorWeightFactorArray[ii].unshift(spacer, [userSelectedFactors[ii], appendText1], spacer);
             outputData.push(factorWeightFactorArray[ii]);
 
             // set sorts corr name
@@ -1233,7 +1047,7 @@
             colSizes.push(columns2);
 
             // set sorts corr sheet
-            miniCorrelationArray[ii].unshift(spacer);
+            miniCorrelationArray[ii].unshift(spacer, [userSelectedFactors[ii], appendText9], spacer);
             outputData.push(miniCorrelationArray[ii]);
 
             // set factor sheet name
@@ -1273,7 +1087,7 @@
             for (var jj = 0, jjLen = sigSortsArray[ii].SigSorts.length; jj < jjLen; jj++) {
                 sheetHeaderArrayPartial.push(appendText7 + " " + sigSortsArray[ii].SigSorts[jj]);
             }
-            compositeFactorMasterArray[ii].unshift(spacer, sheetHeaderArrayPartial);
+            compositeFactorMasterArray[ii].unshift(spacer, ["", appendText10 + " " + userSelectedFactors[ii]], spacer, sheetHeaderArrayPartial);
             outputData.push(compositeFactorMasterArray[ii]);
         }
 
@@ -1295,6 +1109,9 @@
         var chartText2 = resources[language].translation.Difference;
         var chartText3 = resources[language].translation["Statement Number"];
         var chartText4 = resources[language].translation.Statement;
+        var chartText5 = resources[language].translation["Descending Array of Differences Between"];
+        var chartText6 = resources[language].translation.and;
+        var oneFactor, anotherFactor;
         var maxStatementLength = QAV.getState("maxStatementLength");
         var spacer = ["", ""];
 
@@ -1308,18 +1125,20 @@
             }
         }
         var diffArraySorted;
-
+        var namesComboArray = [];
         var sheetHeader1Array = [];
 
         for (var k = 0; k < factorPairs.length; k++) {
+            var namesComboArrayFrag = [];
             var sheetHeader1 = [chartText3, chartText4];
-            var oneFactor = factorPairs[k][0][0].factor;
-            var anotherFactor = factorPairs[k][1][0].factor;
+            oneFactor = factorPairs[k][0][0].factor;
+            anotherFactor = factorPairs[k][1][0].factor;
+            namesComboArrayFrag.push(oneFactor, anotherFactor);
             var temp1 = {};
             temp1.sheetid = chartText1 + oneFactor + " " + anotherFactor;
             temp1.header = true;
             sheetNames.push(temp1);
-
+            namesComboArray.push(namesComboArrayFrag);
             sheetNamesXlsx.push(chartText1 + oneFactor + " " + anotherFactor);
 
             sheetHeader1.push(oneFactor, anotherFactor, chartText2);
@@ -1344,14 +1163,7 @@
             var diffArray = [];
             var diffArrayXlsx = [];
             for (var p = 0; p < factorPairs[m][0].length; p++) {
-                var tempObj = {};
                 var tempArray = [];
-                tempObj[chartText3] = factorPairs[m][0][p].statement;
-                tempObj[chartText4] = factorPairs[m][0][p].sortStatement;
-                tempObj[factorPairs[m][0][0].factor] = factorPairs[m][0][p].zScore;
-                tempObj[factorPairs[m][1][0].factor] = factorPairs[m][1][p].zScore;
-                tempObj[chartText2] = evenRound(((factorPairs[m][0][p].zScore) - (factorPairs[m][1][p].zScore)), 3);
-                diffArray.push(tempObj);
 
                 var temp1a = factorPairs[m][0][p].statement;
                 var temp1b = factorPairs[m][0][p].sortStatement;
@@ -1361,9 +1173,6 @@
                 tempArray.push(temp1a, temp1b, temp1c, temp1d, factorsDiff);
                 diffArrayXlsx.push(tempArray);
             }
-            diffArraySorted = diffArray.sort(function(a, b) {
-                return b[chartText2] - a[chartText2];
-            });
 
             diffArrayXlsx.sort(function(a, b) {
                 if (a[4] === b[4]) {
@@ -1374,9 +1183,8 @@
                         1;
                 }
             });
-            diffArrayXlsx.unshift(spacer, sheetHeader1Array[m]);
+            diffArrayXlsx.unshift(spacer, [chartText5 + " " + namesComboArray[m][0] + " " + chartText6 + " " + namesComboArray[m][1]], spacer, sheetHeader1Array[m]);
             outputData.push(diffArrayXlsx);
-            output.push(diffArraySorted);
         }
 
         pushConsensusStatementsToOutput(sheetNames, output, analysisOutput, outputData, sheetNamesXlsx, colSizes);
@@ -1390,6 +1198,8 @@
         var chartText3 = resources[language].translation["Statement Number"];
         var chartText4 = resources[language].translation.Statement;
         var chartText5 = resources[language].translation["Z-Score Variance"];
+        var chartText6 = resources[language].translation["Factor Q-sort Values for Statements sorted by Consensus vs. Disagreement"];
+
         var sigFactorNumbersArray = QAV.getState("sigFactorNumbersArray");
         var userSelectedFactors = QAV.getState("userSelectedFactors");
         var maxStatementLength = QAV.getState("maxStatementLength");
@@ -1401,11 +1211,6 @@
         var tableHeader2 = tableHeader.concat(userSelectedFactors);
         tableHeader2.push(chartText5);
 
-        var newSheet = {
-            sheetid: chartText2,
-            header: true
-        };
-        sheetNames.push(newSheet);
         sheetNamesXlsx.push(chartText2);
 
         // set factor sheet cols
@@ -1427,30 +1232,19 @@
         var consensusDisagreeArray = [];
         var zScoreArrayForStatements = [];
         for (var i = 0; i < analysisOutput[0].length; i++) {
-            var tempObj = {};
             var tempArray1a = [];
-            tempObj[chartText3] = analysisOutput[0][i].statement;
-            tempObj[chartText4] = analysisOutput[0][i].sortStatement;
-
             tempArray1a.push(analysisOutput[0][i].statement, analysisOutput[0][i].sortStatement);
-
             var tempArray = [];
             for (var j = 0; j < analysisOutput.length; j++) {
                 var temp1 = sigFactorNumbersArray[j];
-                tempObj[temp1] = analysisOutput[j][i].sortValue;
                 tempArray1a.push(analysisOutput[j][i].sortValue);
                 tempArray.push(analysisOutput[j][i].zScore);
             }
             var zScoreVariance = evenRound((UTIL.variance(tempArray)), 3);
-            tempObj[chartText5] = zScoreVariance;
             tempArray1a.push(zScoreVariance);
-
             consensusDisagreeArray.push(tempArray1a);
-            zScoreArrayForStatements.push(tempObj);
         }
-        var zScoreArrayForStatementsSorted = zScoreArrayForStatements.sort(function(a, b) {
-            return a[chartText5] - b[chartText5];
-        });
+
         var locator = userSelectedFactors.length + 2;
         consensusDisagreeArray.sort(function(a, b) {
             if (a[locator] === b[locator]) {
@@ -1461,9 +1255,8 @@
                     1;
             }
         });
-        consensusDisagreeArray.unshift(spacer, tableHeader2);
+        consensusDisagreeArray.unshift(spacer, [chartText6], spacer, tableHeader2);
         outputData.push(consensusDisagreeArray);
-        output.push(zScoreArrayForStatementsSorted);
 
         pushFactorCharacteristicsToOutput(sheetNames, output, analysisOutput, sigFactorNumbersArray, outputData, sheetNamesXlsx, colSizes);
     }
@@ -1481,11 +1274,6 @@
         var sigSortsArray = QAV.getState("sigSortsArray");
         var spacer = ["", ""];
 
-        var newSheet = {
-            sheetid: chartText1,
-            headers: false
-        };
-        sheetNames.push(newSheet);
         sheetNamesXlsx.push(chartText1);
 
         // set factor sheet col widths
@@ -1506,72 +1294,46 @@
         var line1Arrayb = line1Array.concat(userSelectedFactors);
         factorCharacteristicsSheetArray.push(line1Arrayb);
 
-        var factorCharacteristicsArray = [];
-        var factorNumber = [];
-        var tempObj = {};
-        tempObj[chartText1] = " ";
-        for (var i = 0; i < sigSortsArray.length; i++) {
-            factorNumber[i] = sigSortsArray[i]["Factor Number"];
-            tempObj[factorNumber[i]] = sigSortsArray[i]["Factor Number"];
-        }
-        factorCharacteristicsArray.push(tempObj);
 
         // line 2 - No. of Defining Variables
         var line2Array = [chartText3];
-        tempObj = {};
-        tempObj[chartText1] = chartText3;
         for (var j = 0; j < sigSortsArray.length; j++) {
-            tempObj[factorNumber[j]] = sigSortsArray[j].SigSorts.length;
             line2Array.push(sigSortsArray[j].SigSorts.length);
         }
         factorCharacteristicsSheetArray.push(line2Array);
-        factorCharacteristicsArray.push(tempObj);
 
         // line 3 - Avg. Rel. Coef.
-        // todo - !important - change this for unrestrained unforced sort patterns
+        // todo - !important - change this for unrestrained unforced sort patterns?
         var line3Array = [chartText4];
-        tempObj = {};
-        tempObj[chartText1] = chartText4;
         for (var k = 0; k < sigSortsArray.length; k++) {
-            tempObj[factorNumber[k]] = 0.800;
             line3Array.push(0.800);
         }
         factorCharacteristicsSheetArray.push(line3Array);
-        factorCharacteristicsArray.push(tempObj);
 
         // line 4 - Composite Reliability
         var line4Array = [chartText5];
         var nSorts,
             compositeRel;
         var composRelArray = [];
-        tempObj = {};
-        tempObj[chartText1] = chartText5;
         for (var m = 0; m < sigSortsArray.length; m++) {
             nSorts = sigSortsArray[m].SigSorts.length;
             compositeRel = evenRound(((nSorts * 0.800) / (1 + ((nSorts - 1) * 0.800))), 3);
             composRelArray.push(compositeRel);
             line4Array.push(compositeRel);
-            tempObj[factorNumber[m]] = compositeRel;
         }
         factorCharacteristicsSheetArray.push(line4Array);
-        factorCharacteristicsArray.push(tempObj);
 
         // line 5 - S.E. of Factor Z-scores
         var line5Array = [chartText6];
-        tempObj = {};
         var stndErrorArray = [];
-        tempObj[chartText1] = chartText6;
         for (var p = 0; p < sigSortsArray.length; p++) {
             var stndError = evenRound(Math.sqrt(Math.abs(1.0 - composRelArray[p])), 3);
             stndErrorArray.push(stndError);
             line5Array.push(stndError);
-            tempObj[factorNumber[p]] = stndError;
         }
-        factorCharacteristicsArray.push(tempObj);
         factorCharacteristicsSheetArray.push(line5Array);
-        factorCharacteristicsSheetArray.unshift(spacer);
+        factorCharacteristicsSheetArray.unshift(spacer, [chartText1], spacer);
 
-        output.push(factorCharacteristicsArray);
         outputData.push(factorCharacteristicsSheetArray);
 
         pushStandardErrorsDifferencesToOutput(sheetNames, output, stndErrorArray, analysisOutput, sigFactorNumbersArray, outputData, sheetNamesXlsx, colSizes);
@@ -1581,15 +1343,11 @@
 
         var language = QAV.getState("language");
         var chartText1 = resources[language].translation["Standard Errors for Diffs"];
+        var chartText2 = resources[language].translation["Standard Errors for Differences in Factor Z-scores"];
         var sigSortsArray = QAV.getState("sigSortsArray");
         var userSelectedFactors = QAV.getState("userSelectedFactors");
         var spacer = ["", ""];
 
-        var newSheet = {
-            sheetid: chartText1,
-            headers: false
-        };
-        sheetNames.push(newSheet);
         sheetNamesXlsx.push(chartText1);
 
         // set factor sheet col widths
@@ -1611,24 +1369,14 @@
         standardErrorDiffSheetArray.push(line1Arrayb);
 
         var stndErrorDiffArray = [];
-        var tempObj = {};
-        tempObj.Factors = "Factors";
         var stndErrorDiffDataArray = [];
         var stndErrorDiffDataDistingArray = [];
-        for (var i = 0; i < sigSortsArray.length; i++) {
-            tempObj["Factor " + sigSortsArray[i]["Factor Number"]] = sigSortsArray[i]["Factor Number"];
-        }
-        stndErrorDiffArray.push(tempObj);
 
-        var stndError1,
-            stndError2,
-            stndError3;
+        var stndError1, stndError2, stndError3;
 
         // lines 2 to end
         for (var j = 0; j < sigSortsArray.length; j++) {
-            tempObj = {};
-            tempArray1 = [];
-            tempObj.Factors = sigSortsArray[j]["Factor Number"];
+            var tempArray1 = [];
             tempArray1.push(sigSortsArray[j]["Factor Number"]);
 
             for (var k = 0; k < sigSortsArray.length; k++) {
@@ -1643,16 +1391,13 @@
                 stndError3 = evenRound((Math.sqrt((stndError1 * stndError1) + (stndError2 * stndError2))), 3);
                 stndErrorDiffDataArrayTemp1.push(stndError3);
                 tempArray2.push(stndError3);
-                tempObj["Factor " + sigSortsArray[k]["Factor Number"]] = stndError3;
                 tempArray1.push(stndError3);
                 stndErrorDiffDataArray.push(stndErrorDiffDataArrayTemp1);
                 stndErrorDiffDataDistingArray.push(tempArray2);
             }
-            stndErrorDiffArray.push(tempObj);
             standardErrorDiffSheetArray.push(tempArray1);
         }
-        output.push(stndErrorDiffArray);
-        standardErrorDiffSheetArray.unshift(spacer);
+        standardErrorDiffSheetArray.unshift(spacer, [chartText2], spacer);
         outputData.push(standardErrorDiffSheetArray);
 
         pushDistinguishingStatementsToOutput(sheetNames, output, sigSortsArray, analysisOutput, stndErrorDiffDataArray, stndErrorDiffDataDistingArray, sigFactorNumbersArray, outputData, sheetNamesXlsx, colSizes);
@@ -1682,13 +1427,6 @@
             }, {
                 wch: 8
             }];
-            // for (var tt = 0, ttLen = userSelectedFactors.length; tt < ttLen; tt++) {
-            //     columns.push([{
-            //
-            //         wch: 8
-            //     }, {
-            //         wch: maxStatementLength
-            //     }, {wch: 8}]);
             for (var tt = 0, ttLen = userSelectedFactors.length; tt < ttLen; tt++) {
                 columns.push({
                     wch: 8
@@ -1699,19 +1437,10 @@
                 });
             }
             colSizes.push(columns);
-
-            var newSheet = {
-                sheetid: chartText1 + sigSortsArray[i]["Factor Number"],
-                headers: false
-            };
-            sheetNames.push(newSheet);
         }
 
         // starting calcs for distinguishing factors
-        var sedComparisonValue,
-            j,
-            k,
-            m;
+        var sedComparisonValue, j, k, m;
         var consensusStatementComparisonArray05 = [];
         var consensusStatementComparisonArray01 = [];
         var distStatementDataVizArray = [];
@@ -1729,7 +1458,6 @@
             var consensusStatementTransferArray01 = [];
 
             for (k = 0; k < analysisOutput[0].length; k++) {
-                // statement k
                 // looping through each statement's other factor zScores to compare
                 // also grabbing the appropriate SED value for each comparison
                 var sig05 = false;
@@ -1804,7 +1532,6 @@
             var formattedDistingStatements = formatDistingArrayForDownload(distingStatementsTransferArray01b, distingStatementsTransferArray05c, factorNumber, analysisOutput, sigFactorNumbersArray);
 
             distStatementDataVizArray.push(formattedDistingStatements[0]);
-            output.push(formattedDistingStatements[0]);
 
             outputData.push(formattedDistingStatements[1]);
         }
@@ -1815,9 +1542,9 @@
         // ******
         // develop consensus statement data
         // ******
-        var outputForDataViz = _.cloneDeep(analysisOutput);
+        //var outputForDataViz = _.cloneDeep(analysisOutput);
         QAV.setState("distStatementDataVizArray", distStatementDataVizArray);
-        QAV.setState("outputForDataViz", outputForDataViz);
+        QAV.setState("outputForDataViz", analysisOutput);
 
         do {
             consensusStatementComparisonArray05 = reduceDistingArray(consensusStatementComparisonArray05);
@@ -1835,11 +1562,6 @@
         QAV.setState("consensus05Statements", consensus05);
         QAV.setState("consensus01Statements", consensus01);
 
-        var newSheet2 = {
-            sheetid: chartText2,
-            headers: false
-        };
-        sheetNames.push(newSheet2);
         sheetNamesXlsx.push(chartText2);
 
         // set up col widths for excel output
@@ -1865,7 +1587,6 @@
 
         var formattedConsensusStatements = formatConsensusArrayForDownload(consensus05, consensus01, analysisOutput, sigFactorNumbersArray);
         QAV.setState("formattedConsensusStatements", formattedConsensusStatements[0]);
-        output.push(formattedConsensusStatements[0]);
 
         outputData.push(formattedConsensusStatements[1]);
 
@@ -1897,6 +1618,7 @@
             lowestRankStatements,
             tempObj1,
             cribArray = [];
+        var cribArray2 = [];
         var highestRankStatements,
             tempObj2,
             tempObj3,
@@ -1919,17 +1641,9 @@
         var maxCounts = triangleCounts[arrayMax];
         var minCounts = triangleCounts[arrayMin];
 
-        //console.log(minCounts);
-        //console.log(maxCounts);
-
         // loop through factors
         for (var j = 0, jLen = userSelectedFactors.length; j < jLen; j++) {
 
-            var newSheet = {
-                sheetid: userSelectedFactors[j] + appendText1,
-                headers: false
-            };
-            sheetNames.push(newSheet);
             sheetNamesXlsx.push(userSelectedFactors[j] + appendText1);
 
             var columns = [{
@@ -2052,15 +1766,7 @@
                 }
             }
 
-            // var spacer = {};
             var spacerArray = ["", ""];
-            // var headerArray = [
-            //     "",
-            //     (appendText2 + facName)
-            // ];
-            // spacer.stateNum = "";
-            // spacer.statement = "";
-            // spacer.sortValue = "";
 
             // construct headers for statement groups
             var facName = userSelectedFactors[j];
@@ -2075,7 +1781,7 @@
             var header1 = [
                 "", appendText2 + facName
             ];
-            header0 = ["", appendTextHeader1, facName, appendText9].concat(otherFactorNames);
+            var header0 = ["", appendTextHeader1, facName, appendText9].concat(otherFactorNames);
             cribArray2[0].unshift(spacerArray, header1, [
                 "", "", "", appendText8
             ], header0);
@@ -2086,7 +1792,6 @@
             header3.stateNum = "";
             header3.statement = appendTextHeader3a + facName + appendTextHeader3b;
             header3.sortValue = "";
-            // cribArray[2].unshift(spacer, header3);
             cribArray2[2].unshift(spacerArray, [
                 "",
                 (appendTextHeader3a + facName + appendTextHeader3b),
@@ -2097,7 +1802,6 @@
             header4.stateNum = "";
             header4.statement = appendTextHeader4;
             header4.sortValue = "";
-            // cribArray[3].unshift(spacer, header4);
             cribArray2[3].unshift(spacerArray, ["", (appendTextHeader4), ""]);
 
             output.push(_.flattenDeep(cribArray));
@@ -2122,9 +1826,6 @@
                 return "";
             }
         }
-
-        // console.log(JSON.stringify(userSelectedFactors));
-        // console.log(JSON.stringify(statementRankingArray));
         pushSettingsToOutput(sheetNames, output, outputData, sheetNamesXlsx, colSizes);
     }
 
@@ -2222,7 +1923,7 @@
         // push 05 statements
         for (var k = 0; k < consensus05Length; k++) {
             tempObj = {};
-            tempArray = [];
+            var tempArray = [];
             kShift = consensus05[k];
 
             // cycle through statement numbers and get statement, factors q score and sort value from results object and set sig level to ""
@@ -2245,7 +1946,7 @@
 
         // cycle through statement numbers and get statement, factors q score and sort value from results object and set sig level to "*"
         for (var p = 0; p < consensus01Length; p++) {
-            tempArray2 = [];
+            var tempArray2 = [];
             tempObj2 = {};
             pShift = consensus01[p];
 
@@ -2599,13 +2300,36 @@
             return buf;
         }
 
-        timeStamp = UTIL.currentDate1() + "_" + UTIL.currentTime1();
-        projectName = QAV.getState("qavProjectName");
+        var timeStamp = UTIL.currentDate1() + "_" + UTIL.currentTime1();
+        var projectName = QAV.getState("qavProjectName");
         var nameFile = 'KenQ_output_' + projectName + '_' + timeStamp + '.xlsx';
 
         saveAs(new Blob([s2ab(wbout)], {
             type: "application/octet-stream"
         }), nameFile);
+    };
+
+
+    OUTPUT.downloadCsvOutputFile = function() {
+        var data = QAV.getState("dataXlsx");
+
+        var spacer = ["", "", ""];
+
+        var newDataArray = [];
+        for (var i = 0, iLen = data.length; i < iLen; i++) {
+            for (var j = 0, jLen = data[i].length; j < jLen; j++) {
+                newDataArray.push(data[i][j]);
+            }
+            newDataArray.push(spacer, spacer, spacer, spacer, spacer, spacer);
+        }
+
+        newDataArray.shift();
+
+        var timeStamp = UTIL.currentDate1() + "_" + UTIL.currentTime1();
+        var projectName = QAV.getState("qavProjectName");
+        var nameFile = 'KenQ_output_' + projectName + '_' + timeStamp + ".csv";
+
+        UTIL.exportToCsv(nameFile, newDataArray);
     };
 
 }(window.OUTPUT = window.OUTPUT || {}, QAV));

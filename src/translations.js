@@ -9,7 +9,8 @@
 var resources = {
     'en-us': {
         "translation": {
-            "versionNumber": "Beta Version 0.9.1 Test Release (February 15, 2017)",
+            "versionNumber": "Beta Version 0.9.2 Test Release (May 19, 2017)",
+            "Translation by": "",
             "Top": "Top",
             "aData": "1.Data",
             "aCorrelations": "2.Correlations",
@@ -145,7 +146,7 @@ var resources = {
             "(P < .05 : Asterisk (*) Indicates Significance at P < .01)": "(P < .05 : Asterisk (*) Indicates Significance at P < .01)",
             "Both the Factor Q-Sort Value and the Z-Score (Z-SCR) are Shown": "Both the Factor Q-Sort Value and the Z-Score (Z-SCR) are Shown",
             "Standard Errors": "Standard Errors",
-            "Factor Characteristics": "Factor Character",
+            "Factor Characteristics": "Factor Characteristics",
             "Consensus-Disagreement": "Consensus-Disagreement",
             "No. of Defining Variables": "No. of Defining Variables",
             "Avg. Rel. Coef.": "Avg. Rel. Coef.",
@@ -171,6 +172,7 @@ var resources = {
             "Diff": "Diff ",
             "Z-Score Variance": "Z-Score Variance",
             "Standard Errors for Diffs": "Standard Errors for Diffs",
+            "Standard Errors for Differences in Factor Z-scores": "Standard Errors for Differences in Factor Z-scores",
             "Dist State": "Dist State ",
             "All Listed Statements are Non-Significant at P > 0.01, and Those Flagged with an * are also Non-Significant at P > 0.05)": "All Listed Statements are Non-Significant at P > 0.01, and Those Flagged with an * are also Non-Significant at P > 0.05)",
             "Num": "Num",
@@ -291,12 +293,22 @@ var resources = {
             "Cumulative Communalities Matrix": "Cumulative Communalities Matrix",
             "Factor Matrix with Defining Sorts Flagged": "Factor Matrix with Defining Sorts Flagged",
             "Click on the yellow button above for a tutorial on how to import Excel data.": "Click on the yellow button above for a tutorial on how to import Excel data.",
-            "Export statements to pqmethod": "Export statements to pqmethod"
+            "Export statements to pqmethod": "Export statements to pqmethod",
+            "Download complete output in CSV format": "Download complete output in CSV format",
+            "Sorts Correlations": "Sorts Correlations",
+            "Factor Scores for ": "Factor Scores for ",
+            "Descending Array of Differences Between": "Descending Array of Differences Between",
+            "Factor Q-sort Values for Statements sorted by Consensus vs. Disagreement": "Factor Q-sort Values for Statements sorted by Consensus vs. Disagreement",
+            "You seem to be using": "You are using ",
+            "Please update your browser before using Ken-Q Analysis": "Please update your browser before using Ken-Q Analysis",
+            "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above": "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above",
+            "Ready to begin analysis": " "
         }
     },
     "ja": {
         "translation": {
-            "versionNumber": "Beta Version 0.9.1 Test Release (February 15, 2017)",
+            "versionNumber": "Beta Version 0.9.1 Test Release (May 19, 2017)",
+            "Translation by": "Translation by バナシック",
             "Top": "トップに戻る",
             "aData": "1.データ",
             "aCorrelations": "2.相関関係",
@@ -457,6 +469,7 @@ var resources = {
             "Diff": "差額 ",
             "Z-Score Variance": "zスコアの分散",
             "Standard Errors for Diffs": "差額の標準誤差",
+            "Standard Errors for Differences in Factor Z-scores": "Standard Errors for Differences in Factor Z-scores",
             "Dist State": "区別するステートメント ",
             "All Listed Statements are Non-Significant at P > 0.01, and Those Flagged with an * are also Non-Significant at P > 0.05)": "以下のステートメントは、 P > 0.01 で有意性がありません。そして、米印が付いているステートメントは、 P > 0.05 で有意性がありません。",
             "Num": "Num",
@@ -578,7 +591,16 @@ var resources = {
             "Cumulative Communalities Matrix": "Cumulative Communalities Matrix",
             "Factor Matrix with Defining Sorts Flagged": "Factor Matrix with Defining Sorts Flagged",
             "Click on the yellow button above for a tutorial on how to import Excel data.": "Click on the yellow button above for a tutorial on how to import Excel data.",
-            "Export statements to pqmethod": "Export statements to pqmethod"
+            "Export statements to pqmethod": "Export statements to pqmethod",
+            "Download complete output in CSV format": "Download complete output in CSV format",
+            "Sorts Correlations": "Sorts Correlations",
+            "Factor Scores for ": "Factor Scores for ",
+            "Descending Array of Differences Between": "Descending Array of Differences Between",
+            "Factor Q-sort Values for Statements sorted by Consensus vs. Disagreement": "Factor Q-sort Values for Statements sorted by Consensus vs. Disagreement",
+            "You seem to be using": "You are using  ",
+            "Please update your browser before using Ken-Q Analysis": "You should update your browser before using Ken-Q Analysis",
+            "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above": "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above",
+            "Ready to begin analysis": "-- ready to begin analysis"
         }
     }
 };
@@ -586,27 +608,25 @@ var resources = {
 // JSlint declarations
 /* global $, i18n, QAV, document */
 
-(function() {
+(function () {
     i18n
         .init({
             "lng": 'en-us',
             "resStore": resources,
             "useDataAttrOptions": true,
             "fallbackLng": 'en-us'
-        }, function() {
+        }, function () {
             $(document).i18n();
         });
 
-    $('#languageSelect').on("change", function() {
+    $('.languageSelect').on("change", function () {
         var lang = $(this).val();
-        console.log(lang);
-
         // change the UI language variable
         QAV.setState("language", lang);
 
         i18n.init({
             lng: lang
-        }, function() {
+        }, function () {
             $(document).i18n();
         });
     });

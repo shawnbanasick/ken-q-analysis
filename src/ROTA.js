@@ -10,11 +10,11 @@
 // JSlint declarations
 /* global window, d3, performance, sessionStorage, QAV, $, resources, LOAD, document, evenRound, UTIL, _ */
 
-(function(ROTA, QAV, undefined) {
+(function (ROTA, QAV, undefined) {
 
 
     // reset 'has split factor' marker on page load
-    (function() {
+    (function () {
         var hasSplitFactor = 0;
         QAV.setState("hasSplitFactor", hasSplitFactor);
     })();
@@ -23,7 +23,7 @@
     // **********  re-initialize chart after save rotation or varimax *************
     // ****************************************************************************
 
-    ROTA.reInitializePlotAndChart = function() {
+    ROTA.reInitializePlotAndChart = function () {
         // data to initialize D3 chart
 
         var testVar = $.fn.dataTable.isDataTable('#twoFactorDisplayTable');
@@ -47,7 +47,7 @@
     // ****************************************************************************
 
     // always reset to zero on centroid extraction (in centroid.js file)
-    ROTA.saveRotationArchiveCounter = function(option) {
+    ROTA.saveRotationArchiveCounter = function (option) {
         var saveRotationCounter = QAV.getState("saveRotationCounter");
         if (option === "increase") {
             saveRotationCounter = saveRotationCounter + 1;
@@ -66,7 +66,7 @@
     // ****  Rotation button state    ***************************************
     // **********************************************************************
 
-    ROTA.saveRotationButtonColor = function(rotationDegreeDisplayValue) {
+    ROTA.saveRotationButtonColor = function (rotationDegreeDisplayValue) {
         var saveRotButton = $("#saveRotationButton");
         if (rotationDegreeDisplayValue !== 0) {
             saveRotButton.removeClass("saveRotationButtonGray");
@@ -90,7 +90,7 @@
     // ************************************************************  view controller
     // *************    SAVE SELECTED factors for rotation   ***********************
     // *****************************************************************************
-    ROTA.setRotationFactorsFromCheckbox = function() {
+    ROTA.setRotationFactorsFromCheckbox = function () {
 
         // get the factors to send to 2 factor chart
         var pullFactors = [];
@@ -103,7 +103,6 @@
 
         // account for sending null set on page load to display empty chart
         if (pullFactors !== null) {
-
             var rotationFactorA = pullFactors[0];
             var rotationFactorB = pullFactors[1];
             QAV.setState("rotationFactorA", rotationFactorA);
@@ -117,7 +116,7 @@
     // *******************************************************************************
 
     // CALLED BY "DISPLAY FACTORS FOR ROTATION BUTTON"
-    ROTA.doD3ChartDataPrep = function(rotFacStateArray) {
+    ROTA.doD3ChartDataPrep = function (rotFacStateArray) {
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
         var step4 = QAV.getState("qavRespondentNames");
@@ -162,7 +161,7 @@
     // *******  draw D3 Chart  ***************************************************
     // ***************************************************************************
 
-    ROTA.drawD3Chart = function(dataValuesArray) {
+    ROTA.drawD3Chart = function (dataValuesArray) {
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
         var rotChartConfig = QAV.getState("rotChartConfig");
@@ -200,7 +199,7 @@
             customFontSize = "9px";
         }
 
-        console.log(customFontSize);
+        //console.log(customFontSize);
 
         // var significanceLevel = ROTA.calculateFactorLoadingSignificanceLevel();
 
@@ -217,8 +216,6 @@
 
             width = chartSize - margin.left - margin.right,
             height = chartSize - margin.top - margin.bottom;
-        //        width = 640 - margin.left - margin.right,
-        //        height = 640 - margin.top - margin.bottom;
         // todo - coordinate with canvas size on html so download works
 
         /*
@@ -229,38 +226,24 @@
          */
 
         // setup x
-        var xValue = function(d) {
+        var xValue = function (d) {
                 return d.factor2;
             }, // data -> value
             xScale = d3.scale.linear().range([0, width]), // value -> display
-            xMap = function(d) {
+            xMap = function (d) {
                 return xScale(xValue(d));
             }, // data -> display
             xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(2).tickSize(-height, 0, 0).tickPadding(10);
 
         // setup y
-        var yValue = function(d) {
+        var yValue = function (d) {
                 return d.factor1;
             }, // data -> value
             yScale = d3.scale.linear().range([height, 0]), // value -> display
-            yMap = function(d) {
+            yMap = function (d) {
                 return yScale(yValue(d));
             }, // data -> display
             yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(2).tickSize(-width, 0, 0).tickPadding(10);
-
-        //    var xAxisScale = d3.scale.linear()
-        //        .domain([0, width])
-        //        .range([0, width]);
-        //
-        //    var yAxisScale = d3.scale.linear()
-        //        .domain([0, height])
-        //        .range([height, 0]);
-
-        // todo - remove setup fill color?
-        //        var cValue = function (d) {
-        //                return d.respondent;
-        //            },
-        //            color = d3.scale.category10();
 
         // add the graph canvas to the webpage
         var svg = d3.select("#d3_scatterchart").append("svg")
@@ -271,25 +254,8 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-        //    var svg = d3.select("#d3_scatterchart").append("svg")
-        //        .attr("width", width + margin.left + margin.right)
-        //        .attr("height", height + margin.top + margin.bottom)
-        //        .call(d3.behavior.zoom().on("zoom", function () {
-        //            svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
-        //            // svg.select(".x").scale(xAxisScale);
-        //            // svg.select(".y").scale(yAxisScale);
-        //            //.y(yAxisScale);
-        //            // scaling the axis will be complex due to max-min axis setup
-        //            // svg.select(".x.axis").scaleExtent(xAxisScale);
-        //            // svg.select(".y.axis").scaleExtent(yAxisScale);
-        //        }))
-        //        .append("g")
-        //        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
         // confirm number format
-        data.forEach(function(d) {
+        data.forEach(function (d) {
             d.factor1 = +d.factor1;
             d.factor2 = +d.factor2;
             d.factor1Sig = d.factor1Sig + '';
@@ -321,7 +287,6 @@
         yScale.domain([-axisMax, +axisMax]);
 
         // define the div for the tooltip   #d3_scatterchart
-        // var div = d3.select("body").append("div")
         var div = d3.select("#d3_scatterchart").append("div")
             .attr("class", "d3Tooltip")
             .style("opacity", 0);
@@ -337,7 +302,6 @@
             .attr("y", -6)
             .style("font-family", "Arial")
             .style("text-anchor", "end");
-        //  .text("Factor " + rotationFactorB);
 
         // create x axis title
         svg.append("text")
@@ -347,7 +311,6 @@
             .style("font-family", "Arial")
             .style("font-weight", "bold")
             .text("Factor " + rotationFactorB);
-
 
         // y-axis
         svg.append("g")
@@ -377,13 +340,13 @@
         /*  drawing dots and circles based on http://jsfiddle.net/eamonnmag/Q567s/   */
 
         /*    telling D3 that all nodes (g elements with class node) will have data attached to them. The 'key' used (to let D3 know the uniqueness of items) will be the "num" */
-        var index = svg.selectAll("g.node").data(data, function(d) {
+        var index = svg.selectAll("g.node").data(data, function (d) {
             return d.num;
         });
 
         /* 'enter' the data, making the SVG group (to contain a circle and text) with a class node. This corresponds with what we told the data it should be above. */
         var indexGroup = index.enter().append("g").attr("class", "node")
-            .attr('transform', function(d) {
+            .attr('transform', function (d) {
                 return "translate(" + xMap(d) + "," + yMap(d) + ")";
             });
 
@@ -392,7 +355,7 @@
             .attr("r", 9)
             .attr("class", "dot")
             .style("stroke", dotStrokeColor)
-            .style("fill", function(d) {
+            .style("fill", function (d) {
                 if (d.factor1Sig === "true") {
                     return (significanceColorA); //"#ffe4b2";
                 } else if (d.factor2Sig === "true") {
@@ -401,7 +364,7 @@
                     return (defaultDotColor);
                 }
             })
-            .on("mouseover", function(d) {
+            .on("mouseover", function (d) {
                 div.transition()
                     .duration(100)
                     .style("opacity", 1);
@@ -409,7 +372,7 @@
                     .style("left", (d3.event.pageX + 10) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
             })
-            .on("mouseout", function() {
+            .on("mouseout", function () {
                 div.transition()
                     .duration(500)
                     .style("opacity", 0);
@@ -422,14 +385,14 @@
             .attr("font-family", "Arial")
             .attr("font-size", customFontSize)
             .attr("dy", 3)
-            .text(function(d) {
+            .text(function (d) {
                 if (identifier === "number") {
                     return d.num;
                 } else {
                     return d.respondent;
                 }
             })
-            .on("mouseover", function(d) {
+            .on("mouseover", function (d) {
                 div.transition()
                     .duration(100)
                     .style("opacity", 1);
@@ -437,16 +400,13 @@
                     .style("left", (d3.event.pageX + 10) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
             })
-            .on("mouseout", function() {
+            .on("mouseout", function () {
                 div.transition()
                     .duration(500)
                     .style("opacity", 0);
             });
-
         //  todo - check to see if I need to exit the dots
-
     };
-
 
     // todo - store this info on auto flagging somewhere else
     //These are the two standard criteria for automatic flagging used in Q method analysis:
@@ -457,14 +417,12 @@
     // C Flag Item I on Factor J if A^2/H^2 > .5 (Fuerntratt-Criterion) preliminary flagging method
     // C *and* a > 1.96/sqrt(nitems)
 
-
-
     // ******************************************************** data analysis
     // ********  calc significance Levels  **********************************
     //***********************************************************************
 
-    ROTA.calculateFactorLoadingSignificanceLevel = function() {
-        var totalStatements = QAV.getState("qavOriginalSortSize");
+    ROTA.calculateFactorLoadingSignificanceLevel = function (totalStatements) {
+        // var totalStatements = QAV.getState("qavOriginalSortSize");
         var significanceLevel = evenRound((1.96 * (1 / Math.sqrt(totalStatements))), 5);
         return significanceLevel;
     };
@@ -473,28 +431,27 @@
     // **********  calc h2 communalities  ***********************************
     //***********************************************************************
 
-    ROTA.calculateCommunalities = function(currentFactorData) {
+    ROTA.calculateCommunalities = function (currentFactorData) {
         var calculateCommunalityArray = _.cloneDeep(currentFactorData);
+        var temp, temp2, temp3, temp4, i, roundedValue, chartDataLength;
+        var communalitiesArray = [];
+        var fSigCriterion = [];
 
         // calculateCommunalityArray.shift();
         function square(m) {
             return m * m;
         }
 
-        var temp, temp2, temp3, temp4, i, k, roundedValue, chartDataLength;
-        var communalitiesArray = [];
-        var fSigCriterion = [];
-
-        _.forEach(calculateCommunalityArray, function(n) {
+        _.forEach(calculateCommunalityArray, function (n) {
             temp = (_.map(n, square));
-            temp2 = temp.reduce(function(a, b) {
+            temp2 = temp.reduce(function (a, b) {
                 return a + b;
             }, 0);
             temp3 = evenRound((temp2), 5);
             communalitiesArray.push(temp3);
 
             temp4 = [];
-            for (k = 0; k < temp.length; k++) {
+            for (var k = 0, kLen = temp.length; k < kLen; k++) {
                 roundedValue = evenRound((temp[k]), 5);
                 temp4.push(roundedValue);
             }
@@ -519,9 +476,10 @@
 
 
     // todo - relocate function?
-    ROTA.calculatefSigCriterionValues = function(addFlag) {
+    ROTA.calculatefSigCriterionValues = function (addFlag) {
         var fSigCriterionArray = QAV.getState("fSigCriterion");
-        var sigLevel2 = ROTA.calculateFactorLoadingSignificanceLevel();
+        var totalStatements = QAV.getState("qavOriginalSortSize");
+        var sigLevel2 = ROTA.calculateFactorLoadingSignificanceLevel(totalStatements);
         var sigLevel = sigLevel2 * sigLevel2;
         var arrayLength = fSigCriterionArray.length;
         var arrayLength2 = fSigCriterionArray[0].length;
@@ -535,7 +493,7 @@
             for (j = 0; j < arrayLength2; j++) {
                 array = _.clone(temp1);
                 testValue = _.pullAt(array, j);
-                others2 = array.reduce(function(a, b) {
+                others2 = array.reduce(function (a, b) {
                     return a + b;
                 }, 0);
                 others = evenRound((others2), 5);
@@ -552,8 +510,6 @@
                 tempArray.push(significant);
             }
             fSigCriterionResults.push(tempArray);
-
-
         }
         QAV.setState("fSigCriterionResults", fSigCriterionResults);
     };
@@ -562,16 +518,71 @@
     // ******  Rotation procedure  ********************************************
     // ************************************************************************
 
-    ROTA.calculateRotatedFactors = function(rotationDegree) {
+    ROTA.calcSinDegrees = function (num) {
+        return Math.sin(num * (Math.PI / 180));
+    };
 
-        var time0 = performance.now();
+    ROTA.calcCosDegrees = function (num) {
+        return Math.cos(num * (Math.PI / 180));
+    };
 
+    ROTA.newRotateClockwise = function (calculateRotationsArray, rotationDegree) {
+        var transposedArray = _.zip.apply(_, calculateRotationsArray);
+        var sinDegreesValue = (ROTA.calcSinDegrees(rotationDegree));
+        var cosDegreesValue = (ROTA.calcCosDegrees(rotationDegree));
+        var valueA, valueB, tempArray;
+        var len = transposedArray[0].length;
+        var a1Calculations, b1Calculations;
+        var a2Calculations, b2Calculations;
+        var rotatedFactorsArray = [];
+
+        for (var k = 0; k < len; k++) {
+            a1Calculations = transposedArray[1][k] * sinDegreesValue;
+            b1Calculations = transposedArray[0][k] * cosDegreesValue;
+            valueA = (evenRound((a1Calculations + b1Calculations), 5));
+            a2Calculations = transposedArray[0][k] * sinDegreesValue;
+            b2Calculations = transposedArray[1][k] * cosDegreesValue;
+            valueB = (evenRound((-(a2Calculations - b2Calculations)), 5));
+            tempArray = [];
+            tempArray[0] = valueA;
+            tempArray[1] = valueB;
+            rotatedFactorsArray.push(tempArray);
+        }
+        return rotatedFactorsArray;
+    };
+
+    ROTA.newRotateCounterClockwise = function (calculateRotationsArray, rotationDegree) {
+        var transposedArray = _.zip.apply(_, calculateRotationsArray);
+        var sinDegreesValue = (ROTA.calcSinDegrees(rotationDegree));
+        var cosDegreesValue = (ROTA.calcCosDegrees(rotationDegree));
+        var valueA, valueB;
+        var len = transposedArray[0].length;
+        var a1Calculations, b1Calculations;
+        var a2Calculations, b2Calculations;
+        var rotatedFactorsArray = [];
+
+        for (var k = 0; k < len; k++) {
+            a1Calculations = transposedArray[1][k] * sinDegreesValue;
+            b1Calculations = transposedArray[0][k] * cosDegreesValue;
+            valueA = (evenRound((-(a1Calculations - b1Calculations)), 5));
+            a2Calculations = transposedArray[0][k] * sinDegreesValue;
+            b2Calculations = transposedArray[1][k] * cosDegreesValue;
+            valueB = (evenRound(((a2Calculations + b2Calculations)), 5));
+            var tempArray = [];
+            tempArray[0] = valueA;
+            tempArray[1] = valueB;
+            rotatedFactorsArray.push(tempArray);
+        }
+        return rotatedFactorsArray;
+    };
+
+
+    ROTA.calculateRotatedFactors = function (rotationDegree) {
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
         var counterClockwiseRotation = false;
         var calculateRotationsArray = QAV.getState("calculateRotationsArray");
         var tempRotFacStateArray = QAV.getState("tempRotFacStateArray");
-
         var rotatedFactors;
         var looplen = calculateRotationsArray.length;
 
@@ -581,84 +592,11 @@
 
         rotationDegree = Math.abs(rotationDegree);
 
-        function sinDegrees(num) {
-            return Math.sin(num * (Math.PI / 180));
-        }
-
-        function cosDegrees(num) {
-            return Math.cos(num * (Math.PI / 180));
-        }
-
-        function newRotateClockwise(calculateRotationsArray) {
-            var transposedArray = _.zip.apply(_, calculateRotationsArray);
-
-            var sinDegreesValue = (sinDegrees(rotationDegree));
-            var cosDegreesValue = (cosDegrees(rotationDegree));
-
-            var valueA, valueB;
-            var len = transposedArray[0].length;
-            var a1Calculations, b1Calculations;
-            var a2Calculations, b2Calculations;
-
-
-            var rotatedFactorsArray = [];
-            for (var k = 0; k < len; k++) {
-
-                a1Calculations = transposedArray[1][k] * sinDegreesValue;
-                b1Calculations = transposedArray[0][k] * cosDegreesValue;
-                valueA = (evenRound((a1Calculations + b1Calculations), 5));
-
-                a2Calculations = transposedArray[0][k] * sinDegreesValue;
-                b2Calculations = transposedArray[1][k] * cosDegreesValue;
-                valueB = (evenRound((-(a2Calculations - b2Calculations)), 5));
-
-                var tempArray = [];
-                tempArray[0] = valueA;
-                tempArray[1] = valueB;
-                rotatedFactorsArray.push(tempArray);
-            }
-            return rotatedFactorsArray;
-        }
-
-        function newRotateCounterClockwise(calculateRotationsArray) {
-            var transposedArray = _.zip.apply(_, calculateRotationsArray);
-
-            var sinDegreesValue = (sinDegrees(rotationDegree));
-            var cosDegreesValue = (cosDegrees(rotationDegree));
-
-            var valueA, valueB;
-            var len = transposedArray[0].length;
-            var a1Calculations, b1Calculations;
-            var a2Calculations, b2Calculations;
-
-
-            var rotatedFactorsArray = [];
-            for (var k = 0; k < len; k++) {
-
-                a1Calculations = transposedArray[1][k] * sinDegreesValue;
-                b1Calculations = transposedArray[0][k] * cosDegreesValue;
-                valueA = (evenRound((-(a1Calculations - b1Calculations)), 5));
-
-                a2Calculations = transposedArray[0][k] * sinDegreesValue;
-                b2Calculations = transposedArray[1][k] * cosDegreesValue;
-                valueB = (evenRound(((a2Calculations + b2Calculations)), 5));
-
-                var tempArray = [];
-                tempArray[0] = valueA;
-                tempArray[1] = valueB;
-                rotatedFactorsArray.push(tempArray);
-            }
-            return rotatedFactorsArray;
-        }
-
-
         if (counterClockwiseRotation !== true) {
-            rotatedFactors = newRotateClockwise(calculateRotationsArray);
+            rotatedFactors = ROTA.newRotateClockwise(calculateRotationsArray, rotationDegree);
         } else {
-            rotatedFactors = newRotateCounterClockwise(calculateRotationsArray);
+            rotatedFactors = ROTA.newRotateCounterClockwise(calculateRotationsArray, rotationDegree);
         }
-
-        var time1 = performance.now();
 
         //insert rotated factors into temp rotational state array
         for (var i = 0; i < looplen; i++) {
@@ -676,7 +614,7 @@
         ROTA.calculatefSigCriterionValues("flag");
 
         // returns dataValuesArray for D3 chart
-        var d3Prep = ROTA.doD3ChartDataPrep(arrayWithCommunalities); // creates arrays for table/D3 (LS) from state
+        var d3Prep = ROTA.doD3ChartDataPrep(arrayWithCommunalities);
 
         ROTA.drawD3Chart(d3Prep);
         var prepTwoFactorTable = ROTA.prepTwoFactorUpdateHandsontable(tempRotFacStateArray);
@@ -685,7 +623,7 @@
         var isNewSelection = false;
         ROTA.updateDatatable1(prepTwoFactorTable, isNewSelection);
 
-        console.log('%c Factor rotation calcs completed in  ' + (time1 - time0).toFixed(3) + ' milliseconds', 'background: aquamarine; color: black');
+        // console.log('%c Factor rotation calcs completed in  ' + (time1 - time0).toFixed(3) + ' milliseconds', 'background: aquamarine; color: black');
 
         QAV.setState("calculateRotationsArray", rotatedFactors);
         QAV.setState("tempRotFacStateArray", tempRotFacStateArray);
@@ -695,8 +633,7 @@
     // ************************************************************* model
     // ****  prep two factor and create initial rot array ****************
     // *******************************************************************
-    ROTA.prepTwoFactorUpdateHandsontable = function(chartData) {
-
+    ROTA.prepTwoFactorUpdateHandsontable = function (chartData) {
         var twoFactorTableArray = [];
         var step1, i, step3, tempObj;
         var rotationFactorA = QAV.getState("rotationFactorA");
@@ -724,7 +661,7 @@
     // **************************************************************  model
     // **** initial array for two factor table ****************************
     // ********************************************************************
-    ROTA.setTwoFactorRotationalArray = function(chartData) {
+    ROTA.setTwoFactorRotationalArray = function (chartData) {
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
         var ilen = chartData.length;
@@ -741,13 +678,14 @@
             calculateRotationsArray.push(tempArray);
         }
         QAV.setState("calculateRotationsArray", calculateRotationsArray);
+        return calculateRotationsArray;
     };
 
 
     // *************************************************************** view
     // ******  draw two factors table  ************************************
     // ********************************************************************
-    ROTA.updateDatatable1 = function(newData, isNewSelection) {
+    ROTA.updateDatatable1 = function (newData, isNewSelection) {
 
         // todo - fix error on baselinedata setting after displaying factors once
         var i, baseLineData, tempArray1, temp1, temp1a, temp2, temp2b, temp2a;
@@ -893,7 +831,7 @@
                     "visible": false
                 }, {
                     'targets': [2],
-                    "createdCell": function(td, cellData, rowData) { // row col
+                    "createdCell": function (td, cellData, rowData) { // row col
 
                         if (rowData[6] === "true") {
                             $(td).css('background', significanceColorA); //'#ffe4b2');
@@ -901,7 +839,7 @@
                     }
                 }, {
                     'targets': [4],
-                    "createdCell": function(td, cellData, rowData) { // row col
+                    "createdCell": function (td, cellData, rowData) { // row col
                         if (rowData[7] === "true") {
                             $(td).css('background', significanceColorB);
                         }
@@ -949,7 +887,7 @@
     // **************************************************************************** model
     // **********  save D3 rotated factors to state matrix array  ***********************
     // **********************************************************************************
-    ROTA.saveRotation = function() {
+    ROTA.saveRotation = function () {
         var rotationDegree = sessionStorage.getItem("rotationDegreeDisplayValue");
         var rotationFactorA = QAV.getState("rotationFactorA");
         var rotationFactorB = QAV.getState("rotationFactorB");
@@ -997,61 +935,61 @@
     //******************************************************************   model
     //******* for rotated factors table data  handsontable version *************
     //**************************************************************************
-    ROTA.calculateEigenvaluesAndVariance = function() {
-        var numberSorts = QAV.getState("qavTotalNumberSorts");
-        var factorMatrix = QAV.getState("rotFacStateArray");
-        var factorMatrix2 = _.cloneDeep(factorMatrix);
-        var factorMatrix1 = _.zip.apply(_, factorMatrix2);
-        var j, num, eigen, totalVariance;
-        var eigenvalues = {};
-        var explainedVariance = {};
-        var loopLen1 = factorMatrix1.length;
-        var results = [];
-        var factorNumber, factorSig;
+    // ROTA.calculateEigenvaluesAndVariance = function () {
+    //     var numberSorts = QAV.getState("qavTotalNumberSorts");
+    //     var factorMatrix2 = QAV.getState("rotFacStateArray");
+    //     //var factorMatrix2 = _.cloneDeep(factorMatrix);
+    //     var factorMatrix1 = _.zip.apply(_, factorMatrix2);
+    //     var j, num, eigen, totalVariance;
+    //     var eigenvalues = {};
+    //     var explainedVariance = {};
+    //     var loopLen1 = factorMatrix1.length;
+    //     var results = [];
+    //     var factorNumber, factorSig;
 
-        eigenvalues = {
-            respondent: "Eigenvalues"
-        };
-        explainedVariance = {
-            respondent: "% Expln Var"
-        };
+    //     eigenvalues = {
+    //         respondent: "Eigenvalues"
+    //     };
+    //     explainedVariance = {
+    //         respondent: "% Expln Var"
+    //     };
 
-        for (j = 0; j < loopLen1; j++) {
-            num = factorMatrix1[j];
-            for (var k = 0; k < num.length; k++) {
-                num[k] = evenRound((num[k] * num[k]), 8);
-            }
-            eigen = evenRound((_.reduce(num, function(sum, num2) {
-                return sum + num2;
-            })), 5);
+    //     for (j = 0; j < loopLen1; j++) {
+    //         num = factorMatrix1[j];
+    //         for (var k = 0; k < num.length; k++) {
+    //             num[k] = evenRound((num[k] * num[k]), 8);
+    //         }
+    //         eigen = evenRound((_.reduce(num, function (sum, num2) {
+    //             return sum + num2;
+    //         })), 5);
 
-            factorNumber = "factor" + (j + 1);
+    //         factorNumber = "factor" + (j + 1);
 
-            factorSig = "factorSig" + (j + 1);
-            totalVariance = evenRound((100 * (eigen / numberSorts)), 0);
+    //         factorSig = "factorSig" + (j + 1);
+    //         totalVariance = evenRound((100 * (eigen / numberSorts)), 0);
 
-            eigenvalues[factorNumber] = eigen;
-            explainedVariance[factorNumber] = totalVariance;
+    //         eigenvalues[factorNumber] = eigen;
+    //         explainedVariance[factorNumber] = totalVariance;
 
-            eigenvalues[factorSig] = "";
-            explainedVariance[factorSig] = "";
+    //         eigenvalues[factorSig] = "";
+    //         explainedVariance[factorSig] = "";
 
-        }
-        eigenvalues.communality = "";
-        explainedVariance.communality = "";
-        results.push(eigenvalues);
-        QAV.setState("expVar", explainedVariance);
-
-        return results;
-    };
+    //     }
+    //     eigenvalues.communality = "";
+    //     explainedVariance.communality = "";
+    //     results.push(eigenvalues);
+    //     QAV.setState("expVar", explainedVariance);
+    //     jlog("results", results);
+    //     return results;
+    // };
 
     //***************************************************************   model
     //**** for rotated factors table data - datatables version **************
     //***********************************************************************
-    ROTA.calculateEigenvaluesAndVariance2 = function() {
+    ROTA.calculateEigenvaluesAndVariance2 = function () {
         var numberSorts = QAV.getState("qavTotalNumberSorts");
-        var factorMatrix = QAV.getState("rotFacStateArray");
-        var factorMatrix2 = _.cloneDeep(factorMatrix);
+        var factorMatrix2 = QAV.getState("rotFacStateArray");
+        // var factorMatrix2 = _.cloneDeep(factorMatrix);
         var factorMatrix1 = _.zip.apply(_, factorMatrix2);
         var j, num, eigen, totalVariance;
         var eigenvalues = {};
@@ -1068,7 +1006,7 @@
             for (var k = 0; k < num.length; k++) {
                 num[k] = evenRound((num[k] * num[k]), 8);
             }
-            eigen = evenRound((_.reduce(num, function(sum, num2) {
+            eigen = evenRound((_.reduce(num, function (sum, num2) {
                 return sum + num2;
             })), 5);
 
@@ -1089,7 +1027,6 @@
         results.push(eigenvalues);
         explainedVariance.splice(1, 0, "", "");
         QAV.setState("expVar", explainedVariance);
-
         return results;
     };
 

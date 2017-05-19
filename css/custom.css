@@ -46,7 +46,8 @@ div.two.columns {
 
 /*D3 styling*/
 
-.axis path, .axis line {
+.axis path,
+.axis line {
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
@@ -150,7 +151,7 @@ Hands on Table settings for Factor Rotation
 #factorRotationTable {
     display: block;
     margin-right: 2%;
-    vertical-align: top;
+    /*vertical-align: top;*/
     height: auto;
     /*    margin-left: -1%;
     */
@@ -488,9 +489,12 @@ input:hover {
 */
 }
 
+
+/*
 #chartTable {
-    /*    display: inline-block;*/
-}
+             display: inline-block;
+} 
+*/
 
 
 /* dataTable highlighting  */
@@ -632,13 +636,14 @@ td.negativeHighlight {
 MODAL WINDOW CSS
 */
 
-.modal {
-    /*
+
+/*
+.modal {  
     margin-top: 0.1% !important;
 -webkit-transition: none !important;
 transition: none !important;
-*/
 }
+*/
 
 
 /*
@@ -844,10 +849,6 @@ transition: none !important;
     display: inline-block;
 }
 
-.checkboxLabel {
-    width: 65px;
-}
-
 .navigationBar {
     width: 90%;
     margin-left: -25px;
@@ -916,7 +917,7 @@ transition: none !important;
 .inputBoxAutoWidth {
     width: 95%;
 }
-
+/*
 #accordion {
     margin-top: 10px;
     margin-left: 10%;
@@ -961,7 +962,7 @@ transition: none !important;
 
 #accordionDiv {
     height: 500px;
-}
+}*/
 
 .evenFactorRow {
     background-color: pink;
@@ -978,7 +979,7 @@ transition: none !important;
     margin: 0;
 }
 
-#section6 label {
+.factorFlagging label {
     cursor: pointer;
     display: block;
     width: auto;
@@ -994,30 +995,37 @@ transition: none !important;
     border: 1px solid #bbb;
 }
 
-#section6 label:first-child {
+.factorFlagging label:first-child {
     border-left-width: 1px;
     border-top-left-radius: .2em;
     border-bottom-left-radius: .2em;
 }
 
-#section6 label:last-child {
+.factorFlagging label:last-child {
     border-top-right-radius: .2em;
     border-bottom-right-radius: .2em;
 }
 
-#section6 label.selected {
+.factorFlagging label.selected {
     background-color: #38acec;
     color: white;
     border: 1px solid #38acec;
     /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset;*/
 }
 
-#section6 label.warning.selected {
+.factorCheckboxSelected {
+    background-color: #38acec;
+    color: white;
+    border: 1px solid #38acec;
+    /*    box-shadow: 1px 1px 1px rgba(0, 0, 0, .2) inset; */
+}
+
+.factorFlagging label.warning.selected {
     background-color: red;
     border-color: darkred;
 }
 
-#section6 input[type="radio"] {
+.factorFlagging input[type="radio"] {
     position: absolute;
     visibility: hidden;
 }
@@ -1254,7 +1262,8 @@ div.d3Tooltip {
     fill: none;
 }
 
-#section4 .axis path, #section4 .axis line {
+#section4 .axis path,
+#section4 .axis line {
     fill: none;
     stroke: grey;
     stroke-width: 1;
@@ -1800,4 +1809,255 @@ input[type=color] {
     background-color: inherit !important;
     border: none;
     margin-top: .5em;
+}
+
+
+/* Base for label styling */
+
+.rotaTable [type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+    position: absolute;
+    left: -9999px;
+}
+
+.rotaTable [type="checkbox"]:not(:checked)+label,
+.rotaTable [type="checkbox"]:checked+label {
+    margin-top: 4px !important;
+    position: relative;
+    /*padding-left: 1.95em;*/
+    cursor: pointer;
+    margin-bottom: 0 !important;
+}
+
+
+/* checkbox aspect - checked*/
+
+.rotaTable [type="checkbox"]:checked+label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    /*border: 2px solid #ccc;*/
+    background: #8cd0f3;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1);
+}
+
+
+/* checkbox aspect - not checked */
+
+.rotaTable [type="checkbox"]:not(:checked)+label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    /*border: 2px solid #ccc;*/
+    /*   background: #38acec; */
+    border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1);
+}
+
+
+/* checked mark aspect */
+
+.rotaTable [type="checkbox"]:not(:checked)+label:after,
+.rotaTable [type="checkbox"]:checked+label:after {
+    /*content: '✚';*/
+    content: '✓';
+    /*content: '◉';*/
+    position: absolute;
+    top: 3;
+    /*bottom: 0;*/
+    left: 1px;
+    /*transform: translate(-50%, -50%);*/
+    /*right:0; */
+    /*margin: auto;
+    /*margin-left:auto;
+    margin-right: auto;*/
+    font-size: 26px;
+    line-height: .6;
+    color: white;
+    transition: all .2s;
+}
+
+
+/* checked mark aspect changes */
+
+.rotaTable [type="checkbox"]:not(:checked)+label:after {
+    opacity: 0;
+    transform: scale(0);
+}
+
+.rotaTable [type="checkbox"]:checked+label:after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+
+/* disabled checkbox */
+
+.rotaTable [type="checkbox"]:disabled:not(:checked)+label:before,
+.rotaTable [type="checkbox"]:disabled:checked+label:before {
+    box-shadow: none;
+    border-color: #bbb;
+    background-color: #ddd;
+}
+
+.rotaTable [type="checkbox"]:disabled:checked+label:after {
+    color: #999;
+}
+
+.rotaTable [type="checkbox"]:disabled+label {
+    color: #aaa;
+}
+
+
+/* accessibility */
+
+.rotaTable [type="checkbox"]:checked:focus+label:before,
+.rotaTable [type="checkbox"]:not(:checked):focus+label:before {
+    background: #d3d3d3;
+}
+
+
+/* hover style just for information */
+
+.rotaTable label:hover:before {
+    background: #d3d3d3;
+}
+
+.rotaTable label {
+    width: 22px;
+    height: 22px;
+}
+
+.checkboxLabel {
+    padding-left: 5px;
+    width: 73px;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.section7Css .factorSelectBox:checked+.checkboxLabel {
+    background: none repeat scroll #38acec !important;
+    color: #FFFFFF !important;
+    /*margin-left: 10px !important; */
+}
+
+.section7Css [type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+}
+
+.browserDetection .flex-container {
+    padding: 0;
+    margin: 0;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.browserDetection .flex-item {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 850px;
+    height: auto;
+    margin-top: 10px;
+    line-height: 30px;
+    color: black;
+    font-weight: bold;
+    font-size: 2em;
+    text-align: center;
+}
+
+
+.supportedBrowsers .flex-item {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    min-width: 150px;
+    height: 400px;
+    margin-top: 10px;
+    margin-right: 35px;
+    margin-left: 35px;
+    line-height: 30px;
+    color: black;
+    font-weight: bold;
+    font-size: 2em;
+    text-align: center;
+    background-color: #eee;
+    border: solid 3px #dedede;
+}
+
+.supportedBrowsers img {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100px;
+    height: auto;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.topSpacer {
+    margin-top: 100px;
+}
+
+.browserSubText {
+    font-size: 14px;
+}
+
+.introHelpText {
+    width: 875px;
+    display: inline-block;
+}
+
+.introHelpIcon {
+    display: inline-block;
+}
+
+.introCautionText {
+    padding: 20px 20px 10px 20px;
+    background-color: #fef9a8;
+    width: 94%;
+}
+
+.section5Css .checkboxLabel {
+    width: 65px;
+}
+
+.section5Css .checkbox:checked+.checkboxLabel {
+    background: none repeat scroll #38acec !important;
+    color: #FFFFFF !important;
+    /*margin-left: 10px !important; */
+}
+
+.section5Css [type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+}
+
+.languageSelect {
+    display: inline-block;
+    margin-left: 60%;
+}
+
+.translationBy {
+    margin-top: .6em;
+    margin-right: 12%;
+    display: inline-block;
+}
+
+.newThisVersionUL {
+    font-size: 1.5em;
 }

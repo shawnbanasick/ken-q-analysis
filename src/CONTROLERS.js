@@ -10,7 +10,7 @@
 // JSlint declarations
 /* global window, $, resources, EXCEL, FIREBASE, DEMO, d3, INPUT, ROTA, VARIMAX, OUTPUT, LOAD, localStorage, _, d3_save_svg, document, Huebee, PASTE, CORR, sessionStorage, CENTROID, VIEW, PCA, QAV, UTIL, performance*/
 
-(function(CONTROLERS, QAV, undefined) {
+(function (CONTROLERS, QAV, undefined) {
 
     /*
     //
@@ -22,8 +22,8 @@
     // todo - move this to manual input file?
 
     // Use Demo Data Set Option - display database selected
-    (function() {
-        $("#existingDatabaseSelect").change(function() {
+    (function () {
+        $("#existingDatabaseSelect").change(function () {
             var testValue = $(this).val();
             if (testValue === "Lipset") {
                 DEMO.returnLipset();
@@ -37,15 +37,15 @@
 
 
     // call check manual input sort symmetry
-    (function() {
-        $("#sortInputSubmit").on('click', function(e) {
+    (function () {
+        $("#sortInputSubmit").on('click', function (e) {
             e.preventDefault();
             INPUT.isSortSymmetric();
             $('#respondentNameInput1').focus();
         });
     })();
 
-    (function() {
+    (function () {
         var input = document.getElementById('sortInputBox');
 
         // pull user input from memory if it exists
@@ -55,20 +55,20 @@
         }
 
         // capture sorts from user-input and set into memory
-        $('#sortInputBox').on('input propertychange change', function() {
+        $('#sortInputBox').on('input propertychange change', function () {
             localStorage.setItem("sortInputBox", this.value);
         });
     })();
 
-    (function() {
-        $('#stageDataPqmethod').on('click', function() {
+    (function () {
+        $('#stageDataPqmethod').on('click', function () {
             PASTE.stageDataPqmethod();
         });
     })();
 
     // to clear so new data can be added
-    (function() {
-        $("#clearInputBoxDataButton").on("click", function() {
+    (function () {
+        $("#clearInputBoxDataButton").on("click", function () {
             $("#sortInputBox").val("");
             localStorage.setItem("sortInputBox", "");
             QAV.setState("sortInputBox", "");
@@ -78,8 +78,8 @@
     })();
 
     // import EXCEL files
-    (function() {
-        $("#fileSelect").on("change", function(e) {
+    (function () {
+        $("#fileSelect").on("change", function (e) {
             QAV.setState("typeOfExcelFile", "user-input");
             EXCEL.filePicked(e);
         });
@@ -87,56 +87,56 @@
 
 
     // import Unforced EXCEL files
-    (function() {
-        $("#fileSelectUnforced").on("change", function(e) {
+    (function () {
+        $("#fileSelectUnforced").on("change", function (e) {
             QAV.setState("typeOfExcelFile", "unforced");
             EXCEL.filePicked(e);
         });
     })();
 
     // import Ken-Q output files to EXCEL
-    (function() {
-        $("#fileSelectKenq").on("change", function(e) {
+    (function () {
+        $("#fileSelectKenq").on("change", function (e) {
             EXCEL.filePickedKenq(e);
         });
     })();
 
     // import DAT files to PASTE
-    (function() {
-        $("#fileSelectPQM").on("change", function(e) {
+    (function () {
+        $("#fileSelectPQM").on("change", function (e) {
             PASTE.filePickedTextPQM(e);
         });
     })();
 
     // import STA files to PASTE
-    (function() {
-        $("#fileSelectSTA").on("change", function(e) {
+    (function () {
+        $("#fileSelectSTA").on("change", function (e) {
             PASTE.filePickedTextSTA(e);
         });
     })();
 
     // import STA files to PASTE     displayJsonData
-    (function() {
-        $("#fileSelectJSON").on("change", function(e) {
+    (function () {
+        $("#fileSelectJSON").on("change", function (e) {
             FIREBASE.filePickedJSON(e);
         });
     })();
 
-    (function() {
-        $("#stageJsonData").on("click", function(e) {
+    (function () {
+        $("#stageJsonData").on("click", function (e) {
             FIREBASE.stageJsonData(e);
             $(".jsonDownloadPQ").show();
         });
     })();
 
-    (function() {
-        $("#downloadJsonData").on("click", function(e) {
+    (function () {
+        $("#downloadJsonData").on("click", function (e) {
             FIREBASE.downloadJsonData(e);
         });
     })();
 
-    (function() {
-        $("#existingDatabaseRespondentList").on("click", "button", function(e) {
+    (function () {
+        $("#existingDatabaseRespondentList").on("click", "button", function (e) {
             e.preventDefault();
             var index = $(this).parent().index();
             $(this).parent().remove();
@@ -155,23 +155,23 @@
         });
     })();
 
-    (function() {
-        $("#exportJsonSortsPQM").on("click", function(e) {
+    (function () {
+        $("#exportJsonSortsPQM").on("click", function (e) {
             e.preventDefault();
             EXCEL.exportExcelSortsPQM();
         });
     })();
 
-    (function() {
-        $("#exportStatementsPQM").on("click", function(e) {
+    (function () {
+        $("#exportStatementsPQM").on("click", function (e) {
             e.preventDefault();
             EXCEL.exportStatementsToPqmethod();
         });
     })();
 
 
-    (function() {
-        $("#clearAnalysisDataButton").on("click", function(e) {
+    (function () {
+        $("#clearAnalysisDataButton").on("click", function (e) {
             e.preventDefault();
             $("#existingDatabaseStatementList").empty();
             $("#existingDatabaseRespondentList").empty();
@@ -183,8 +183,8 @@
         });
     })();
 
-    (function() {
-        $("#disableSymmetryButton").on("click", function(e) {
+    (function () {
+        $("#disableSymmetryButton").on("click", function (e) {
             e.preventDefault();
             var language = QAV.getState("language");
             var noSymmButText = resources[language].translation["Symmetry Check Disabled"];
@@ -204,8 +204,8 @@
         });
     })();
 
-    (function() {
-        $("#disableErrorSoundButton").on("click", function(e) {
+    (function () {
+        $("#disableErrorSoundButton").on("click", function (e) {
             e.preventDefault();
             var language = QAV.getState("language");
             var noErrorButText = resources[language].translation["AUDIO ERROR WARNING DISABLED"];
@@ -233,8 +233,8 @@
 
 
     // start correlation anaysis from demo data
-    (function() {
-        $("#beginAnalysisLocalData").on("click", function() {
+    (function () {
+        $("#beginAnalysisLocalData").on("click", function () {
             CORR.createCorrelationTable();
         });
     })();
@@ -246,8 +246,8 @@
     //
     */
     // to start pca and draw PCA table
-    (function() {
-        document.getElementById("PcaExtractionButton").addEventListener("click", function() {
+    (function () {
+        document.getElementById("PcaExtractionButton").addEventListener("click", function () {
 
             var button, button2, X, t0, t1, dataArray2, dataArray;
 
@@ -293,8 +293,8 @@
 
 
     // Centroid factor extration button listener
-    (function() {
-        $("#factorExtractionButton").on("click", function() {
+    (function () {
+        $("#factorExtractionButton").on("click", function () {
 
             var button2, dataArray;
             var language = QAV.getState("language");
@@ -323,8 +323,8 @@
     })();
 
     // clear view for reset analysis
-    (function() {
-        $("#resetAnalysisButton").on("click", function() {
+    (function () {
+        $("#resetAnalysisButton").on("click", function () {
 
             VIEW.destroyExtractionTables();
             $(this).prop('disabled', true);
@@ -374,9 +374,9 @@
     //
     */
 
-    (function() {
+    (function () {
         // rotation button 1 event listener
-        $("#clockwiseButton").on("click", function(e) {
+        $("#clockwiseButton").on("click", function (e) {
             e.preventDefault();
             var rotationDegreeDisplayValue = parseInt(sessionStorage.getItem("rotationDegreeDisplayValue"));
 
@@ -394,8 +394,8 @@
     })();
 
     // rotation button 2 event listener
-    (function() {
-        $("#counter-clockwiseButton").on("click", function(e) {
+    (function () {
+        $("#counter-clockwiseButton").on("click", function (e) {
             e.preventDefault();
             var rotationDegreeDisplayValue = sessionStorage.getItem("rotationDegreeDisplayValue");
 
@@ -414,8 +414,8 @@
     })();
 
     // push rotation values to rotation table and array
-    (function() {
-        $("#saveRotationButton").on("click", function(e) {
+    (function () {
+        $("#saveRotationButton").on("click", function (e) {
             e.preventDefault();
             var testForSplit = QAV.getState("hasSplitFactor");
             if (testForSplit > 0) {
@@ -428,8 +428,8 @@
 
 
     // triggered by "Display Selected Factors" button
-    (function() {
-        $("#generateRotationItemsButton").on("click", function(e) {
+    (function () {
+        $("#generateRotationItemsButton").on("click", function (e) {
             e.preventDefault();
             var testForSplit = QAV.getState("hasSplitFactor");
             if (testForSplit > 0) {
@@ -487,8 +487,8 @@
 
 
     // clear DOM when user changes number factors kept for rotation
-    (function() {
-        $("#selectFactorsRotation").on("change", function() {
+    (function () {
+        $("#selectFactorsRotation").on("change", function () {
 
             VIEW.clearSections_4_5_6();
 
@@ -500,8 +500,8 @@
     })();
 
     // get User input on number of factors to keep for rotation
-    (function() {
-        $("#sendToRotationButton").on("click", function() {
+    (function () {
+        $("#sendToRotationButton").on("click", function () {
             var numFactors, data, loopLen, temp1, i, centroidFactors;
 
             $("#factorLoadingContainerDiv").show();
@@ -584,8 +584,8 @@
     })();
 
     // display rotation chart options in DOM
-    (function() {
-        $("#factorJudgementRotButton").on("click", function() {
+    (function () {
+        $("#factorJudgementRotButton").on("click", function () {
             var testForSplit = QAV.getState("hasSplitFactor");
             if (testForSplit > 0) {
                 VIEW.showDisabledFunctionsAfterSplitModal();
@@ -608,8 +608,8 @@
     })();
 
     // call varimax
-    (function() {
-        $("#factorVarimaxButton").on("click", function() {
+    (function () {
+        $("#factorVarimaxButton").on("click", function () {
             var testForSplit = QAV.getState("hasSplitFactor");
             if (testForSplit > 0) {
                 VIEW.showDisabledFunctionsAfterSplitModal();
@@ -633,9 +633,9 @@
         });
     })();
 
-    (function() {
+    (function () {
         // scree plot image download
-        $(".screePlotDownloadButton").on("click", function() {
+        $(".screePlotDownloadButton").on("click", function () {
             var date = UTIL.currentDate1();
             var time = UTIL.currentTime1();
             var dateTime = date + "_" + time;
@@ -650,9 +650,9 @@
         });
     })();
 
-    (function() {
+    (function () {
         // download judgemental rotation chart
-        $(".rotationChartDownloadButton").on("click", function() {
+        $(".rotationChartDownloadButton").on("click", function () {
             var date = UTIL.currentDate1();
             var time = UTIL.currentTime1();
             var dateTime = date + "_" + time;
@@ -668,15 +668,15 @@
     })();
 
     // set judgemental rotation chart options
-    (function() {
-        $(".rotationChartOptionsButton").on("mousedown", function(e) {
+    (function () {
+        $(".rotationChartOptionsButton").on("mousedown", function (e) {
             e.preventDefault();
             VIEW.showRotationChartOptionsModal();
         });
     })();
 
-    (function() {
-        $("#rotationChartOptionsModal").on('change', 'input[type=color]', function() {
+    (function () {
+        $("#rotationChartOptionsModal").on('change', 'input[type=color]', function () {
             var rotChartConfig = QAV.getState("rotChartConfig") || {};
             var hexCode2 = $(this).val();
             rotChartConfig[$(this).attr('name')] = hexCode2;
@@ -685,8 +685,8 @@
     })();
 
     // control rotation chart options
-    (function() {
-        $("#rotationChartOptionsModal").on('click', '.applyChanges', function() {
+    (function () {
+        $("#rotationChartOptionsModal").on('click', '.applyChanges', function () {
             var rotChartConfig = QAV.getState("rotChartConfig") || {};
             rotChartConfig.significanceColorA = rotChartConfig.significanceColorAPrep;
             rotChartConfig.significanceColorB = rotChartConfig.significanceColorBPrep;
@@ -704,16 +704,15 @@
     })();
 
     // close modal box
-    (function() {
-        $("#rotationChartOptionsModal").on('click', '.button-cancel', function() {
-            console.log("cancel clicked");
+    (function () {
+        $("#rotationChartOptionsModal").on('click', '.button-cancel', function () {
             $("#rotationChartOptionsModal").iziModal('close');
         });
     })();
 
     // remove circle highlighting? - event handler
-    (function() {
-        $("#rotationChartOptionsModal").on('click', '#removeCircleHighlightDiv :radio', function() {
+    (function () {
+        $("#rotationChartOptionsModal").on('click', '#removeCircleHighlightDiv :radio', function () {
             var rotChartConfig = QAV.getState("rotChartConfig") || {};
             $('#rotationChartOptionsModal, #removeCircleHighlightDiv .radioHighlight2').removeClass("selected");
             var $radioOption = ($(this).val());
@@ -729,8 +728,8 @@
     })();
 
     // remove circles? - event handler
-    (function() {
-        $("#rotationChartOptionsModal").on('click', '#removeCirclesDiv :radio', function() {
+    (function () {
+        $("#rotationChartOptionsModal").on('click', '#removeCirclesDiv :radio', function () {
             var rotChartConfig = QAV.getState("rotChartConfig") || {};
             $('#rotationChartOptionsModal, #removeCirclesDiv .radioHighlight2').removeClass("selected");
             var $radioOption = ($(this).val());
@@ -746,8 +745,8 @@
     })();
 
     // use id number or respondent name? - event handler
-    (function() {
-        $("#rotationChartOptionsModal").on('click', '#chartIdentifierDiv :radio', function() {
+    (function () {
+        $("#rotationChartOptionsModal").on('click', '#chartIdentifierDiv :radio', function () {
             var rotChartConfig = QAV.getState("rotChartConfig") || {};
             $('#rotationChartOptionsModal, #chartIdentifierDiv .radioHighlight2').removeClass("selected");
             var $radioOption = ($(this).val());
@@ -763,8 +762,8 @@
     })();
 
     // change font size? - event handler
-    (function() {
-        $("#rotationChartOptionsModal").on('click', '#changeFontSizeDiv :radio', function() {
+    (function () {
+        $("#rotationChartOptionsModal").on('click', '#changeFontSizeDiv :radio', function () {
             var rotChartConfig = QAV.getState("rotChartConfig") || {};
             $('#changeFontSizeDiv :radio, #changeFontSizeDiv .radioHighlight2').removeClass("selected");
             var $radioOption = ($(this).val());
@@ -780,8 +779,8 @@
     })();
 
     // chart font size adjustment input box
-    (function() {
-        $("#rotationChartOptionsModal").on('input', '#chartFontSizeInputBox', function() {
+    (function () {
+        $("#rotationChartOptionsModal").on('input', '#chartFontSizeInputBox', function () {
             var rotChartConfig = QAV.getState("rotChartConfig") || {};
             var customFontSize = $('#chartFontSizeInputBox').val();
             rotChartConfig.customFontSize = customFontSize;
@@ -794,8 +793,8 @@
     // **** SECTION 5 ****  (factor loadings)
     //
     */
-    (function() {
-        $("#autoflagButton").on("click", function(e) {
+    (function () {
+        $("#autoflagButton").on("click", function (e) {
             e.preventDefault();
             var testForSplit = QAV.getState("hasSplitFactor");
             if (testForSplit > 0) {
@@ -816,8 +815,8 @@
 
 
     // SPLIT BIPOLAR FACTOR BUTTON
-    (function() {
-        $("#splitFactorButton").on("click", function(e) {
+    (function () {
+        $("#splitFactorButton").on("click", function (e) {
             e.preventDefault();
             VIEW.showSplitBipolarFactorModal();
         });
@@ -825,8 +824,8 @@
 
     // click handler for select factor loadings checkboxes
     // todo - check to see if this is needed
-    (function() {
-        $('#factorRotationTable2 tbody').on('click', 'tr', function() {
+    (function () {
+        $('#factorRotationTable2 tbody').on('click', 'tr', function () {
             var table = $('#factorRotationTable2').DataTable(); //
             table
                 .rows()
@@ -835,8 +834,8 @@
     })();
 
     // control factor loadings table background highlight
-    (function() {
-        $("#loadingsRadioSelect2 :radio").on('click', function() {
+    (function () {
+        $("#loadingsRadioSelect2 :radio").on('click', function () {
 
             // disable if table has split factor
             var testForSplit = QAV.getState("hasSplitFactor");
@@ -861,8 +860,8 @@
     })();
 
     // reorder table by respondent id or highest loading factor
-    (function() {
-        $("#loadingsRadioSelect1 :radio").on('click', function() {
+    (function () {
+        $("#loadingsRadioSelect1 :radio").on('click', function () {
             // $('#loadingsRadioSelect1 input:not(:checked)').parent().removeClass("selected");
             $('#loadingsRadioSelect1 .radioHighlight1').removeClass("selected");
             // $(this).parent().addClass("selected");
@@ -879,8 +878,8 @@
     })();
 
     // remove items from Project history list and undo rotation
-    (function() {
-        $("#rotationHistoryList").on("click", "button", function(e) {
+    (function () {
+        $("#rotationHistoryList").on("click", "button", function (e) {
             e.preventDefault();
             var $this = $(this);
             if ($this.hasClass("deleteButton") && $this.hasClass("varimaxCalled")) {
@@ -898,8 +897,8 @@
     })();
 
     // INVERT FACTOR BUTTON
-    (function() {
-        $("#invertFactorButton").on("click", function(e) {
+    (function () {
+        $("#invertFactorButton").on("click", function (e) {
             e.preventDefault();
             var rotationHistory = $("#rotationHistoryList li").text();
             if (rotationHistory.indexOf('was split into') >= 0) {
@@ -917,17 +916,20 @@
     */
 
     // page setup actions for page reload
-    (function() {
+    (function () {
         // hide download button until after preliminary results are displayed
         $("#downloadResultsButton").hide();
+        $("#downloadCsvResultsButton").hide();
+        $("#displayQuickResultsButton").hide();
+        $("#factorVizOptionsDiv").hide();
 
         // tracker for results download / display buttons
         QAV.setState("outputComplete", "false");
     })();
 
     //  change the value of checkboxes on factor rotation table when clicked
-    (function() {
-        $('#factorRotationTable2').on('click', 'td', function() {
+    (function () {
+        $('#factorRotationTable2').on('click', 'td', function () {
             var myTable = $('#factorRotationTable2').DataTable();
             if (myTable.cell($(this)).data() === 'false') {
                 myTable.cell($(this)).data('true');
@@ -938,8 +940,8 @@
     })();
 
     // display quick results button event listener
-    (function() {
-        $('#displayQuickResultsButton').on('click', function() {
+    (function () {
+        $('#displayQuickResultsButton').on('click', function () {
             // pull the state data (selected factor loadings - checkboxes) from table
             var results = [];
             var loopLen1 = QAV.getState("qavRespondentNames").length;
@@ -962,33 +964,56 @@
                 // CORR.drawRawSortsRadviz();
                 PRELIMOUT.showPreliminaryOutput1();
                 $("#downloadResultsButton").show();
+                $("#downloadCsvResultsButton").show();
                 $("#clearStorageButton").show();
             }
         });
     })();
 
     // start the output calculations and file write functions cascade
-    (function() {
-        $("#downloadResultsButton").on("click", function() {
+    (function () {
+        $("#downloadResultsButton").on("click", function () {
             // OUTPUT.downloadOutput();
             OUTPUT.downloadExcelOutputFile();
         });
     })();
 
-    (function() {
-        $("#selectFactorsForOutputButton").on("click", function() {
-            PRELIMOUT.appendFactorSelectionCheckboxes();
+    (function () {
+        $("#downloadCsvResultsButton").on("click", function () {
+            // OUTPUT.downloadOutput();
+            OUTPUT.downloadCsvOutputFile();
         });
     })();
 
-    (function() {
-        $("#clearStorageButton").on("click", function() {
+    (function () {
+        $("#selectFactorsForOutputButton").on("click", function () {
+            PRELIMOUT.appendFactorSelectionCheckboxes();
+            $("#displayQuickResultsButton").show();
+            $("#factorVizOptionsDiv").show();
+        });
+    })();
+
+
+    // (function () {
+    //     $("#selectFactorsForOutputDiv").on("click", function () {
+    //         console.log("clicked");
+    //         if ($(this).is(":checked")) {
+    //             $(this).next("label").addClass("factorCheckboxSelected");
+    //         } else {
+    //             $(this).next("label").removeClass("factorCheckboxSelected");
+    //         }
+    //     });
+    // })();
+
+
+    (function () {
+        $("#clearStorageButton").on("click", function () {
             VIEW.showDeleteKenqData();
         });
     })();
 
-    (function() {
-        $('#deleteLocalDataModal').on("click", '#deleteLocalDataConfirmButton', function() {
+    (function () {
+        $('#deleteLocalDataModal').on("click", '#deleteLocalDataConfirmButton', function () {
             localStorage.clear();
             sessionStorage.clear();
             VIEW.showlocalDataDeleteSuccessModal();
@@ -996,8 +1021,8 @@
     })();
 
 
-    (function() {
-        $('#deleteLocalDataModal').on("click", '.button-cancel', function() {
+    (function () {
+        $('#deleteLocalDataModal').on("click", '.button-cancel', function () {
             $('#deleteLocalDataModal').iziModal('close');
         });
     })();
@@ -1007,8 +1032,8 @@
      **
      */
     // should include legend? - event handler
-    (function() {
-        $("#includeLegendDiv :radio").on('click', function() {
+    (function () {
+        $("#includeLegendDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#includeLegendDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1024,8 +1049,8 @@
     })();
 
     // should prepend statement numbers? - event handler
-    (function() {
-        $("#prependStateNoDiv :radio").on('click', function() {
+    (function () {
+        $("#prependStateNoDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#prependStateNoDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1041,8 +1066,8 @@
     })();
 
     // should set Card Height? - event handler
-    (function() {
-        $("#setCardHeightDiv :radio").on('click', function() {
+    (function () {
+        $("#setCardHeightDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setCardHeightDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1058,8 +1083,8 @@
     })();
 
     // should set card width? - event handler
-    (function() {
-        $("#setCardWidthDiv :radio").on('click', function() {
+    (function () {
+        $("#setCardWidthDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setCardWidthDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1075,8 +1100,8 @@
     })();
 
     // should set font size? - event handler
-    (function() {
-        $("#setFontSizeDiv :radio").on('click', function() {
+    (function () {
+        $("#setFontSizeDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setFontSizeDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1092,8 +1117,8 @@
     })();
 
     // should set font size? - event handler
-    (function() {
-        $("#setStatementWidthDiv :radio").on('click', function() {
+    (function () {
+        $("#setStatementWidthDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setStatementWidthDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1109,8 +1134,8 @@
     })();
 
     // should set line spacing? - event handler
-    (function() {
-        $("#adjustLineSpacingDiv :radio").on('click', function() {
+    (function () {
+        $("#adjustLineSpacingDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#adjustLineSpacingDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1126,8 +1151,8 @@
     })();
 
     // should trim statements? - event handler  trimStatementsDiv
-    (function() {
-        $("#trimStatementsDiv :radio").on('click', function() {
+    (function () {
+        $("#trimStatementsDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#trimStatementsDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1143,8 +1168,8 @@
     })();
 
     // Asian Language set width? - event handler  trimStatementsDiv
-    (function() {
-        $("#setAsianStatementsLengthDiv :radio").on('click', function() {
+    (function () {
+        $("#setAsianStatementsLengthDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setAsianStatementsLengthDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1161,8 +1186,8 @@
     })();
 
     // indicate significance? - event handler
-    (function() {
-        $("#showSignificanceSymbolsDiv :radio").on('click', function() {
+    (function () {
+        $("#showSignificanceSymbolsDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#showSignificanceSymbolsDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1183,8 +1208,8 @@
     })();
 
     // should use Unicode symbols? - event handler  #useUnicodeSymbolsDiv
-    (function() {
-        $("#useUnicodeSymbolsDiv :radio").on('click', function() {
+    (function () {
+        $("#useUnicodeSymbolsDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#useUnicodeSymbolsDiv .radioHighlight2').removeClass("selected");
             $(this).parent().addClass("selected");
@@ -1200,8 +1225,8 @@
     })();
 
     // should use Unicode symbols? - event handler  #useUnicodeSymbolsDiv
-    (function() {
-        $("#setSymbolFontSizeDiv :radio").on('click', function() {
+    (function () {
+        $("#setSymbolFontSizeDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setSymbolFontSizeDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1217,8 +1242,8 @@
     })();
 
     // should show zscore factor comparison arrows? - event handler
-    (function() {
-        $("#zscoreArrowDirectionDiv :radio").on('click', function() {
+    (function () {
+        $("#zscoreArrowDirectionDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#zscoreArrowDirectionDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1234,8 +1259,8 @@
     })();
 
     // should show zscore factor comparison arrows? - event handler
-    (function() {
-        $("#displayConsensusStatementsDiv :radio").on('click', function() {
+    (function () {
+        $("#displayConsensusStatementsDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#displayConsensusStatementsDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1254,8 +1279,8 @@
     })();
 
     // should color vs stripe for consensus? - event handler
-    (function() {
-        $("#setConsensusSymbolDiv :radio").on('click', function() {
+    (function () {
+        $("#setConsensusSymbolDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setConsensusSymbolDiv .radioHighlight2').removeClass("selected");
             $(this).parent().addClass("selected");
@@ -1271,8 +1296,8 @@
     })();
 
     // should show matching counts? - event handler
-    (function() {
-        $("#useMatchCountDiv :radio").on('click', function() {
+    (function () {
+        $("#useMatchCountDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#useMatchCountDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1288,8 +1313,8 @@
     })();
 
     // should show background color? - event handler
-    (function() {
-        $("#indicateMatchCountAsBackgroundDiv :radio").on('click', function() {
+    (function () {
+        $("#indicateMatchCountAsBackgroundDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#indicateMatchCountAsBackgroundDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1312,8 +1337,8 @@
     })();
 
     // should color vs stripe for consensus? - event handler
-    (function() {
-        $("#setMatchCountCautionIndicatorDiv :radio").on('click', function() {
+    (function () {
+        $("#setMatchCountCautionIndicatorDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setMatchCountCautionIndicatorDiv .radioHighlight2').removeClass("selected");
             $(this).parent().addClass("selected");
@@ -1329,8 +1354,8 @@
     })();
 
     // should color vs stripe for consensus? - event handler
-    (function() {
-        $("#setMatchConsensusOverlapIndicatorDiv :radio").on('click', function() {
+    (function () {
+        $("#setMatchConsensusOverlapIndicatorDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#setMatchConsensusOverlapIndicatorDiv .radioHighlight2').removeClass("selected");
             $(this).parent().addClass("selected");
@@ -1346,8 +1371,8 @@
     })();
 
     // should add custom name? - event handler
-    (function() {
-        $("#addCustomNameDiv :radio").on('click', function() {
+    (function () {
+        $("#addCustomNameDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#addCustomNameDiv .radioHighlight2').removeClass("active");
             $(this).parent().addClass("active");
@@ -1362,8 +1387,8 @@
         });
     })();
 
-    (function() {
-        $("#customNameLocationDiv :radio").on('click', function() {
+    (function () {
+        $("#customNameLocationDiv :radio").on('click', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             $('#customNameLocationDiv .radioHighlight2').removeClass("selected");
             $(this).parent().addClass("selected");
@@ -1374,12 +1399,12 @@
         });
     })();
 
-    (function() {
-        $("#showDisplayPanelButton").on('click', function() {
+    (function () {
+        $("#showDisplayPanelButton").on('click', function () {
             var language = QAV.getState("language");
             var hide = resources[language].translation.HIDE;
             var view = resources[language].translation.VIEW;
-            $(this).val(function(i, value) {
+            $(this).val(function (i, value) {
                 return value === hide ? view : hide;
             });
             $("#vizPanelHideContainer").toggle();
@@ -1387,8 +1412,8 @@
     })();
 
 
-    (function() {
-        $("#updateDisplayButton").on('click', function() {
+    (function () {
+        $("#updateDisplayButton").on('click', function () {
             VIEW.clearPreviousTables();
             PRELIMOUT.showPreliminaryOutput1();
         });
@@ -1398,8 +1423,8 @@
     //
 
     // capture card height input in Viz panel   #cardHeightInputBox
-    (function() {
-        $('#cardHeightInputBox').on('input', function() {
+    (function () {
+        $('#cardHeightInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var cardHeight = $('#cardHeightInputBox').val();
             UTIL.checkIfValueIsNumber(cardHeight, "cardHeightInputBox");
@@ -1413,8 +1438,8 @@
         });
     })();
 
-    (function() {
-        $('#cardWidthInputBox').on('input', function() {
+    (function () {
+        $('#cardWidthInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var cardWidth = $('#cardWidthInputBox').val();
             UTIL.checkIfValueIsNumber(cardWidth, "cardWidthInputBox");
@@ -1428,8 +1453,8 @@
         });
     })();
 
-    (function() {
-        $('#fontSizeInputBox').on('input', function() {
+    (function () {
+        $('#fontSizeInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var fontSize = $('#fontSizeInputBox').val();
             UTIL.checkIfValueIsNumber(fontSize, "fontSizeInputBox");
@@ -1443,8 +1468,8 @@
         });
     })();
 
-    (function() {
-        $('#statementWidthInputBox').on('input', function() {
+    (function () {
+        $('#statementWidthInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var statementWidth = $('#statementWidthInputBox').val();
             UTIL.checkIfValueIsNumber(statementWidth, "statementWidthInputBox");
@@ -1458,8 +1483,8 @@
         });
     })();
 
-    (function() {
-        $('#lineSpacingInputBox').on('input', function() {
+    (function () {
+        $('#lineSpacingInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var lineSpacing = $('#lineSpacingInputBox').val();
             UTIL.checkIfValueIsNumber(lineSpacing, "lineSpacingInputBox");
@@ -1473,8 +1498,8 @@
         });
     })();
 
-    (function() {
-        $('#trimStatementsInputBox').on('input', function() {
+    (function () {
+        $('#trimStatementsInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var trimStatementSize = $('#trimStatementsInputBox').val();
             UTIL.checkIfValueIsNumber(trimStatementSize, "trimStatementsInputBox");
@@ -1488,8 +1513,8 @@
         });
     })();
 
-    (function() {
-        $('#setAsianLengthInputBox').on('input', function() {
+    (function () {
+        $('#setAsianLengthInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var asianStatmentLength = $('#setAsianLengthInputBox').val();
             UTIL.checkIfValueIsNumber(asianStatmentLength, "setAsianLengthInputBox");
@@ -1503,8 +1528,8 @@
         });
     })();
 
-    (function() {
-        $('#symbolFontSizeInputBox').on('input', function() {
+    (function () {
+        $('#symbolFontSizeInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var sigSymbolFontSize = $('#symbolFontSizeInputBox').val();
             UTIL.checkIfValueIsNumber(sigSymbolFontSize, "symbolFontSizeInputBox");
@@ -1518,8 +1543,8 @@
         });
     })();
 
-    (function() {
-        $("#vizPanelHideContainer").on('change', 'input[type=color]', function() {
+    (function () {
+        $("#vizPanelHideContainer").on('change', 'input[type=color]', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var hexCode2 = $(this).val();
             vizConfig[$(this).attr('name')] = hexCode2;
@@ -1527,8 +1552,8 @@
         });
     })();
 
-    (function() {
-        $('#backgroundColorCutoffInputBox').on('input', function() {
+    (function () {
+        $('#backgroundColorCutoffInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var backgroundColorCutoff = $('#backgroundColorCutoffInputBox').val();
             UTIL.checkIfValueIsNumber(backgroundColorCutoff, "backgroundColorCutoffInputBox");
@@ -1540,8 +1565,8 @@
         });
     })();
 
-    (function() {
-        $('#customNameInputBox').on('input', function() {
+    (function () {
+        $('#customNameInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var customName = $('#customNameInputBox').val();
             vizConfig.customName = customName;

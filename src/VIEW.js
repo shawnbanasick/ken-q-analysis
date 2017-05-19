@@ -34,23 +34,105 @@
         $("#heroSection")[0].click();
     });
 
-    $(function () {
-        // display the first div by default.
-        $("#accordion div").first().css('display', 'block');
 
-        // Get all the links.
-        var link = $("#accordion a");
+    (function () {
+        var language = QAV.getState("language");
+        var YouSeemToBeUsing = resources[language].translation["You seem to be using"];
+        var readyForAnalysis = resources[language].translation["Ready to begin analysis"];
+        var YouShouldUpdate = resources[language].translation["Please update your browser before using Ken-Q Analysis"];
+        var YouShouldSwitch = resources[language].translation["This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above"];
 
-        // On clicking of the links open / close.
-        link.on('click', function (e) {
-            e.preventDefault();
-            var a = $(this).attr("href");
-            $(a).slideDown('fast');
+        var message, Linux;
+        var versionLong = platform.version;
+        var version = versionLong.slice(0, 2);
+        var opSystem = platform.os.family;
+        var userAgent = platform.ua;
+        var browser = platform.name;
 
-            $("#accordion div").not(a).slideUp('fast');
+        if (userAgent.indexOf('Linux') >= 0) {
+            Linux = true;
+        }
 
-        });
-    });
+
+        if (opSystem === "OS X") {
+            if (browser === "Firefox") {
+                if (+version >= 51) {
+                    message = goodToGo();
+                } else {
+                    message = updateYourBrowser();
+                }
+            } else if (browser === "Chrome") {
+                if (+version >= 55) {
+                    message = goodToGo();
+                } else {
+                    message = updateYourBrowser();
+                }
+            } else {
+                message = changeYourBrowser();
+            }
+        } else if (opSystem === "Windows") {
+            if (browser === "Firefox") {
+                if (+version >= 51) {
+                    message = goodToGo();
+                } else {
+                    message = updateYourBrowser();
+                }
+            } else if (browser === "Chrome") {
+                if (+version >= 55) {
+                    message = goodToGo();
+                } else {
+                    message = updateYourBrowser();
+                }
+            } else if (browser === "Microsoft Edge") {
+                if (+version >= 14) {
+                    message = goodToGo();
+                } else {
+                    message = updateYourBrowser();
+                }
+            } else {
+                message = changeYourBrowser();
+            }
+        } else if (Linux) {
+            if (browser === "Firefox") {
+                if (+version >= 50) {
+                    $(".browserDetection .flex-item").css("background-color", "#ccffcc");
+                    message = YouSeemToBeUsing + "Firefox version " + version + "<br><br>-- ready for analysis";
+                } else {
+                    message = updateYourBrowser();
+                }
+            } else if (browser === "Chrome") {
+                if (+version >= 55) {
+                    $(".browserDetection .flex-item").css("background-color", "#ccffcc");
+                    message = YouSeemToBeUsing + "Chromium version " + version + "<br><br>-- ready for analysis";
+                } else {
+                    message = updateYourBrowser();
+                }
+            } else {
+                message = changeYourBrowser();
+            }
+        }
+
+        // #section1 > div.browserDetection.flex-container > div > h3
+        function goodToGo() {
+            $(".browserDetection .flex-item").css("background-color", "#ccffcc");
+            var messageReply = YouSeemToBeUsing + platform.name + " version " + version + "<br><br>" + readyForAnalysis;
+            return messageReply;
+        }
+
+        function updateYourBrowser() {
+            var messageReply = YouSeemToBeUsing + platform.name + " version " + version + "<br><br>" + YouShouldUpdate;
+            $(".browserDetection .flex-item").css("background-color", "yellow");
+            return messageReply;
+        }
+
+        function changeYourBrowser() {
+            var messageReply = YouSeemToBeUsing + platform.name + " version " + version + "<br><br>" + YouShouldSwitch;
+            $(".browserDetection .flex-item").css("background-color", "yellow");
+            return messageReply;
+        }
+        console.log(message);
+        $("#browserMessage").html(message);
+    })();
 
 
     // ************************************************************  view
@@ -66,7 +148,7 @@
                 var radioValue = $("input[name='radio']:checked").attr("id");
                 $("#" + radioValue).parent().addClass("selected");
                 inputTypeDisplay(radioValue);
-            } 
+            }
         });
 
         $(window).bind('unload', function () {
@@ -207,62 +289,62 @@
         //
         $("label[for='" + inputType + "']").addClass("selected");
         switch (inputType) {
-        case "radio4":
-            $("#manualInputContainer").hide(300);
-            $("#databaseSelectDiv").hide(300);
-            $("#rawSorts").hide(300);
-            $(".firebaseDataInputDiv").hide(300);
-            $("#pasteExcelDataDiv").show(300);
-            $(".analysisDataDiv").show(300);
-            $(".pqmButton").hide();
-            break;
+            case "radio4":
+                $("#manualInputContainer").hide(300);
+                $("#databaseSelectDiv").hide(300);
+                $("#rawSorts").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
+                $("#pasteExcelDataDiv").show(300);
+                $(".analysisDataDiv").show(300);
+                $(".pqmButton").hide();
+                break;
 
-        case "radio3": // pqmethod pasted data
-            $("#manualInputContainer").hide(300);
-            $("#databaseSelectDiv").hide(300);
-            $("#pasteExcelDataDiv").hide(300);
-            $(".firebaseDataInputDiv").hide(300);
-            $("#rawSorts").show(300);
-            $(".analysisDataDiv").show(300);
-            $(".pqmButton").hide();
-            break;
+            case "radio3": // pqmethod pasted data
+                $("#manualInputContainer").hide(300);
+                $("#databaseSelectDiv").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
+                $("#rawSorts").show(300);
+                $(".analysisDataDiv").show(300);
+                $(".pqmButton").hide();
+                break;
 
-        case "radio2":
-            $("#databaseSelectDiv").hide(300);
-            $("#rawSorts").hide(300);
-            $("#pasteExcelDataDiv").hide(300);
-            $(".firebaseDataInputDiv").hide(300);
-            $("#manualInputContainer").show(300);
-            $(".analysisDataDiv").show(300);
-            $(".pqmButton").hide();
-            break;
+            case "radio2":
+                $("#databaseSelectDiv").hide(300);
+                $("#rawSorts").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
+                $("#manualInputContainer").show(300);
+                $(".analysisDataDiv").show(300);
+                $(".pqmButton").hide();
+                break;
 
-        case "radio1":  // radio5
-            $("#databaseSelectDiv").hide(300);
-            $("#rawSorts").hide(300);
-            $("#pasteExcelDataDiv").hide(300);
-            $("#manualInputContainer").hide(300);
-            $(".analysisDataDiv").show(300);
-            $(".firebaseDataInputDiv").show(300);
-            $(".pqmButton").hide();
-            break;
+            case "radio1": // radio5
+                $("#databaseSelectDiv").hide(300);
+                $("#rawSorts").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $("#manualInputContainer").hide(300);
+                $(".analysisDataDiv").show(300);
+                $(".firebaseDataInputDiv").show(300);
+                $(".pqmButton").hide();
+                break;
 
-        default:
-            $("#manualInputContainer").hide(300);
-            $("#rawSorts").hide(300);
-            $("#pasteExcelDataDiv").hide(300);
-            $(".firebaseDataInputDiv").hide(300);
-            $(".analysisDataDiv").show(300);
-            $("#databaseSelectDiv").show(300);
-            $(".pqmButton").hide();
-            //$("#radio_radio1").parent().addClass("selected");
+            default:
+                $("#manualInputContainer").hide(300);
+                $("#rawSorts").hide(300);
+                $("#pasteExcelDataDiv").hide(300);
+                $(".firebaseDataInputDiv").hide(300);
+                $(".analysisDataDiv").show(300);
+                $("#databaseSelectDiv").show(300);
+                $(".pqmButton").hide();
+                $("#radio5").parent().addClass("selected");
         }
     }
 
     // ************************************************************  view
     // ******* SECTION 5 - factor loadings table  ***********************
     // ******************************************************************
-
+    // #section2 > div.row > div:nth-child(5) > div > label
 
     // ************************************************************  view
     // ******* SECTION 6 - output tables  *******************************
@@ -319,7 +401,8 @@
     // SUBMIT BUTTON event listeners
     $(function () {
         $('#invertModal').on('click', '.button-submit', function (e) {
-            e.preventDefault();
+            // e.preventDefault();
+            e.stopPropagation();
             var inputValue = $("#invertModal input").val();
             if (inputValue === false || inputValue === "") {
                 return false;
@@ -338,7 +421,7 @@
     // SUBMIT BUTTON event listeners
     $(function () {
         $('#splitModal').on('click', '.button-submit', function (e) {
-            e.preventDefault();
+            // e.preventDefault();
             var inputValue = $("#splitModal input").val();
             if (inputValue === false || inputValue === "") {
                 return false;
@@ -356,7 +439,7 @@
     // cancel and close button across all modal windows
     $(function () {
         $('.button-cancel').on('click', function (e) {
-            e.preventDefault();
+            // e.preventDefault();
             $(this).closest("div.modal").toggleClass('active');
         });
     });

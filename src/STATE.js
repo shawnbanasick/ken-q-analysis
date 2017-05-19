@@ -12,7 +12,9 @@
 
 // QAV is the global state data store
 (function (QAV, undefined) {
-
+    'use strict';
+    // check if platform is up-to-date 
+   
     // set default language
     QAV.language = "en-us";
 

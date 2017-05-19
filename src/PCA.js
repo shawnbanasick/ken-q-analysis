@@ -18,11 +18,11 @@
         var eigenValuesSorted, y, percentNumber, eigenValuesAsPercents;
         var eigenValuesCumulPercentArray, eigenValuesPercent, pcaFactorsToExtractArray;
         var eigenValueCumulPercentAccum, k;
-        var critInflectionValue, temp4, i, j, temp1, temp3, temp5, s, t;
+        var critInflectionValue, temp5, s, t;
         var numberFactorsExtracted;
         var factorLabels = [];
-        var numberofPrincipalComps;
-        var inflectionArray = [];
+        var numberofPrincipalComps, getEigenCumulPercentArray, doEigenVecsCalcs;
+        var inflectionArray;
 
         // to differentiate output functions
         QAV.setState("typeOfFactor", "PCA");
@@ -40,78 +40,34 @@
         QAV.pcaNumberFactorsExtracted = numberFactorsExtracted;
         UTIL.addFactorSelectCheckboxesRotation(numberFactorsExtracted);
 
-
         // labels according to factors extacted (above)
         for (m = 0; m < numberFactorsExtracted; m++) {
             factorLabels.push("Factor " + (m + 1));
         }
-
         QAV.setState("factorLabels", factorLabels);
 
-        // svd = matrix of all principle components as column vectors          
-        m = X.length;
-        sigma = numeric.div(numeric.dot(numeric.transpose(X), X), m);
-        svd = numeric.svd(sigma).U;
-
+        // // svd = matrix of all principle components as column vectors          
+        svd = PCA.calcSvd(X);
 
         // eigens = eigenvalues for data X 
-        eigens = numeric.eig(X);
-
-        // setup empty array
-        eigenVecs = [];
-        for (p = 0; p < numberOfSorts; p++) {
-            eigenVecs.push([]);
-        }
+        eigens = PCA.calcEigens(X);
 
         // sort eigenValues from numeric
-        eigenValuesSorted = eigens.lambda.x;
-        eigenValuesSorted.sort(function (a, b) {
-            return (b - a);
-        });
+        eigenValuesSorted = PCA.sortEigenValues(eigens.lambda.x);
 
-        // round off numbers 
-        for (y = 0; y < eigenValuesSorted.length; y++) {
-            eigenValuesSorted[y] = evenRound((eigenValuesSorted[y]), 4);
-        }
+        // convert to percents and push to array
+        getEigenCumulPercentArray = PCA.calcEigenCumulPercentArray(eigenValuesSorted, numberOfSorts);
 
-        percentNumber = 100 / numberOfSorts;
-        eigenValuesAsPercents = [];
-        eigenValuesCumulPercentArray = [];
-        eigenValueCumulPercentAccum = 0;
+        eigenValuesAsPercents = getEigenCumulPercentArray[0];
+        eigenValuesCumulPercentArray = getEigenCumulPercentArray[1];
 
-        for (k = 0; k < eigenValuesSorted.length; k++) {
-            eigenValuesPercent = evenRound((eigenValuesSorted[k] * percentNumber), 0);
-            eigenValuesAsPercents.push(eigenValuesPercent);
-            eigenValueCumulPercentAccum = eigenValueCumulPercentAccum + eigenValuesPercent;
-            eigenValuesCumulPercentArray.push(eigenValueCumulPercentAccum);
-        }
 
-        // loop through each component    
-        for (i = 0; i < numberofPrincipalComps; i++) {
+        doEigenVecsCalcs = PCA.calcEigenVectors(numberOfSorts, numberofPrincipalComps, eigenValuesSorted, svd);
 
-            temp1 = Math.sqrt(eigenValuesSorted[i]);
+        eigenVecs = doEigenVecsCalcs[0];
+        inflectionArray = doEigenVecsCalcs[1];
 
-            critInflectionValue = 0;
-
-            // loop through each QSort to get loading and also calc CRIT
-            for (j = 0; j < svd.length; j++) {
-                temp3 = evenRound((svd[j][i] * temp1), 4);
-                eigenVecs[j][i] = temp3;
-                // set up data for influection test
-                temp4 = evenRound((temp3 * Math.abs(temp3)), 4);
-                critInflectionValue = critInflectionValue + temp4;
-            }
-            inflectionArray.push(critInflectionValue);
-        }
-
-        // check and inflect components if necessary
-        for (s = 0; s < eigenVecs[0].length; s++) {
-            if (inflectionArray[s] < 0.0) {
-                for (t = 0; t < eigenVecs.length; t++) {
-                    eigenVecs[t][s] = -eigenVecs[t][s];
-                }
-            }
-        }
+        eigenVecs = PCA.inflectPrincipalComponents(eigenVecs, inflectionArray);
 
         QAV.setState("centroidFactors", eigenVecs);
         QAV.setState("eigenValuesSorted", eigenValuesSorted);
@@ -120,10 +76,90 @@
         QAV.setState("eigenVecs", eigenVecs);
 
         var language = QAV.getState("language");
-        var appendText = resources[language]["translation"]["8 Principal Components Extracted"];
+        var appendText = resources[language].translation["8 Principal Components Extracted"];
         $("#rotationHistoryList").append('<li>' + appendText + '</button></li>');
 
         return [eigenValuesSorted, eigenValuesAsPercents, eigenValuesCumulPercentArray, eigenVecs];
+    };
+
+    PCA.inflectPrincipalComponents = function (eigenVecs, inflectionArray) {
+        // check and inflect components if necessary
+        for (s = 0; s < eigenVecs[0].length; s++) {
+            if (inflectionArray[s] < 0.0) {
+                for (t = 0; t < eigenVecs.length; t++) {
+                    eigenVecs[t][s] = -eigenVecs[t][s];
+                }
+            }
+        }
+        return eigenVecs;
+    };
+
+    PCA.calcEigenVectors = function (numberOfSorts, numberofPrincipalComps, eigenValuesSorted, svd) {
+        var inflectionArray = [];
+        var temp1, criticalInflectionValue, temp3, temp4;
+        // setup empty array
+        var eigenVecs = [];
+        for (p = 0; p < numberOfSorts; p++) {
+            eigenVecs.push([]);
+        }
+        // loop through each component    
+        for (var i = 0, iLen = numberofPrincipalComps; i < iLen; i++) {
+            temp1 = Math.sqrt(eigenValuesSorted[i]);
+            critInflectionValue = 0;
+
+            // loop through each QSort to get loading and also calc CRIT
+            for (var j = 0, jLen = svd.length; j < jLen; j++) {
+                temp3 = evenRound((svd[j][i] * temp1), 4);
+                eigenVecs[j][i] = temp3;
+                // set up data for influection test
+                temp4 = evenRound((temp3 * Math.abs(temp3)), 4);
+                critInflectionValue = critInflectionValue + temp4;
+            }
+            inflectionArray.push(evenRound(critInflectionValue, 4));
+        }
+        return [eigenVecs, inflectionArray];
+    };
+
+
+    PCA.calcEigenCumulPercentArray = function (eigenValuesSorted, numberOfSorts) {
+        var percentNumber = 100 / numberOfSorts;
+        var eigenValuesAsPercents = [];
+        var eigenValuesCumulPercentArray = [];
+        var eigenValueCumulPercentAccum = 0;
+
+        for (var k = 0, kLen = eigenValuesSorted.length; k < kLen; k++) {
+            eigenValuesSorted[k] = evenRound((eigenValuesSorted[k]), 4);
+            eigenValuesPercent = evenRound((eigenValuesSorted[k] * percentNumber), 0);
+            eigenValuesAsPercents.push(eigenValuesPercent);
+            eigenValueCumulPercentAccum = eigenValueCumulPercentAccum + eigenValuesPercent;
+            eigenValuesCumulPercentArray.push(eigenValueCumulPercentAccum);
+        }
+        return [eigenValuesAsPercents, eigenValuesCumulPercentArray];
+    };
+
+
+    PCA.sortEigenValues = function (values) {
+        // sort eigenValues from numeric
+        // eigenValuesSorted = eigens.lambda.x;
+        values.sort(function (a, b) {
+            return (b - a);
+        });
+        return values;
+    };
+
+    PCA.calcSvd = function (X) {
+        // svd = matrix of all principle components as column vectors          
+        var m, sigma, svd;
+        m = X.length;
+        sigma = numeric.div(numeric.dot(numeric.transpose(X), X), m);
+        svd = numeric.svd(sigma).U;
+        return svd;
+    };
+
+    PCA.calcEigens = function (X) {
+        // eigens = eigenvalues for data X 
+        var eigens = numeric.eig(X);
+        return eigens;
     };
 
     PCA.drawExtractedFactorsTable = function () {
@@ -137,11 +173,10 @@
         }
 
         var language = QAV.getState("language");
-        var facText = resources[language]["translation"]["Factor"];
-        var respondText = resources[language]["translation"]["Respondent"];
+        var facText = resources[language].translation.Factor;
+        var respondText = resources[language].translation.Respondent;
 
-        pcaHeaders = [
-            {
+        pcaHeaders = [{
                 title: "Number"
             }, {
                 title: respondText
@@ -190,11 +225,11 @@
         configObj.colDefs = [{
                 targets: [0, 1],
                 className: 'dt-head-center dt-body-center dt-body-name'
-        },
+            },
             {
                 targets: pcaTableTargets,
                 className: 'dt-head-center dt-body-right'
-                             },
+            },
             {
                 targets: '_all',
                 "createdCell": function (td, cellData, rowData, row, col) {
@@ -202,7 +237,8 @@
                         $(td).css('color', 'red');
                     }
                 }
-        }];
+            }
+        ];
 
         UTIL.drawDatatable(configObj);
         PCA.createFooter();
@@ -215,9 +251,9 @@
         var pcaFooterTableHeaders;
 
         var language = QAV.getState("language");
-        var cumVarText = resources[language]["translation"]["Cum % Expln Var"];
-        var varText = resources[language]["translation"]["% explained variance"];
-        var eigenText = resources[language]["translation"]["Eigenvalues"];
+        var cumVarText = resources[language].translation["Cum % Expln Var"];
+        var varText = resources[language].translation["% explained variance"];
+        var eigenText = resources[language].translation.Eigenvalues;
 
 
         temp = QAV.getState("eigenValuesSorted");
@@ -252,11 +288,11 @@
         configObj.colDefs = [{
                 targets: [0, 1],
                 className: 'dt-head-center dt-body-center dt-body-name'
-        },
+            },
             {
                 targets: _.clone(QAV.pcaTableTargets),
                 className: 'dt-head-center dt-body-right'
-                             },
+            },
             {
                 targets: '_all',
                 "createdCell": function (td, cellData, rowData, row, col) {
@@ -264,7 +300,8 @@
                         $(td).css('color', 'red');
                     }
                 }
-                             }];
+            }
+        ];
 
         UTIL.drawDatatable(configObj);
 

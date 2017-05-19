@@ -12,6 +12,7 @@
 
 // QAV is the global state data store
 (function (CORR, QAV, undefined) {
+    'use strict';
 
     CORR.createCorrelationTable = function () {
         var t0 = performance.now();
@@ -43,7 +44,7 @@
 
             var sortsAsNumbers2 = CORR.convertSortsTextToNumbers(sortsFromExistingData, originalSortSize2);
 
-            var createCorrelationTable = calculateCorrelations(sortsAsNumbers2, namesFromExistingData);
+            var createCorrelationTable = CORR.calculateCorrelations(sortsAsNumbers2, namesFromExistingData);
 
             createDisplayTableJQUERY(createCorrelationTable, 'correlationTable');
 
@@ -88,10 +89,10 @@
             sortsAsNumbers = _.cloneDeep(sortsTextFromDb);
         }
         QAV.setState("sortsAsNumbers", sortsAsNumbers);
-
+        var sortsToShiftPositive = _.cloneDeep(sortsAsNumbers);
         // shift sorts to positive range
-        maxArrayValue = _.max(sortsAsNumbers[0]);
-        _(sortsAsNumbers).forEach(function (element) {
+        maxArrayValue = _.max(sortsToShiftPositive[0]);
+        _(sortsToShiftPositive).forEach(function (element) {
             var j;
             var loopLen = originalSortSize;
 
@@ -99,7 +100,7 @@
                 element[j] = element[j] + maxArrayValue + 1;
             }
         }).value();
-        QAV.setState("positiveShiftedRawSorts", sortsAsNumbers);
+        QAV.setState("positiveShiftedRawSorts", sortsToShiftPositive);
         console.timeEnd("convertNumbers");
         return sortsAsNumbers;
     };
@@ -168,7 +169,7 @@
     //*********************************************************************   model
     //******* correlations calcs       ********************************************
     //*****************************************************************************
-    function calculateCorrelations(sortsAsNumbers, names) {
+    CORR.calculateCorrelations = function (sortsAsNumbers, names) {
 
         console.time("correlation calculations and table display ");
 
@@ -217,14 +218,13 @@
         correlationTableArrayFormatted.unshift(names);
 
         QAV.setState("correlationTableArrayFormatted", correlationTableArrayFormatted);
-
         QAV.setState("respondentNames", names);
         QAV.setState("originalCorrelationValues", correlationTableArray);
 
         console.timeEnd("correlation calculations and table display ");
 
         return correlationTableArrayFormatted;
-    }
+    };
 
 
     //*********************************************************************   model

@@ -902,7 +902,7 @@ a {
 
 #section1 {
     padding-top: 5em;
-    height: 1600px;
+    height: auto;
     padding-left: 20px;
 }
 
@@ -995,12 +995,6 @@ label {
     border: 1px solid #D1D3D4
 }
 
-.checkboxLabel {
-    padding-left: 5px;
-    width: 73px;
-    display: inline-block;
-    margin-right: 20px;
-}
 
 input[type="checkbox"] {}
 

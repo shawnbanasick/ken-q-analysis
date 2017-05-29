@@ -15,7 +15,8 @@
     'use strict';
 
     CORR.createCorrelationTable = function () {
-        var t0 = performance.now();
+        var t1, t0 = performance.now();
+        var createCorrelationTable;
 
         var namesFromExistingData2 = QAV.getState("qavRespondentNames");
 
@@ -24,35 +25,66 @@
 
         QAV.setState("qavRespondentNames", namesFromExistingData);
         QAV.setState("respondentNames", namesFromExistingData);
+        QAV.setState("qavTotalNumberSorts", namesFromExistingData.length);
+        QAV.setState("totalNumberSorts", namesFromExistingData.length);
 
-        if (namesFromExistingData.length > 25) {
+        // database data analysis
+        var originalSortSize2 = QAV.getState("qavOriginalSortSize");
+        var sortsFromExistingData = QAV.getState("qavRespondentSortsFromDbStored");
 
-            $("#correlationsSpinner").append('<p id="spinnerText">&nbsp&nbsp Calculating, <i>please wait</i>&nbsp&nbsp</p>').fadeIn(300);
+        var isOnline = UTIL.checkIfOnline();
+
+        if (window.Worker && isOnline) {
+            $("#correlationSpinnerText").css('visibility', 'visible');
+            $("#correlationSpinnerDiv").addClass('calcSpinner');
+            var myWorker = new Worker('wrkrs/workerCorr.js');
+            var workerMessageArray = [originalSortSize2, sortsFromExistingData, namesFromExistingData];
+            myWorker.postMessage(workerMessageArray);
+            myWorker.onmessage = function (e) {
+                QAV.setState('sortsAsNumbers', e.data[0]);
+                QAV.setState('positiveShiftedRawSorts', e.data[1]);
+                QAV.setState('correlationTableArrayFormatted', e.data[2]);
+                QAV.setState('respondentNames', e.data[3]);
+                QAV.setState('originalCorrelationValues', e.data[4]);
+
+                // remove spinner and message
+                $("#correlationSpinnerText").css('visibility', 'hidden');
+                $("#correlationSpinnerDiv").removeClass('calcSpinner');
+
+                // draw the display table
+                createDisplayTableJQUERY(e.data[2], 'correlationTable');
+
+                t1 = performance.now();
+                console.log('%c Correlation Table completed in ' + (t1 - t0).toFixed(0) + ' milliseconds', 'background: black; color: white');
+            };
+        } else {
+
+            if (namesFromExistingData.length > 0) {
+
+                $("#correlationsSpinner").append('<p id="spinnerText">&nbsp&nbsp Calculating, <i>please wait</i>&nbsp&nbsp</p>').fadeIn(300);
+            }
+
+            $("#calculatingCorrelationsModal").toggleClass('active');
+
+            // setTimeout to force display of spinner
+            setTimeout(function () {
+
+                // convert sorts to arrays
+                var sortsAsNumbers2 = CORR.convertSortsTextToNumbers(sortsFromExistingData, originalSortSize2);
+
+                // do the calcuations
+                createCorrelationTable = CORR.calculateCorrelations(sortsAsNumbers2, namesFromExistingData);
+
+                $("#correlationsSpinner").children("p").remove();
+
+                // draw the display table
+                createDisplayTableJQUERY(createCorrelationTable, 'correlationTable');
+
+                t1 = performance.now();
+                console.log('%c Correlation Table completed in ' + (t1 - t0).toFixed(0) + ' milliseconds', 'background: black; color: white');
+
+            }, 10);
         }
-
-        $("#calculatingCorrelationsModal").toggleClass('active');
-
-        // setTimeout to force display of spinner
-        setTimeout(function () {
-            // database data analysis
-            var originalSortSize2 = QAV.getState("qavOriginalSortSize");
-
-            QAV.setState("qavTotalNumberSorts", namesFromExistingData.length);
-            QAV.setState("totalNumberSorts", namesFromExistingData.length);
-
-            var sortsFromExistingData = QAV.getState("qavRespondentSortsFromDbStored");
-
-            var sortsAsNumbers2 = CORR.convertSortsTextToNumbers(sortsFromExistingData, originalSortSize2);
-
-            var createCorrelationTable = CORR.calculateCorrelations(sortsAsNumbers2, namesFromExistingData);
-
-            createDisplayTableJQUERY(createCorrelationTable, 'correlationTable');
-
-            $("#correlationsSpinner").children("p").remove();
-
-        }, 10);
-        var t1 = performance.now();
-        console.log('%c Correlation Table completed in ' + (t1 - t0).toFixed(0) + ' milliseconds', 'background: black; color: white');
     };
 
 
@@ -237,14 +269,14 @@
         var headerText = dataSet[0];
         dataSet.shift();
 
-        for (var j = 0; j < dataSet.length; j++) {
+        for (var j = 0, jLen = dataSet.length; j < jLen; j++) {
             dataSet[j].unshift(j + 1);
         }
 
         var tempObj;
         var headerArray = [];
 
-        for (var i = 0; i < headerText.length; i++) {
+        for (var i = 0, iLen = headerText.length; i < iLen; i++) {
             tempObj = {};
             tempObj.title = headerText[i];
             headerArray.push(tempObj);
@@ -259,7 +291,7 @@
         headerArray.unshift(blank);
 
         var columnTargets = [];
-        for (var k = 2; k < headerText.length + 1; k++) {
+        for (var k = 2, kLen = headerText.length + 1; k < kLen; k++) {
             columnTargets.push(k);
         }
 
@@ -273,11 +305,12 @@
             "searching": false,
             "ordering": true,
             "info": false,
+            "destroy": true,
             "scrollY": 800,
             "scrollCollapse": true,
             "scrollX": true,
             "paging": false,
-            data: dataSet,
+            "data": dataSet,
             "columns": headerArray,
             "columnDefs": [{
                 targets: columnTargets,

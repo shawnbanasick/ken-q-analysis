@@ -9,7 +9,7 @@
 var resources = {
     'en-us': {
         "translation": {
-            "versionNumber": "Beta Version 0.9.2 Test Release (May 19, 2017)",
+            "versionNumber": "Beta Version 0.10.0 Test Release (May 29, 2017)",
             "Translation by": "",
             "Top": "Top",
             "aData": "1.Data",
@@ -58,7 +58,7 @@ var resources = {
             "Extract centroid factors": "Extract Centroid Factors",
             "Centroid factors": "Centroid Factors",
             "Extract principal components": "Extract Principal Components",
-            "Principal components": "Principal Components",
+            "Principal components": "8 Principal Components extracted",
             "Reset analysis": "Reset Analysis",
             "Eigenvalues": "Eigenvalues",
             "% explained variance": "% Explained Variance",
@@ -91,7 +91,7 @@ var resources = {
             "Results": "Results",
             "Choose factors for output": "Choose Factors for Output",
             "Display preliminary output": "Display Preliminary Output",
-            "Download complete output": "Download Complete Output",
+            "Download complete output": "Download Complete Output in Excel Format",
             "Permanently delete all locally-stored data": "Permanently Delete All Locally-Stored Data",
             "Factor score correlations": "Factor Score Correlations",
             "Flagged q - sort weights": "Flagged q-sort weights",
@@ -307,7 +307,7 @@ var resources = {
     },
     "ja": {
         "translation": {
-            "versionNumber": "Beta Version 0.9.1 Test Release (May 19, 2017)",
+            "versionNumber": "Beta Version 0.10.0 Test Release (May 29, 2017)",
             "Translation by": "Translation by バナシック",
             "Top": "トップに戻る",
             "aData": "1.データ",

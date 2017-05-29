@@ -249,38 +249,28 @@
     (function () {
         document.getElementById("PcaExtractionButton").addEventListener("click", function () {
 
-            var button, button2, X, t0, t1, dataArray2, dataArray;
+            var button, button2, X, t0, t1;
 
-            var language = QAV.getState("language");
-            var PcaButText = resources[language].translation["Principal components"];
+            // var language = QAV.getState("language");
+            // var PcaButText = resources[language].translation["Principal components"];
 
             t0 = performance.now();
 
-            button = $(this);
-            button.removeClass("blackHover");
-            button.addClass("buttonActionComplete");
-            button.prop('value', PcaButText);
-            button.prop('disabled', true);
+            //   button = $(this);
+            // button.removeClass("blackHover");
+            // button.addClass("buttonActionComplete");
+            // button.prop('value', PcaButText);
+            // button.prop('disabled', true);
 
-            button2 = $("#factorExtractionButton");
-            button2.prop('disabled', true);
+            // button2 = $("#factorExtractionButton");
+            // button2.prop('disabled', true);
 
-            $("#resetAnalysisButton").prop('disabled', false);
+            // $("#resetAnalysisButton").prop('disabled', false);
 
             X = QAV.getState("originalCorrelationValues");
             PCA.doPrincipalComponents(X);
 
             QAV.setState("numFactorsExtracted", 8);
-
-            PCA.drawExtractedFactorsTable();
-
-            // get data for scree plot
-            dataArray2 = QAV.getState("eigenValuesSorted");
-            dataArray = dataArray2.slice(0, 8);
-
-            UTIL.drawScreePlot(dataArray);
-
-            $("#section4 > input").show();
 
             t1 = performance.now();
 
@@ -992,19 +982,6 @@
             $("#factorVizOptionsDiv").show();
         });
     })();
-
-
-    // (function () {
-    //     $("#selectFactorsForOutputDiv").on("click", function () {
-    //         console.log("clicked");
-    //         if ($(this).is(":checked")) {
-    //             $(this).next("label").addClass("factorCheckboxSelected");
-    //         } else {
-    //             $(this).next("label").removeClass("factorCheckboxSelected");
-    //         }
-    //     });
-    // })();
-
 
     (function () {
         $("#clearStorageButton").on("click", function () {

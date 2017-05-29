@@ -373,8 +373,8 @@ input[type="button"].deleteHover:hover {
 }
 
 input[type="button"].buttonActionComplete {
-    background: none repeat scroll 0 0 #38acec !important;
-    color: white !important;
+    background: none repeat scroll 0 0 #ccffcc !important;
+    color: black !important;
 }
 
 #respondentListDiv {
@@ -595,23 +595,6 @@ td.highlight {
 #excelUploadErrorDiv li {
     margin-left: 15%;
     font: normal 20px Myriad Pro, Verdana, Geneva, sans-serif;
-}
-
-.spinner {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-left: -50px;
-    /* half width of the spinner gif */
-    margin-top: -50px;
-    /* half height of the spinner gif */
-    text-align: center;
-    z-index: 1234;
-    overflow: auto;
-    width: 100px;
-    /* width of the spinner gif */
-    height: 102px;
-    /*hight of the spinner gif +2px to fix IE8 issue */
 }
 
 td.negativeHighlight {
@@ -881,15 +864,6 @@ transition: none !important;
     margin-left: 8%;
 }
 
-#spinnerText {
-    padding-left: 3px;
-    padding-right: 3px;
-    margin-left: 20px;
-    font-size: 36px;
-    color: white;
-    background-color: black;
-}
-
 #clearStorageButton {
     display: none;
 }
@@ -917,6 +891,8 @@ transition: none !important;
 .inputBoxAutoWidth {
     width: 95%;
 }
+
+
 /*
 #accordion {
     margin-top: 10px;
@@ -1980,7 +1956,6 @@ input[type=color] {
     text-align: center;
 }
 
-
 .supportedBrowsers .flex-item {
     padding-top: 10px;
     padding-bottom: 10px;
@@ -2061,3 +2036,76 @@ input[type=color] {
 .newThisVersionUL {
     font-size: 1.5em;
 }
+
+#spinnerText {
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-left: 20px;
+    font-size: 36px;
+    color: white;
+    background-color: black;
+}
+
+.calcSpinner {
+    box-sizing: inherit;
+    opacity: 0.8;
+    position: relative;
+    top: 50px;
+    height: 120px;
+    width: 90px;
+    background: url('../images/spinner.gif') no-repeat right center;
+}
+
+#factorExtractionSpinnerText {
+    visibility: hidden;
+    position: relative;
+    top: 0px;
+    height: 38px;
+    width: 170px;
+    padding-left: 7px;
+    padding-right: 3px;
+    padding-bottom: 5px;
+    margin-left: 20px;
+    font-size: 30px;
+    font-style: italic;
+    color: #38acec;
+}
+
+#correlationSpinnerText {
+    visibility: hidden;
+    position: relative;
+    top: 0px;
+    height: 38px;
+    width: 170px;
+    padding-left: 7px;
+    padding-right: 3px;
+    padding-bottom: 5px;
+    margin-left: 20px;
+    font-size: 30px;
+    font-style: italic;
+    color: #38acec;
+}
+
+
+/*
+.factorExtractionButtonDiv {
+    max-height: 110px;
+}*/
+
+
+/*.spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    /* half width of the spinner gif 
+    margin-top: -50px;
+    /* half height of the spinner gif 
+    text-align: center;
+    z-index: 1234;
+    overflow: auto;
+    width: 100px;
+    /* width of the spinner gif 
+    height: 102px;
+    /*hight of the spinner gif +2px to fix IE8 issue 
+}*/

@@ -327,7 +327,6 @@
             }
             for (var rr = 0; rr < qavRespondentSortsFromDbStored.length; rr++) {
                 var sortItem = qavRespondentSortsFromDbStored[rr];
-                //console.log(JSON.stringify(sortItem));
                 var sortItem2 = sortItem.join();
                 var sortItem3 = sortItem2.replace(/,/g, " ").replace(/ -/g, "-");
                 if (sortItem3.charAt(0) !== "-") {
@@ -580,8 +579,6 @@
             }
             for (var rr = 0; rr < qavRespondentSortsFromDbStored.length; rr++) {
                 var sortItem = qavRespondentSortsFromDbStored[rr];
-                // console.log(sortItem);
-                // var sortItem2 = sortItem.join();
                 var sortItem3 = sortItem.replace(/,/g, " ").replace(/ -/g, "-");
                 if (sortItem3.charAt(0) !== "-") {
                     sortItem3 = " " + sortItem3;

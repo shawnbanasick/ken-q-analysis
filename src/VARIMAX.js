@@ -35,18 +35,8 @@
         ROTA.calculatefSigCriterionValues("noFlag");
 
         // re-draw rotation table
-        // var isRotatedFactorsTableUpdate = "yes";
         var isRotatedFactorsTableUpdate = "destroy";
         LOAD.drawRotatedFactorsTable2(isRotatedFactorsTableUpdate, "noFlag");
-
-        var lessThanZeroCounter = QAV.getState("lessThanZeroCounter");
-        var greaterThanZeroCounter = QAV.getState("greaterThanZeroCounter");
-        var equalsZeroCounter = QAV.getState("equalsZeroCounter");
-        var lessA = QAV.getState("lessA");
-        var lessB = QAV.getState("lessB");
-        var lessC = QAV.getState("lessC");
-        var greaterA = QAV.getState("greaterA");
-        var greaterB = QAV.getState("greaterB");
     };
 
 
@@ -147,7 +137,6 @@
 
             TVLT = TV;
 
-
             // gets sumSquares of new varimaxIteration matrix to check convergence
             for (i = 0; i < iLoopLen; i++) { // for each factor
                 AA = 0;
@@ -167,6 +156,8 @@
                 }
                 AA = evenRound((VARIMAX.sumArray(aaArray)), 8);
                 BB = evenRound((VARIMAX.sumArray(bbArray)), 8);
+                // FN is number factors, AA is total of sumSquares, BB is square of total of sumSquares, FFN is number factors squared
+                // (3745) 
                 FNBB = evenRound((FN * BB), 8);
                 AASQ = evenRound((AA * AA), 8);
                 //TV = evenRound(((FN * BB - AA * AA) / FFN), 8);
@@ -257,15 +248,12 @@
             uArray.push(U);
             // (3777)
             tPrep = factorA[i] * factorB[i];
-
             // (3778)
             tPrep2 = tPrep + tPrep;
             tArray.push(tPrep2);
-
             // (3779)
             ccPrep = (U + tPrep2) * (U - tPrep2);
             ccArray.push(ccPrep);
-
             // (3780)
             ddPrep = (2 * U * tPrep2);
             ddArray.push(ddPrep);
@@ -279,81 +267,59 @@
         AA = evenRound(VARIMAX.sumArray(uArray), 17);
         // (3782)
         BB = evenRound(VARIMAX.sumArray(tArray), 17);
+
         // (3784-3785)
         var T = evenRound((DD - evenRound((2 * AA * evenRound((BB / factorALength), 17)), 17)), 17);
         var B = evenRound((CC - evenRound(((AA * AA - BB * BB) / factorALength), 8)), 8);
+
         var CospAndSinp = getComparisonOfNumAndDen(T, B);
         rotatedFactors = doFactorRotations(CospAndSinp, factorA, factorB);
         return rotatedFactors;
     }
-
 
     function getComparisonOfNumAndDen(T, B) {
         var TAN4T, SINP, COSP, COS4T, SIN4T, CTN4T;
         var COS2T, SIN2T, COST, SINT;
         var shouldSkipRotation = false;
 
-        var greaterThanZeroCounter = QAV.getState("greaterThanZeroCounter") || 0;
-        var equalsZeroCounter = QAV.getState("equalsZeroCounter") || 0;
-        var lessThanZeroCounter = QAV.getState("lessThanZeroCounter") || 0;
-        var lessA = QAV.getState("lessA") || 0;
-        var lessB = QAV.getState("lessB") || 0;
-        var lessC = QAV.getState("lessC") || 0;
-        var greaterA = QAV.getState("greaterA") || 0;
-        var greaterB = QAV.getState("greaterB") || 0;
-
         if (T < B) {
-            lessThanZeroCounter = lessThanZeroCounter + 1;
-            QAV.setState("lessThanZeroCounter", lessThanZeroCounter);
             TAN4T = evenRound((Math.abs(T) / Math.abs(B)), 5);
             if (TAN4T < 0.00116) {
                 if (B >= 0) {
-                    lessA = lessA + 1;
-                    QAV.setState("lessA", lessA);
                     shouldSkipRotation = true;
                     return [SINP, COSP, shouldSkipRotation];
                 } else {
-                    lessB = lessB + 1;
-                    QAV.setState("lessB", lessB);
                     SINP = 0.7071066;
                     COSP = 0.7071066;
                     return [SINP, COSP, shouldSkipRotation];
                 }
             } else {
                 // variables cascade to below
-                lessC = lessC + 1;
-                QAV.setState("lessC", lessC);
                 COS4T = evenRound((1.0 / evenRound(Math.sqrt(1.0 + TAN4T * TAN4T), 8)), 8);
                 SIN4T = evenRound((TAN4T * COS4T), 8);
             }
         } else if (T === B) {
-            equalsZeroCounter = equalsZeroCounter + 1;
-            QAV.setState("equalsZeroCounter", equalsZeroCounter);
-
             if ((T + B) < 0.00116) {
                 shouldSkipRotation = true;
                 return [SINP, COSP, shouldSkipRotation];
             } else {
+                // variables cascade to below
                 COS4T = 0.7071066;
                 SIN4T = 0.7071066;
             }
         } else { // case (T > B)
-            greaterThanZeroCounter = greaterThanZeroCounter + 1;
-            QAV.setState("greaterThanZeroCounter", greaterThanZeroCounter);
-
             CTN4T = evenRound((Math.abs(T / B)), 5);
             if (CTN4T < 0.00116) {
-                greaterA = greaterA + 1;
-                QAV.setState("greaterA", greaterA);
+                // variables cascade to below
                 COS4T = 0.0;
                 SIN4T = 1.0;
             } else {
-                greaterB = greaterB + 1;
-                QAV.setState("greaterB", greaterB);
+                // variables cascade to below
                 SIN4T = evenRound((1.0 / evenRound(Math.sqrt(1.0 + CTN4T * CTN4T), 8)), 8);
                 COS4T = evenRound((CTN4T * SIN4T), 8);
             }
         }
+
         // continue with casecade values to determine COS theta and SIN theta
         COS2T = evenRound(Math.sqrt(((1.0 + COS4T) / 2.0)), 8);
         SIN2T = evenRound(SIN4T / (2.0 * COS2T), 8);
@@ -368,7 +334,6 @@
             COSP = COST;
             SINP = SINT;
         }
-
         // check T value
         if (T <= 0) {
             SINP = -SINP;

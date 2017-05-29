@@ -34,6 +34,18 @@ function jlog(text, element) {
 
 (function (UTIL, QAV, undefined) {
     'use strict';
+
+    UTIL.checkIfOnline = function () {
+        var isOnline;
+        if (window.location.protocol === 'file:') {
+            isOnline = false;
+        } else {
+            isOnline = true;
+        }
+        return isOnline;
+    };
+
+
     /*
     ********************************************************
     HELPER FUNCTIONS

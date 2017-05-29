@@ -105,13 +105,13 @@
                         <h3>New this version:</h3>
                         <ul class="newThisVersionUL">
                             <li>
-                                CSV format results download
+                                Improved principal components extraction process
                             </li>
                             <li>
-                                Custom checkboxes for flagging
+                                Changed button color on activation for better UI communication
                             </li>
                             <li>
-                                Default display of legends in composite factor visualizations
+                                Moved correlations and principal components calculations to a separate thread using web workers
                             </li>
                         </ul>
                     </div>
@@ -1059,11 +1059,14 @@
                     <p class="helpImageDivText"><strong>?</strong></p>
                 </div>
             </div>
-            <div class="specialH4" id="correlationsSpinner"></div>
             <div id="localDataButtonDiv">
                 <input type="button" class="blackHover" id="beginAnalysisLocalData" data-i18n="[value]Create correlation table">
             </div>
-
+            <div class="specialH4" id="correlationsSpinner"></div>
+            <div class="row">
+                <div id="correlationSpinnerText" class="singleLine">Calculating...</div>
+                <div id="correlationSpinnerDiv" class="singleLine"></div>
+            </div>
 
             <div id="correlationTable" class="rightMargin">
                 <table id="correlationTable2" class="display compact nowrap cell-border stripe" width="100%"></table>
@@ -1086,7 +1089,7 @@
                     <p class="helpImageDivText"><strong>?</strong></p>
                 </div>
             </div>
-            <div class="row">
+            <div class="row .factorExtractionButtonDiv">
                 <div class="singleLine">
                     <select id="factorSelect" autocomplete="off" class="singleLIne vertical">
                         <!--  <option disabled="disabled" selected="selected">Choose option</option>-->
@@ -1103,10 +1106,13 @@
 
                     <input type="button" autocomplete="off" class="blackHover singleLine vertical" id="PcaExtractionButton" data-i18n="[value]Extract principal components">
                 </div>
-                <div class="row">
-                    <input type="button" autocomplete="off" class="blackHover singleLine vertical u-pull-right rightMargin" id="resetAnalysisButton"
-                        data-i18n="[value]Reset analysis">
-                </div>
+                <input type="button" autocomplete="off" class="blackHover singleLine vertical u-pull-right rightMargin" id="resetAnalysisButton"
+                    data-i18n="[value]Reset analysis">
+
+            </div>
+            <div class="row">
+                <div id="factorExtractionSpinnerText" class="singleLine">Calculating...</div>
+                <div id="factorExtractionSpinnerDiv" class="singleLine"></div>
             </div>
             <br>
             <br>

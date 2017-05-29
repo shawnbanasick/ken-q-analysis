@@ -64,16 +64,16 @@
         }
 
         QAV.setState("factorLabels", factorDisplayNameArray);
-        QAV.factorLabels = factorDisplayNameArray;
+        // QAV.factorLabels = factorDisplayNameArray;
 
-        // todo - separate model from controller
+        // 
         factorMatrix1 = _.cloneDeep(factorMatrix, true);
         var centroidFactors = _.cloneDeep(factorMatrix);
 
         // send and save  to varimax rotation
         // todo - change this name to clarify for PCA
         QAV.setState("centroidFactors", centroidFactors);
-       
+
         // todo change to analysis global object setting
         numberSorts = QAV.getState("qavTotalNumberSorts");
         respondentNames = QAV.getState("qavRespondentNames");

@@ -11,18 +11,14 @@
 /* global numeric, window, QAV, $, document, JQuery, evenRound, UTIL, localStorage, _ */
 
 (function (PCA, QAV, undefined) {
+    'use strict';
 
     PCA.doPrincipalComponents = function (X) {
-
-        var m, sigma, svd, numberOfSorts, eigens, eigenVecs, p;
-        var eigenValuesSorted, y, percentNumber, eigenValuesAsPercents;
-        var eigenValuesCumulPercentArray, eigenValuesPercent, pcaFactorsToExtractArray;
-        var eigenValueCumulPercentAccum, k;
-        var critInflectionValue, temp5, s, t;
-        var numberFactorsExtracted;
+        var numberOfSorts, temp4, temp5, pcaFactorsToExtractArray, numberFactorsExtracted;
+        var numberofPrincipalComps, m;
         var factorLabels = [];
-        var numberofPrincipalComps, getEigenCumulPercentArray, doEigenVecsCalcs;
-        var inflectionArray;
+        var eigenVecs, eigenValuesSorted, eigenValuesAsPercents, eigenValuesCumulPercentArray;
+        var dataArray, dataArray2;
 
         // to differentiate output functions
         QAV.setState("typeOfFactor", "PCA");
@@ -35,9 +31,11 @@
         pcaFactorsToExtractArray = [8, temp4, temp5];
         numberFactorsExtracted = _.min(pcaFactorsToExtractArray);
 
+
         numberofPrincipalComps = numberFactorsExtracted;
         QAV.setState("numberFactorsExtracted", numberFactorsExtracted);
-        QAV.pcaNumberFactorsExtracted = numberFactorsExtracted;
+        //  QAV.pcaNumberFactorsExtracted = numberFactorsExtracted;
+        QAV.setState("pcaNumberFactorsExtracted", numberFactorsExtracted);
         UTIL.addFactorSelectCheckboxesRotation(numberFactorsExtracted);
 
         // labels according to factors extacted (above)
@@ -46,47 +44,110 @@
         }
         QAV.setState("factorLabels", factorLabels);
 
-        // // svd = matrix of all principle components as column vectors          
-        svd = PCA.calcSvd(X);
+        var isOnline = UTIL.checkIfOnline();
 
-        // eigens = eigenvalues for data X 
-        eigens = PCA.calcEigens(X);
+        // use web worker if available and not running from local file
+        if (window.Worker && isOnline) {
+            $("#factorExtractionSpinnerText").css('visibility', 'visible');
+            $("#factorExtractionSpinnerDiv").addClass('calcSpinner');
+            var workerMessageArray = [numberOfSorts, numberofPrincipalComps, X];
+            var myWorker = new Worker('wrkrs/workerPCA.js');
+            myWorker.postMessage(workerMessageArray);
+            myWorker.onmessage = function (e) {
+                eigenVecs = e.data[0];
+                eigenValuesSorted = e.data[1];
+                eigenValuesAsPercents = e.data[2];
+                eigenValuesCumulPercentArray = e.data[3];
 
-        // sort eigenValues from numeric
-        eigenValuesSorted = PCA.sortEigenValues(eigens.lambda.x);
+                QAV.setState("centroidFactors", eigenVecs);
+                QAV.setState("eigenValuesSorted", eigenValuesSorted);
+                QAV.setState("eigenValuesAsPercents", eigenValuesAsPercents);
+                QAV.setState("eigenValuesCumulPercentArray", eigenValuesCumulPercentArray);
+                QAV.setState("eigenVecs", eigenVecs);
 
-        // convert to percents and push to array
-        getEigenCumulPercentArray = PCA.calcEigenCumulPercentArray(eigenValuesSorted, numberOfSorts);
+                var language = QAV.getState("language");
+                var appendText = resources[language].translation["8 Principal Components Extracted"];
+                $("#rotationHistoryList").append('<li>' + appendText + '</button></li>');
 
-        eigenValuesAsPercents = getEigenCumulPercentArray[0];
-        eigenValuesCumulPercentArray = getEigenCumulPercentArray[1];
+                // hide spinner and change button display state
+                $("#factorExtractionSpinnerText").css('visibility', 'hidden');
+                $("#factorExtractionSpinnerDiv").removeClass('calcSpinner');
+                VIEW.changePcaExtractionButtonDisplay();
+
+                // display components
+                PCA.drawExtractedFactorsTable();
+
+                // get data for scree plot
+                dataArray2 = eigenValuesSorted;
+                dataArray = dataArray2.slice(0, 8);
+
+                UTIL.drawScreePlot(dataArray);
+
+                $("#section4 > input").show();
+
+                return [eigenValuesSorted, eigenValuesAsPercents, eigenValuesCumulPercentArray, eigenVecs];
+            };
+        } else {
+            // if web workers not available
+            var svd, eigens;
+            var getEigenCumulPercentArray, doEigenVecsCalcs;
+            var inflectionArray;
+
+            // // svd = matrix of all principle components as column vectors          
+            svd = PCA.calcSvd(X);
+
+            // eigens = eigenvalues for data X 
+            eigens = PCA.calcEigens(X);
+
+            // sort eigenValues from numeric
+            eigenValuesSorted = PCA.sortEigenValues(eigens.lambda.x);
+
+            // convert to percents and push to array
+            getEigenCumulPercentArray = PCA.calcEigenCumulPercentArray(eigenValuesSorted, numberOfSorts);
+
+            eigenValuesAsPercents = getEigenCumulPercentArray[0];
+            eigenValuesCumulPercentArray = getEigenCumulPercentArray[1];
+
+            doEigenVecsCalcs = PCA.calcEigenVectors(numberOfSorts, numberofPrincipalComps, eigenValuesSorted, svd);
+
+            eigenVecs = doEigenVecsCalcs[0];
+            inflectionArray = doEigenVecsCalcs[1];
+
+            eigenVecs = PCA.inflectPrincipalComponents(eigenVecs, inflectionArray);
+
+            QAV.setState("centroidFactors", eigenVecs);
+            QAV.setState("eigenValuesSorted", eigenValuesSorted);
+            QAV.setState("eigenValuesAsPercents", eigenValuesAsPercents);
+            QAV.setState("eigenValuesCumulPercentArray", eigenValuesCumulPercentArray);
+            QAV.setState("eigenVecs", eigenVecs);
+
+            var language = QAV.getState("language");
+            var appendText = resources[language].translation["8 Principal Components Extracted"];
+            $("#rotationHistoryList").append('<li>' + appendText + '</button></li>');
+
+            // hide spinner and change button display state
+            VIEW.changePcaExtractionButtonDisplay();
+            PCA.drawExtractedFactorsTable();
+
+            // get data for scree plot
+            dataArray2 = eigenValuesSorted;
+            dataArray = dataArray2.slice(0, 8);
+
+            UTIL.drawScreePlot(dataArray);
+
+            $("#section4 > input").show();
+
+            return [eigenValuesSorted, eigenValuesAsPercents, eigenValuesCumulPercentArray, eigenVecs];
+        }
+    }; // END OF DO PCA FUNCTION
 
 
-        doEigenVecsCalcs = PCA.calcEigenVectors(numberOfSorts, numberofPrincipalComps, eigenValuesSorted, svd);
-
-        eigenVecs = doEigenVecsCalcs[0];
-        inflectionArray = doEigenVecsCalcs[1];
-
-        eigenVecs = PCA.inflectPrincipalComponents(eigenVecs, inflectionArray);
-
-        QAV.setState("centroidFactors", eigenVecs);
-        QAV.setState("eigenValuesSorted", eigenValuesSorted);
-        QAV.setState("eigenValuesAsPercents", eigenValuesAsPercents);
-        QAV.setState("eigenValuesCumulPercentArray", eigenValuesCumulPercentArray);
-        QAV.setState("eigenVecs", eigenVecs);
-
-        var language = QAV.getState("language");
-        var appendText = resources[language].translation["8 Principal Components Extracted"];
-        $("#rotationHistoryList").append('<li>' + appendText + '</button></li>');
-
-        return [eigenValuesSorted, eigenValuesAsPercents, eigenValuesCumulPercentArray, eigenVecs];
-    };
 
     PCA.inflectPrincipalComponents = function (eigenVecs, inflectionArray) {
         // check and inflect components if necessary
-        for (s = 0; s < eigenVecs[0].length; s++) {
+        for (var s = 0; s < eigenVecs[0].length; s++) {
             if (inflectionArray[s] < 0.0) {
-                for (t = 0; t < eigenVecs.length; t++) {
+                for (var t = 0; t < eigenVecs.length; t++) {
                     eigenVecs[t][s] = -eigenVecs[t][s];
                 }
             }
@@ -96,10 +157,10 @@
 
     PCA.calcEigenVectors = function (numberOfSorts, numberofPrincipalComps, eigenValuesSorted, svd) {
         var inflectionArray = [];
-        var temp1, criticalInflectionValue, temp3, temp4;
+        var temp1, critInflectionValue, temp3, temp4;
         // setup empty array
         var eigenVecs = [];
-        for (p = 0; p < numberOfSorts; p++) {
+        for (var p = 0; p < numberOfSorts; p++) {
             eigenVecs.push([]);
         }
         // loop through each component    
@@ -109,13 +170,13 @@
 
             // loop through each QSort to get loading and also calc CRIT
             for (var j = 0, jLen = svd.length; j < jLen; j++) {
-                temp3 = evenRound((svd[j][i] * temp1), 4);
+                temp3 = evenRound((svd[j][i] * temp1), 8);
                 eigenVecs[j][i] = temp3;
                 // set up data for influection test
-                temp4 = evenRound((temp3 * Math.abs(temp3)), 4);
+                temp4 = evenRound((temp3 * Math.abs(temp3)), 8);
                 critInflectionValue = critInflectionValue + temp4;
             }
-            inflectionArray.push(evenRound(critInflectionValue, 4));
+            inflectionArray.push(evenRound(critInflectionValue, 8));
         }
         return [eigenVecs, inflectionArray];
     };
@@ -124,11 +185,12 @@
     PCA.calcEigenCumulPercentArray = function (eigenValuesSorted, numberOfSorts) {
         var percentNumber = 100 / numberOfSorts;
         var eigenValuesAsPercents = [];
+        var eigenValuesPercent;
         var eigenValuesCumulPercentArray = [];
         var eigenValueCumulPercentAccum = 0;
 
         for (var k = 0, kLen = eigenValuesSorted.length; k < kLen; k++) {
-            eigenValuesSorted[k] = evenRound((eigenValuesSorted[k]), 4);
+            eigenValuesSorted[k] = evenRound((eigenValuesSorted[k]), 8);
             eigenValuesPercent = evenRound((eigenValuesSorted[k] * percentNumber), 0);
             eigenValuesAsPercents.push(eigenValuesPercent);
             eigenValueCumulPercentAccum = eigenValueCumulPercentAccum + eigenValuesPercent;
@@ -146,6 +208,7 @@
         });
         return values;
     };
+
 
     PCA.calcSvd = function (X) {
         // svd = matrix of all principle components as column vectors          

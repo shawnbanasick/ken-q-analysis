@@ -483,7 +483,12 @@ function jlog(text, element) {
         // Add the valueline path.
         svg.append("path")
             .attr("class", "line")
-            .attr("d", valueline(data));
+            .attr("d", valueline(data))
+            .style({
+                'stroke': 'black',
+                'fill': 'none',
+                'stroke-width': '2px',
+            });
 
         // Add the X Axis
         svg.append("g")
@@ -510,6 +515,119 @@ function jlog(text, element) {
                 return y(data.eigen);
             })
             .attr("r", 3.5);
+
+        svg.selectAll('.axis lne, .axis path')
+            .style({
+                'stroke': 'black',
+                'fill': 'none',
+                'stroke-width': '1px'
+            });
+
+        svg.selectAll(".tick:not(:first-of-type) line").attr("stroke", "black").attr("stroke-width", "1px");
     };
+
+
+
+    // PNG downloads adapted from Nikita Rokotyan http://bl.ocks.org/Rokotyan/0556f8facbaf344507cdc45dc3622177
+    UTIL.downloadPngImages = function (svgString, svgCharacteristics, nameConfig) {
+        var width = parseInt(svgCharacteristics.style("width"), 10) + 2;
+        var height = parseInt(svgCharacteristics.style("height"), 10);
+        svgString2Image(svgString, 2 * width, 2 * height, 'png', save); // passes Blob and filesize String to the callback
+        var filenamePng = nameConfig + '.png';
+
+        function save(dataBlob, filesize) {
+            saveAs(dataBlob, filenamePng); // FileSaver.js function
+        }
+    };
+
+    UTIL.getSVGString = function (svgNode) {
+        svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
+        var cssStyleText = getCSSStyles(svgNode);
+        appendCSS(cssStyleText, svgNode);
+
+        var serializer = new XMLSerializer();
+        var svgString = serializer.serializeToString(svgNode);
+        svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+        svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+
+        return svgString;
+
+        function getCSSStyles(parentElement) {
+            var selectorTextArr = [];
+
+            // Add Parent element Id and Classes to the list
+            selectorTextArr.push('#' + parentElement.id);
+            for (var c = 0; c < parentElement.classList.length; c++)
+                if (!contains('.' + parentElement.classList[c], selectorTextArr))
+                    selectorTextArr.push('.' + parentElement.classList[c]);
+
+            // Add Children element Ids and Classes to the list
+            var nodes = parentElement.getElementsByTagName("*");
+            for (var i = 0; i < nodes.length; i++) {
+                var id = nodes[i].id;
+                if (!contains('#' + id, selectorTextArr))
+                    selectorTextArr.push('#' + id);
+
+                var classes = nodes[i].classList;
+                for (var c = 0; c < classes.length; c++)
+                    if (!contains('.' + classes[c], selectorTextArr))
+                        selectorTextArr.push('.' + classes[c]);
+            }
+
+            // Extract CSS Rules
+            var extractedCSSText = "";
+            for (var i = 0; i < document.styleSheets.length; i++) {
+                var s = document.styleSheets[i];
+
+                try {
+                    if (!s.cssRules) continue;
+                } catch (e) {
+                    if (e.name !== 'SecurityError') throw e; // for Firefox
+                    continue;
+                }
+
+                var cssRules = s.cssRules;
+                for (var r = 0; r < cssRules.length; r++) {
+                    if (contains(cssRules[r].selectorText, selectorTextArr))
+                        extractedCSSText += cssRules[r].cssText;
+                }
+            }
+            return extractedCSSText;
+
+            function contains(str, arr) {
+                return arr.indexOf(str) === -1 ? false : true;
+            }
+        }
+
+        function appendCSS(cssText, element) {
+            var styleElement = document.createElement("style");
+            styleElement.setAttribute("type", "text/css");
+            styleElement.innerHTML = cssText;
+            var refNode = element.hasChildNodes() ? element.children[0] : null;
+            element.insertBefore(styleElement, refNode);
+        }
+    };
+
+    // ** HELPER FUNCTIONS **
+    // svgString2Image
+    function svgString2Image(svgString, width, height, format, callback) {
+        var format = format ? format : 'png';
+        var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext("2d");
+        canvas.width = width;
+        canvas.height = height;
+        var image = new Image();
+        image.onload = function () {
+            context.clearRect(0, 0, width, height);
+            context.drawImage(image, 0, 0, width, height);
+            canvas.toBlob(function (blob) {
+                var filesize = Math.round(blob.length / 1024) + ' KB';
+                if (callback) callback(blob, filesize);
+            });
+        };
+        image.src = imgsrc;
+    }
+
 
 }(window.UTIL = window.UTIL || {}, QAV));

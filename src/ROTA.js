@@ -109,6 +109,7 @@
             QAV.setState("rotationFactorB", rotationFactorB);
 
         }
+        return pullFactors;
     };
 
     // *******************************************************************  data model
@@ -323,7 +324,28 @@
             .attr("dy", ".71em")
             .style("font-family", "Arial")
             .style("text-anchor", "end");
+        // .selectAll('path')
+        // .style('stroke', 'red')
+        // .style('fill', 'none')
+        // .style('stroke-width', '5px');
         // .text("Factor " + rotationFactorA);
+
+        svg.selectAll('.axis lne, .axis path, .minor')
+            .style({
+                'stroke': 'black',
+                'fill': 'none',
+                'stroke-width': '1px',
+                'shape-rendering': 'crispEdges'
+            });
+
+        d3.selectAll('g.tick')
+            .style({
+                'stroke': 'black',
+                'fill': 'black',
+                'stroke-width': '1px',
+                'shape-rendering': 'crispEdges'
+            });
+
 
         // create Y axis label
         svg.append("text")

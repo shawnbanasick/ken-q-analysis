@@ -236,6 +236,7 @@
     (function () {
         $("#beginAnalysisLocalData").on("click", function () {
             CORR.createCorrelationTable();
+            $("#section4 > div.row.factorExtrafactorExtractionButtonDiv").show();
         });
     })();
 
@@ -276,6 +277,9 @@
 
             console.log('%c PCA completed in ' + (t1 - t0).toFixed(0) + ' milliseconds', 'background: black; color: white');
 
+            $("#section5 > div.row.factorsToKeepForRotationDiv").show();
+
+
             // required for firefox to register event
             return false;
         });
@@ -306,6 +310,7 @@
             UTIL.drawScreePlot(dataArray);
 
             $("#section4 > input").show();
+            $("#section5 > div.row.factorsToKeepForRotationDiv").show();
 
             // required for firefox to register event?
             return false;
@@ -323,6 +328,8 @@
             $("#section4 > input").hide();
 
             VIEW.clearSections_4_5_6();
+            // num factors to keep div
+            $("#section5 > div.row.factorsToKeepForRotationDiv").hide();
 
             // reset state
             QAV.setState("rotFacStateArray", "");
@@ -422,6 +429,19 @@
         $("#generateRotationItemsButton").on("click", function (e) {
             e.preventDefault();
             var testForSplit = QAV.getState("hasSplitFactor");
+            var language = QAV.getState("language");
+            var appendErrorText1 = resources[language].translation["selectedFactorsError"];
+
+            // pull the selected factors 
+            var facNumberSelectedCheck = ROTA.setRotationFactorsFromCheckbox();
+            var length = facNumberSelectedCheck.length;
+            if (length !== 2) {
+                $("#genericErrorModal .errorPanel").empty();
+                $("#genericErrorModal .errorPanel").append("<p>" + appendErrorText1 + "</p><br>");
+                VIEW.showGenericErrorModal();
+                return;
+            }
+
             if (testForSplit > 0) {
                 VIEW.showDisabledFunctionsAfterSplitModal();
             } else {
@@ -430,8 +450,7 @@
                 var tempRotFacStateArray = _.cloneDeep(rotFacStateArray);
                 QAV.setState("tempRotFacStateArray", tempRotFacStateArray);
 
-                // pull the selected factors and then pull their data
-                ROTA.setRotationFactorsFromCheckbox();
+                // pull the selected factors' data
                 ROTA.setTwoFactorRotationalArray(rotFacStateArray);
 
                 // expects bare full array
@@ -492,9 +511,12 @@
     // get User input on number of factors to keep for rotation
     (function () {
         $("#sendToRotationButton").on("click", function () {
+            var language = QAV.getState("language");
             var numFactors, data, loopLen, temp1, i, centroidFactors;
 
-            $("#factorLoadingContainerDiv").show();
+            var appendErrorText1 = resources[language].translation["Rotate error 1"];
+            var appendErrorText2 = resources[language].translation["Rotate error 2"];
+
 
             numFactors = parseInt($("#selectFactorsRotation option:selected").val());
 
@@ -503,13 +525,21 @@
             // prvent user selection errors
             temp1 = QAV.numFactorsExtracted || 0;
             if (numFactors > temp1) {
-                $("#rotationLargeNumberError").show();
+                $("#genericErrorModal .errorPanel").empty();
+                $("#genericErrorModal .errorPanel").append("<p>" + appendErrorText1 + "</p><br>");
+                VIEW.showGenericErrorModal();
+                return;
+                // $("#rotationLargeNumberError").show();
             } else if (isNaN(numFactors)) {
-                $("#rotationNanError").removeClass("hidden");
+                $("#genericErrorModal .errorPanel").empty();
+                $("#genericErrorModal .errorPanel").append("<p>" + appendErrorText2 + "</p><br>");
+                VIEW.showGenericErrorModal();
+                return;
+                // $("#rotationNanError").removeClass("hidden");
             } else {
-                $("#rotationLargeNumberError").hide();
-                $("#rotationNanError").addClass("hidden");
-
+                //  $("#rotationLargeNumberError").hide();
+                // $("#rotationNanError").addClass("hidden");
+                $("#factorLoadingContainerDiv").show();
                 $("#factorVarimaxButton").show();
                 $("#factorJudgementRotButton").show();
 
@@ -569,6 +599,8 @@
 
                 // todo - convert to send to state matrix
                 QAV.setState("centroidFactors", centroidFactors);
+
+                $("#selectFactorsForOutputButton").show();
             }
         });
     })();
@@ -641,6 +673,24 @@
     })();
 
     (function () {
+        // scree plot image download
+        $(".screePlotDownloadPngButton").on("click", function () {
+            console.log("clicked");
+            var date = UTIL.currentDate1();
+            var time = UTIL.currentTime1();
+            var dateTime = date + "_" + time;
+            var projectName = QAV.getState("qavProjectName");
+            var language = QAV.getState("language");
+            var screePlotTranslation = resources[language].translation["Scree Plot"];
+            var filename = projectName + "_" + screePlotTranslation + "_" + dateTime;
+            var svgString = UTIL.getSVGString(d3.select('#screePlotSVG')
+                .node());
+            var svgCharacteristics = d3.select('#screePlotSVG');
+            UTIL.downloadPngImages(svgString, svgCharacteristics, filename); // passes Blob and filesize 
+        });
+    })();
+
+    (function () {
         // download judgemental rotation chart
         $(".rotationChartDownloadButton").on("click", function () {
             var date = UTIL.currentDate1();
@@ -656,6 +706,26 @@
             d3_save_svg.save(d3.select('#scatterChart').node(), config);
         });
     })();
+
+    (function () {
+        // download judgemental rotation chart
+        $(".rotationChartDownloadPngButton").on("click", function () {
+            console.log("png rot chart clicked");
+            var date = UTIL.currentDate1();
+            var time = UTIL.currentTime1();
+            var dateTime = date + "_" + time;
+            var projectName = QAV.getState("qavProjectName");
+            var language = QAV.getState("language");
+            var scatterPlotTranslation = resources[language].translation["Download Rotation Chart"];
+            var filename = projectName + "_" + scatterPlotTranslation + "_" + dateTime;
+            var svgString = UTIL.getSVGString(d3.select('#scatterChart')
+                .node());
+            var svgCharacteristics = d3.select('#scatterChart');
+            UTIL.downloadPngImages(svgString, svgCharacteristics, filename); // passes Blob and filesize 
+        });
+    })();
+
+
 
     // set judgemental rotation chart options
     (function () {
@@ -1038,6 +1108,50 @@
             } else if ($radioOption === "No") {
                 vizConfig.shouldPrependStateNo = false;
             }
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    // should show only statement numbers? - event handler
+    (function () {
+        $("#showOnlyStateNoDiv :radio").on('click', function () {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            $('#showOnlyStateNoDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
+            var $radioOption = ($(this).val());
+            if ($radioOption === "Yes") {
+                vizConfig.shouldShowOnlyStateNo = true;
+            } else if ($radioOption === "No") {
+                vizConfig.shouldShowOnlyStateNo = false;
+            }
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    // should show custom factor names? - event handler
+    (function () {
+        $("#addCustomFactorNameDiv :radio").on('click', function () {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            $('#addCustomFactorNameDiv .radioHighlight2').removeClass("active");
+            $(this).parent().addClass("active");
+            $("label[for='" + $(this).attr('id') + "']").addClass("active");
+            var $radioOption = ($(this).val());
+            if ($radioOption === "Yes") {
+                vizConfig.addCustomFactorName = true;
+            } else if ($radioOption === "No") {
+                vizConfig.addCustomFactorName = false;
+            }
+            QAV.setState("vizConfig", vizConfig);
+        });
+    })();
+
+    // grab custom factor names from input
+    (function () {
+        $('#customFactorNameInputBox').on('input', function () {
+            var vizConfig = QAV.getState("vizConfig") || {};
+            var customFactorNames = $('#customFactorNameInputBox').val();
+            vizConfig.customFactorNames = customFactorNames.split(",");
             QAV.setState("vizConfig", vizConfig);
         });
     })();
@@ -1546,6 +1660,7 @@
         $('#customNameInputBox').on('input', function () {
             var vizConfig = QAV.getState("vizConfig") || {};
             var customName = $('#customNameInputBox').val();
+            console.log(customName);
             vizConfig.customName = customName;
             QAV.setState("vizConfig", vizConfig);
         });

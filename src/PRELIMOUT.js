@@ -1,22 +1,23 @@
-// Ken-Q Analysis
-//Copyright (C) 2016 Shawn Banasick
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
+/* @preserve
+Ken-Q Analysis
+Copyright (C) 2016 Shawn Banasick
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+*/
+/*  JSlint declarations
+ global resources, d3, VIEW, d3_save_svg, CORR, alasql, window, QAV, $, document, evenRound, UTIL, _  
+ */
 
-// JSlint declarations
-/* global resources, d3, VIEW, d3_save_svg, CORR, alasql, window, QAV, $, document, evenRound, UTIL, _  */
-
-(function(PRELIMOUT, QAV, undefined) {
+(function (PRELIMOUT, QAV, undefined) {
     'use strict';
     // ************************************************************************  view
     // ******  Preliminary Results 1 - draw factor synthetic Q-sorts visuals ********
     //  ******************************************************************************
-    PRELIMOUT.showPreliminaryOutput1 = function() {
+    PRELIMOUT.showPreliminaryOutput1 = function () {
         // add synthetic factors visualizations
-        // $("#synFactorVizTitle").append("<h4>" + synFactorVizTitleText + "</h4>");
+        // $("#synFactorVizTitle").append("<h4>" + synFactorVizTitleText + "</h4>"); 
 
         var distStatementDataVizArray = QAV.getState("distStatementDataVizArray");
         var outputForDataViz = QAV.getState("outputForDataViz");
@@ -29,7 +30,7 @@
 
         // loop through userSelectedFactors to get each synFactorViz
         for (var i = 0; i < outputForDataViz.length; i++) {
-            var synFactorVizName = "synFactorViz" + (i + 1);
+            // var synFactorVizName = "synFactorViz" + (i + 1);
 
             // loop through each distinguishing statement in distStatementDataVizArray[i]
             for (var j = 0; j < distStatementDataVizArray[i].length; j++) {
@@ -103,7 +104,7 @@
     };
 
 
-    PRELIMOUT.drawSynSortTrianglesForOutput = function(outputForDataViz, userSelectedFactors) {
+    PRELIMOUT.drawSynSortTrianglesForOutput = function (outputForDataViz, userSelectedFactors) {
         var sortTriangleShape = QAV.getState("qavSortTriangleShape");
         var uniques = _.uniq(sortTriangleShape);
         var currentStatements = QAV.getState("qavCurrentStatements");
@@ -316,7 +317,9 @@
         function appendNumbersToStatements(outputForDataViz) {
             for (var i = 0; i < outputForDataViz.length; i++) {
                 for (var ii = 0; ii < outputForDataViz[i].length; ii++) {
-                    if (vizConfig.shouldPrependStateNo === false) {
+                    if (vizConfig.shouldShowOnlyStateNo === true) {
+                        outputForDataViz[i][ii].displayStatements = outputForDataViz[i][ii].statement;
+                    } else if (vizConfig.shouldPrependStateNo === false) {
                         outputForDataViz[i][ii].displayStatements = outputForDataViz[i][ii].sortStatement;
                     } else {
                         outputForDataViz[i][ii].displayStatements = outputForDataViz[i][ii].statement + ". " + outputForDataViz[i][ii].sortStatement;
@@ -348,7 +351,7 @@
             for (var i = 0, iLen = userSelectedFactors.length; i < iLen; i++) {
                 var data1 = data2[i];
                 var data = data1.slice(0);
-                data.sort(function(a, b) {
+                data.sort(function (a, b) {
                     return a.indexer - b.indexer;
                 });
 
@@ -484,13 +487,23 @@
         }
 
         // calc the height of the svg
-        svgHeight = getSvgHeight(sortTriangleShape);
+        svgHeight = (getSvgHeight(sortTriangleShape) + 15);
 
         // get Cutoff from state
         var backgroundColorCutoff = vizConfig.backgroundColorCutoff;
 
+        // adjust if display is only statement numbers
+        var onlyNumbersXAdjustment = 0;
+        if (vizConfig.shouldShowOnlyStateNo === true) {
+            onlyNumbersXAdjustment = 6;
+        }
+
         /*
-        BEGIN visualizations calc
+
+
+        BEGIN visualizations calc loop
+
+
         */
         // loop through array to draw visualizations   synFactorVizDiv
         for (var z = 0; z < outputForDataViz.length; z++) {
@@ -501,15 +514,17 @@
             $("#synFactorVizDiv")
                 .append("<div id=" + factorVizDivName + "></div>");
 
-            $("#" + factorVizDivName)
-                .append("<h4 class='vizTitles'>" + synFactorVizTitleText + userSelectedFactors[z] + "</h4>");
+            // appending name outside SVG
+            // $("#" + factorVizDivName)
+            //     .append("<h4 class='vizTitles'>" + synFactorVizTitleText + userSelectedFactors[z] + "</h4>");
 
             var idName = "synSortSvgNo" + zz;
 
+            // add svg
             var svg = d3
                 .select("#" + factorVizDivName)
                 .append("svg")
-                .attr('width', containerWidth)
+                .attr('width', (containerWidth + 10))
                 .attr('height', svgHeight)
                 .attr('id', idName)
                 .attr('class', "factorViz");
@@ -518,7 +533,7 @@
 
             // sort by zScore z-score
             var textArray = textArray1.slice(0);
-            textArray.sort(function(a, b) {
+            textArray.sort(function (a, b) {
                 if (a.zScore === b.zScore) {
                     return b.statement - a.statement;
                 } else {
@@ -534,7 +549,7 @@
 
             var index = svg
                 .selectAll("g.node")
-                .data(uniques, function(d) {
+                .data(uniques, function (d) {
                     return d;
                 });
 
@@ -543,40 +558,43 @@
                 .append("g")
                 .attr("class", "node");
 
+            // draw headers    
             indexGroup
                 .append('rect')
                 .attr('width', elementWidth)
                 .attr('height', '20')
-                .attr('x', function(d) {
-                    return uniques.indexOf(d) * elementWidth;
+                .attr('x', function (d) {
+                    return ((uniques.indexOf(d) * elementWidth) + 5);
                 })
-                .attr('y', '0')
+                .attr('y', '45')
                 .attr('fill', 'white')
                 .attr('stroke', 'black');
 
+            // draw column numbers    
             indexGroup
                 .append('text')
-                .attr('x', function(d) {
-                    return ((uniques.indexOf(d) * elementWidth) + (elementWidth / 2));
+                .attr('x', function (d) {
+                    return ((uniques.indexOf(d) * elementWidth) + (elementWidth / 2) + 5);
                 })
-                .attr('y', '16')
+                .attr('y', '58') // was 16
                 .style('text-anchor', 'middle')
                 .attr('class', 'headerText')
                 .attr('font-family', 'Arial')
                 .attr('font-size', '14px')
                 .attr('font-weight', 'bold')
                 .attr('fill', 'black')
-                .text(function(d) {
+                .text(function (d) {
                     return d;
                 });
 
             // associate data with identifiers
             var index2 = svg
                 .selectAll("g.node2")
-                .data(textArray, function(d) {
+                .data(textArray, function (d) {
                     return d.statement;
                 });
 
+            // append statement rectangles group    
             var indexGroup2 = index2
                 .enter()
                 .append("g")
@@ -635,18 +653,18 @@
                     stroke: overlapColor
                 });
 
-
+            // draw boxes for statements
             indexGroup2
                 .append('rect')
                 .attr('width', elementWidth)
                 .attr('height', elementHeight)
-                .attr('x', function(d) {
-                    return d.xVal * elementWidth;
+                .attr('x', function (d) {
+                    return ((d.xVal * elementWidth) + 5);
                 })
-                .attr('y', function(d) {
-                    return ((d.yVal * elementHeight) + 20);
+                .attr('y', function (d) {
+                    return ((d.yVal * elementHeight) + 60);
                 })
-                .attr('fill', function(d) {
+                .attr('fill', function (d) {
                     if (vizConfig.shouldShowBackgroundColor === true || vizConfig.shouldIndicateConsensus === true) {
                         return d.displayFill;
                     } else {
@@ -656,36 +674,37 @@
                 //.style('background-color', '#ffffff');
                 .attr('stroke', 'black');
 
+            // draw distinguishing statement symbols    
             if (vizConfig.shouldIndicateDistinguishing !== false) {
                 indexGroup2
                     .append('text')
                     .attr('width', elementWidth)
                     .attr('height', elementHeight)
                     .attr('font-size', symbolSize)
-                    .attr('x', function(d) {
-                        return ((d.xVal * elementWidth) + 5);
+                    .attr('x', function (d) {
+                        return ((d.xVal * elementWidth) + 7); // was 5
                     })
-                    .attr('y', function(d) {
-                        return ((d.yVal * elementHeight) + 38);
+                    .attr('y', function (d) {
+                        return ((d.yVal * elementHeight) + 75); //was 38
                     })
-                    .text(function(d) {
+                    .text(function (d) {
                         return d.sigVisualization;
                     });
             }
-
+            // draw statements
             indexGroup2
                 .append('text')
                 .attr('class', 'wrap')
                 .attr('font-family', 'Arial')
                 .attr('font-size', cardFontSize)
-                .attr('x', function(d) {
-                    return ((d.xVal * elementWidth) + 3);
+                .attr('x', function (d) {
+                    return ((d.xVal * elementWidth) + 8);
                 })
-                .attr('y', function(d) {
-                    return ((d.yVal * elementHeight) + locateStateY);
+                .attr('y', function (d) {
+                    return ((d.yVal * elementHeight) + locateStateY + 35); // was 25
                 })
                 .attr('dy', 0)
-                .each(function(d) {
+                .each(function (d) {
                     var lines = wordwrap(d.displayStatements, maxLength);
                     for (var iii = 0; iii < lines.length; iii++) {
                         d3
@@ -693,7 +712,7 @@
                             .append("tspan")
                             .attr("dy", vSeparation)
                             .attr('text-anchor', 'middle')
-                            .attr("x", (d.xVal * elementWidth) + (elementWidth / 2))
+                            .attr("x", (d.xVal * elementWidth) + (elementWidth / 2) + onlyNumbersXAdjustment)
                             .text(lines[iii]);
                     }
                 });
@@ -703,14 +722,14 @@
                     .append('text')
                     .attr('font-family', 'Arial')
                     .attr('font-size', cardFontSize)
-                    .attr('x', function(d) {
+                    .attr('x', function (d) {
                         return ((d.xVal * elementWidth) + (elementWidth * 0.97));
                     })
-                    .attr('y', function(d) {
-                        return ((d.yVal * elementHeight) + 38);
+                    .attr('y', function (d) {
+                        return ((d.yVal * elementHeight) + 83); // was 38
                     })
                     .style("text-anchor", "end")
-                    .text(function(d) {
+                    .text(function (d) {
                         return (d.matchingCount + " (" + d.matchingCountPercent + "%)");
                     });
             }
@@ -724,17 +743,17 @@
                 indexGroup3
                     .append('rect')
                     .attr('height', 50 + vizConfig.heightAdjustment)
-                    .attr('width', 540)
+                    .attr('width', 575)
                     .attr('x', (xLegendCenterPoint - halfLegendWidth))
-                    .attr('y', (yLegend - 5))
+                    .attr('y', (yLegend + 35)) // was -5
                     .attr('fill', 'white')
                     .style('stroke', 'black');
 
                 indexGroup3
                     .append('text')
                     //.attr('x', ((xLegendCenterPoint - halfLegendWidth) + 20)) // half of legend box width
-                    .attr('x', (xLegendCenterPoint - 10)) // half of legend box width
-                    .attr('y', (yLegend + 30))
+                    .attr('x', (xLegendCenterPoint - 8)) // half of legend box width
+                    .attr('y', (yLegend + 80)) // was 30
                     .attr('class', 'legendHeader')
                     .attr('font-family', 'Arial')
                     .attr('font-size', '20px')
@@ -755,8 +774,8 @@
                                     */
 
                 // set X and Y values for legend
-                var symbolY = 34;
-                var legendTextY = 30;
+                var symbolY = 80; // was 34
+                var legendTextY = 79; // was 30
                 var legendSymbolX = 40;
                 var legendTextX = 80;
 
@@ -904,13 +923,32 @@
                 }
             } // end of should have legend
 
+            // add Factor Names inside SVG
+            var newText;
+            if (vizConfig.addCustomFactorName === true && vizConfig.customFactorNames[z]) {
+                newText = vizConfig.customFactorNames[z];
+            } else {
+                var capitalizedFactorName = userSelectedFactors[z].charAt(0).toUpperCase() + userSelectedFactors[z].slice(1);
+                newText = synFactorVizTitleText + capitalizedFactorName;
+            }
+            svg.append('text')
+                .attr('x', 5)
+                .attr('y', 28)
+                .attr('font-family', 'Arial')
+                .attr('font-size', '30px')
+                .attr('fill', 'black')
+                .text(newText);
+
+
+            var thisFactorName = userSelectedFactors[z].replace(/\s/g, '');
             var downloadText = resources[language].translation.downloadImage;
-            $("#" + factorVizDivName)
-                .append('<input class="svgDownloadButton blackHover" name="downloadButton" type="button" value="' + userSelectedFactors[z] + downloadText + '" />');
-        }
+            var $thisSvg = $("#" + factorVizDivName);
+            $thisSvg.append('<input class="svgDownloadButton blackHover" name="downloadButton" id="' + thisFactorName + 'Image"   type="button" value="' + userSelectedFactors[z] + downloadText + '" />');
+            $thisSvg.append('<input class="pngDownloadButton blackHover" name="downloadPngButton" id="' + thisFactorName + 'PngImage"   type="button" value="' + userSelectedFactors[z] + ' - Download image as PNG' + '" />');
+        } // end z loop to add visualizations
 
         $('.svgDownloadButton')
-            .on('mousedown', function(event) {
+            .on('mousedown', function (event) {
                 var vizConfig = QAV.getState("vizConfig") || {};
                 var shouldAddName = vizConfig.shouldAddCustomName;
                 var svgId = $(this)
@@ -951,6 +989,49 @@
                 d3_save_svg.save(d3.select('#' + svgId)
                     .node(), config);
             });
+
+        $('.pngDownloadButton')
+            .on('mousedown', function (event) {
+                var nameConfig;
+                var vizConfig = QAV.getState("vizConfig") || {};
+                var shouldAddName = vizConfig.shouldAddCustomName;
+                console.log(shouldAddName);
+                var svgId = $(this)
+                    .parent()
+                    .find("svg")
+                    .attr('id');
+                var arrayIndexNumber = (svgId.slice(-1) - 1);
+                var factorName = userSelectedFactors[arrayIndexNumber];
+                var cleanFactorName = factorName.replace(/\s+/g, '');
+                var date = UTIL.currentDate1();
+                var time = UTIL.currentTime1();
+                var dateTime = date + "_" + time;
+                var projectName = QAV.getState("qavProjectName");
+                var customName = vizConfig.customName;
+                console.log(customName);
+                if (shouldAddName === true) {
+                    if (vizConfig.customNameLocation === "prepend") {
+                        nameConfig = customName + "_" + projectName + "_" + cleanFactorName;
+                    } else if (vizConfig.customNameLocation === "append") {
+                        nameConfig = projectName + "_" + cleanFactorName + "_" + customName;
+                    } else if (vizConfig.customNameLocation === "replace") {
+                        nameConfig = customName;
+                    } else {
+                        nameConfig = projectName + "_" + cleanFactorName;
+                    }
+                } else {
+                    nameConfig = projectName + "_" + cleanFactorName;
+                }
+
+                var svgString = UTIL.getSVGString(d3.select('#' + svgId)
+                    .node());
+                var svgCharacteristics = d3.select('#' + svgId);
+                // var width = parseInt(thisSvgCharacteristics.style("width"), 10) + 2;
+                // var height = parseInt(thisSvgCharacteristics.style("height"), 10);
+                UTIL.downloadPngImages(svgString, svgCharacteristics, nameConfig); // passes Blob and filesize 
+            });
+
+
         PRELIMOUT.showPreliminaryOutput1b();
     };
 
@@ -959,7 +1040,7 @@
     // ************************************************************************  view
     // ******  Preliminary Results 1b - draw factor score correlations table  ********
     // ******************************************************************************
-    PRELIMOUT.showPreliminaryOutput1b = function() {
+    PRELIMOUT.showPreliminaryOutput1b = function () {
         var language = QAV.getState("language");
         var headerText = resources[language].translation["Factor score correlations"];
 
@@ -1006,7 +1087,7 @@
 
         var table = $('#factorCorrelationTable').DataTable();
         var lastIdx = null;
-        $('#factorCorrelationTable tbody').on('mouseover', 'td', function() {
+        $('#factorCorrelationTable tbody').on('mouseover', 'td', function () {
                 var colIdx = table
                     .cell(this)
                     .index()
@@ -1016,7 +1097,7 @@
                     $(table.column(colIdx).nodes()).addClass('highlight');
                 }
             })
-            .on('mouseleave', function() {
+            .on('mouseleave', function () {
                 $(table.cells().nodes()).removeClass('highlight');
             });
         showPreliminaryOutput2();
@@ -1089,7 +1170,7 @@
                     className: 'dt-body-center dt-body-name'
                 }, {
                     targets: '_all',
-                    "createdCell": function(td, cellData, rowData, row, col) {
+                    "createdCell": function (td, cellData, rowData, row, col) {
                         if (cellData < 0) {
                             $(td).css('color', 'red');
                         }
@@ -1130,7 +1211,7 @@
                     className: 'dt-body-center dt-body-name'
                 }, {
                     targets: '_all',
-                    "createdCell": function(td, cellData, rowData, row, col) {
+                    "createdCell": function (td, cellData, rowData, row, col) {
                         if (cellData < 0) {
                             $(td).css('color', 'red');
                         }
@@ -1144,7 +1225,7 @@
 
             // resort back to high to low z-score sort
             newData
-                .sort(function(a, b) {
+                .sort(function (a, b) {
                     if (b[chartText6] === a[chartText6]) {
                         return a[chartText4] - b[chartText4];
                     } else {
@@ -1204,7 +1285,7 @@
     // **********************************************************************  view
     // ******  dynamicallly append checkboxs to select factors for analysis *******
     // ****************************************************************************
-    PRELIMOUT.appendFactorSelectionCheckboxes = function() {
+    PRELIMOUT.appendFactorSelectionCheckboxes = function () {
 
         var hasSplitFactor = QAV.getState("hasSplitFactor");
         var j,
@@ -1291,7 +1372,7 @@
     // **************  pull user-selected factors for analysis *********************
     // *****************************************************************************
 
-    PRELIMOUT.getFactorsForAnalysis = function() {
+    PRELIMOUT.getFactorsForAnalysis = function () {
         var checkboxes = document.getElementsByName('analysisFactors');
         var vals = [];
         for (var i = 0; i < checkboxes.length; i++) {
@@ -1306,7 +1387,7 @@
     // **************  pull loadings that have been flagged  **********************
     // ****************************************************************************
 
-    PRELIMOUT.pullFlaggedFactorLoadings = function() {
+    PRELIMOUT.pullFlaggedFactorLoadings = function () {
         var numberFactorsExtracted = parseInt(QAV.getState("numberFactorsExtracted"));
         var results = QAV.getState("results");
         var jLoopLen = (numberFactorsExtracted * 2) + 3;
@@ -1382,7 +1463,7 @@
             return "false";
         } else {
             significantLoadingsArray
-                .sort(function(a, b) {
+                .sort(function (a, b) {
                     if (a[0] < b[0]) {
                         return -1;
                     }
@@ -1424,14 +1505,14 @@
     function findLargestFactorWeights(significantLoadingsArray) {
 
         // remove unique sorts (value 99) from array
-        var factorSelect = _.filter(significantLoadingsArray, function(n) {
+        var factorSelect = _.filter(significantLoadingsArray, function (n) {
             return n[0] !== 99;
         });
 
         // pull out just factor number and W value to array
         var factorNumbersArray2 = [];
         var factorNumbersArray = [];
-        _(factorSelect).forEach(function(n) {
+        _(factorSelect).forEach(function (n) {
             var tempArray = [];
             var factorNumber = n[0];
             factorNumbersArray2.push(factorNumber);
@@ -1448,13 +1529,13 @@
 
         var maxFactorValuesArray = [];
         var factorValue = 0;
-        _(sigFactorNumbersArray).forEach(function() {
-            var temp = _(factorNumbersArray).filter(function(j) {
+        _(sigFactorNumbersArray).forEach(function () {
+            var temp = _(factorNumbersArray).filter(function (j) {
                 return j[0] === sigArray[factorValue];
             });
 
             var tempArray2 = [];
-            var maxFactorLoadings = _(temp).forEach(function(q) {
+            var maxFactorLoadings = _(temp).forEach(function (q) {
                 var tempVar3 = evenRound((Math.abs(1 / q[1])), 8);
                 tempArray2.push(tempVar3);
             }).value();
@@ -1638,7 +1719,7 @@
 
             var temp1 = _.cloneDeep(factorNumbers);
 
-            temp1.sort(function(a, b) {
+            temp1.sort(function (a, b) {
                 if (a.zScore === b.zScore) {
                     return b.statement - a.statement;
                 } else {
@@ -1650,7 +1731,7 @@
                 temp1[j].sortValue = qavSortTriangleShape[j];
                 temp1[j].sigVisualization = "";
             }
-            temp1.sort(function(a, b) {
+            temp1.sort(function (a, b) {
                 return a.statement - b.statement;
             });
             sortedZScoreArray.push(temp1);

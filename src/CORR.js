@@ -99,7 +99,7 @@
 
         // skip conversion if data coming from somewhere other than pasted data
         if (_.isArray(sortsTextFromDb[0]) === false) {
-            _(sortsTextFromDb).forEach(function (element) {
+            _(sortsTextFromDb).forEach(function (element, j) {
                 var startPoint = 0;
                 var endPoint = 2;
                 var tempArray = [];
@@ -119,6 +119,7 @@
             // continue if not pasted text -
         } else {
             sortsAsNumbers = _.cloneDeep(sortsTextFromDb);
+            console.log("the else path was taken");
         }
         QAV.setState("sortsAsNumbers", sortsAsNumbers);
         var sortsToShiftPositive = _.cloneDeep(sortsAsNumbers);

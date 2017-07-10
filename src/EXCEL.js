@@ -146,7 +146,9 @@
         var tempArray = [];
         var allWorksheets = [];
         var data, workbook, worksheet, sheet_name_list;
-
+        var hasSortsWorksheet = false;
+        var hasStatementsWorksheet = false;
+        var $errorPanel = $("#genericErrorModal .errorPanel");
         reader.onload = function (e) {
             data = e.target.result;
 
@@ -160,6 +162,7 @@
 
                 worksheet = workbook.Sheets[y];
                 if (y === "sorts") {
+                    hasSortsWorksheet = true;
                     tester = XLSX.utils.sheet_to_csv(worksheet);
                     tester2 = tester.split(/\n/);
 
@@ -174,13 +177,23 @@
                     }
 
                 } else if (y === "statements") {
+                    hasStatementsWorksheet = true;
                     tempArray = [];
                     tester4 = XLSX.utils.sheet_to_json(worksheet);
                     tempArray.push(tester4);
                 }
                 allWorksheets.push(tempArray);
-
-            });
+            }); // end iteration of for each
+            if (hasSortsWorksheet === false) {
+                $errorPanel.empty();
+                $errorPanel.append("<p>Can't find the 'sorts' worksheet. Please check your file's worksheet names and try again.</p><br>");
+                VIEW.showGenericErrorModal();
+            }
+            if (hasStatementsWorksheet === false) {
+                $errorPanel.empty();
+                $errorPanel.append("<p>Can't find the 'statements' worksheet. Please check your file's worksheet names and try again.</p><br>");
+                VIEW.showGenericErrorModal();
+            }
             if (filetype === "user-input") {
                 formatUploadForDisplay(allWorksheets);
             } else if (filetype === "unforced") {
@@ -199,7 +212,7 @@
         var language = QAV.getState("language");
         var localText1 = resources[language].translation["Project Overview"];
         var localText2 = resources[language].translation.Statements;
-
+        var errorPanel = $("#genericErrorModal .errorPanel");
 
         var files = e.target.files[0];
         var reader = new FileReader();
@@ -211,6 +224,9 @@
             });
 
             // iterate through every sheet and pull values
+            var hasSortsWorksheet = false;
+            var hasStatementsWorksheet = false;
+            var hasSortsWorksheetFromKenQ = false;
             var allWorksheets = [];
             var sheet_name_list = workbook.SheetNames;
             sheet_name_list.forEach(function (y) { /* iterate through sheets */
@@ -225,6 +241,7 @@
                     tempArray.push(tester6);
 
                 } else if (y === "Q-sorts") {
+                    hasSortsWorksheetFromKenQ = true;
                     var tester = XLSX.utils.sheet_to_csv(worksheet);
                     var tester2 = tester.split(/\n/);
                     tempArray = [];
@@ -233,13 +250,23 @@
                         tempArray.push(tester3);
                     });
                 } else if (y === localText2) {
+                    hasStatementsWorksheet = true;
                     tempArray = [];
                     var tester4 = XLSX.utils.sheet_to_json(worksheet);
                     tempArray.push(tester4);
                 }
                 allWorksheets.push(tempArray);
-
-            });
+            }); // end iteration for each
+            if (hasSortsWorksheetFromKenQ === false) {
+                errorPanel.empty();
+                errorPanel.append("<p>Can't find Q-sorts. Please check your file's formatting and try again.</p><br>");
+                VIEW.showGenericErrorModal();
+            }
+            if (hasStatementsWorksheet === false) {
+                errorPanel.empty();
+                errorPanel.append("<p>Can't find sort statements. Please check your file's formatting and try again.</p><br>");
+                VIEW.showGenericErrorModal();
+            }
             formatKenqUploadForDisplay(allWorksheets);
         };
         reader.readAsBinaryString(files);
@@ -386,7 +413,7 @@
         } else {
             isNumberOfStatementsCorrect = "true";
         }
-        var returnedValue = [areThereErrors, isNumberOfStatementsCorrect];
+        // var returnedValue = [areThereErrors, isNumberOfStatementsCorrect];
         return [areThereErrors, isNumberOfStatementsCorrect];
     };
 
@@ -480,6 +507,7 @@
     };
 
     EXCEL.createMultiplierArrayAndTriangleShape = function (inputData1) {
+        console.log(inputData1);
         var qavSortTriangleShape = [];
         var multiplierArray = [];
         for (var i = 4; i < 24; i++) {
@@ -665,6 +693,14 @@
             var temp3 = temp1.split(',');
             var temp4 = temp3.shift();
             var temp5 = temp3.toString();
+            // check to confirm sort value is numeric
+            if (temp5.match(/[^,-\d]/)) {
+                var errorPanel = $("#genericErrorModal .errorPanel");
+                errorPanel.empty();
+                errorPanel.append("<p>The Q-sort for respondent " + temp4 + " contains non-numeric data</p>");
+                VIEW.showGenericErrorModal();
+                return;
+            }
             qavRespondentNames.push(temp4);
             respondentSortsArray.push(temp5);
             symmetryCheckArray.push(temp3);

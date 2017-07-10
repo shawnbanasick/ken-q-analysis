@@ -14,7 +14,7 @@
 (function (QAV, undefined) {
     'use strict';
     // check if platform is up-to-date 
-   
+
     // set default language
     QAV.language = "en-us";
 
@@ -53,5 +53,11 @@
     $('#useUnicodeSymbolsDiv .vizButtonYes').addClass("selected");
     $('#zscoreArrowDirectionDiv .vizButtonYes').addClass("active");
     $('#includeLegendDiv .vizButtonYes').addClass("active");
+
+    // initial component show / hide
+    $("#section4 > div.row.factorExtrafactorExtractionButtonDiv").hide();
+    $("#section5 > div.row.factorsToKeepForRotationDiv").hide();
+    $("#selectFactorsForOutputButton").hide();
+
 
 }(window.QAV = window.QAV || {}));

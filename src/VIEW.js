@@ -252,6 +252,12 @@
     VIEW.clearSections_4_5_6 = function () {
 
         $("#judgementalRotationContainer").hide();
+        $("#factorLoadingContainerDiv").hide();
+        $("#selectFactorsForOutputButton").hide();
+        $("#downloadCsvResultsButton").hide();
+        $("#displayQuickResultsButton").hide();
+        $("#factorVizOptionsDiv").hide();
+
 
         var varimaxButton = $("#factorVarimaxButton");
         if (varimaxButton.hasClass("buttonActionComplete")) {
@@ -387,6 +393,7 @@
 
         $(".vizTitles").remove();
         $(".svgDownloadButton").remove();
+        $(".pngDownloadButton").remove();
 
         var $temp = $("#factorCorrelationTableTitle");
         var $temp3 = $("#factorCorrelationTableDiv");

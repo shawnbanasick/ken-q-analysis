@@ -9,7 +9,7 @@
 var resources = {
     'en-us': {
         "translation": {
-            "versionNumber": "Beta Version 0.10.0 Test Release (May 29, 2017)",
+            "versionNumber": "Version 0.11.0 (July 10, 2017)",
             "Translation by": "",
             "Top": "Top",
             "aData": "1.Data",
@@ -67,8 +67,8 @@ var resources = {
             "How many factors to keep for rotation": "How many factors to keep for rotation?",
             "Select": "Select",
             "Submit": "Submit",
-            "Rotate error 1": "- ERROR - The selection is larger than the number of factors extracted.",
-            "Rotate error 2": "- ERROR - Please select the number of factors for rotation. -",
+            "Rotate error 1": "The selection is larger than the number of factors extracted.",
+            "Rotate error 2": "Please select the number of factors for rotation.",
             "Use judgemental rotation": "Use Judgemental Rotation",
             "Judgemental rotation": "Judgemental rotation",
             "Apply varimax rotation": "Apply Varimax Rotation",
@@ -183,10 +183,10 @@ var resources = {
             "Total Number of Q-sorts": "Total Number of Q-sorts: ",
             "Analysis Process": "Analysis Process",
             "synFactorVizTitle": "Factor Composite Q-sorts",
-            "Synthetic Sort for": "Composite Q-Sort for ",
-            "downloadImage": " - Download image",
-            "Download Scree Plot": "Download Scree Plot",
-            "Download Rotation Chart": "Download Rotation Chart",
+            "Synthetic Sort for": "Idealized Q-Sort for ",
+            "downloadImage": " - Download image as SVG",
+            "Download Scree Plot": "Download Scree Plot as SVG",
+            "Download Rotation Chart": "Download Rotation Chart as svg",
             "Composite Q-Sort Display Options": "Composite Q-sort Display Options",
             "VIEW": "VIEW",
             "HIDE": "HIDE",
@@ -302,12 +302,13 @@ var resources = {
             "You seem to be using": "You are using ",
             "Please update your browser before using Ken-Q Analysis": "Please update your browser before using Ken-Q Analysis",
             "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above": "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above",
-            "Ready to begin analysis": " "
+            "Ready to begin analysis": " ",
+            "selectedFactorsError": "Please select two factors to display"
         }
     },
     "ja": {
         "translation": {
-            "versionNumber": "Beta Version 0.10.0 Test Release (May 29, 2017)",
+            "versionNumber": "Version 0.11.0 (July 10, 2017)",
             "Translation by": "Translation by バナシック",
             "Top": "トップに戻る",
             "aData": "1.データ",
@@ -600,7 +601,8 @@ var resources = {
             "You seem to be using": "You are using  ",
             "Please update your browser before using Ken-Q Analysis": "You should update your browser before using Ken-Q Analysis",
             "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above": "This browser is not supported by Ken-Q Analysis <br> Please use one of the browsers listed above",
-            "Ready to begin analysis": "-- ready to begin analysis"
+            "Ready to begin analysis": "-- ready to begin analysis",
+            "selectedFactorsError": "Please select two factors to display"
         }
     }
 };
@@ -608,25 +610,25 @@ var resources = {
 // JSlint declarations
 /* global $, i18n, QAV, document */
 
-(function () {
+(function() {
     i18n
         .init({
             "lng": 'en-us',
             "resStore": resources,
             "useDataAttrOptions": true,
             "fallbackLng": 'en-us'
-        }, function () {
+        }, function() {
             $(document).i18n();
         });
 
-    $('.languageSelect').on("change", function () {
+    $('.languageSelect').on("change", function() {
         var lang = $(this).val();
         // change the UI language variable
         QAV.setState("language", lang);
 
         i18n.init({
             lng: lang
-        }, function () {
+        }, function() {
             $(document).i18n();
         });
     });

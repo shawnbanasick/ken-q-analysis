@@ -9,7 +9,7 @@
 var resources = {
     'en-us': {
         "translation": {
-            "versionNumber": "Version 0.11.0 (July 10, 2017)",
+            "versionNumber": "Version 0.11.1 (January 15, 2018)",
             "Translation by": "",
             "Top": "Top",
             "aData": "1.Data",

@@ -1,0 +1,14 @@
+.tabDiv {
+  min-height: 450px;
+  display: flex;
+  max-width: 1170px;
+  flex-wrap: wrap;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+.tabDivCustom .item {
+  font-size: 25px;
+}

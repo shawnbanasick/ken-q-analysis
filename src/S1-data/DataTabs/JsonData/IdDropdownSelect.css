@@ -1,0 +1,10 @@
+.jsonTextSpan {
+  font-size: 20px;
+  /* border: 2px solid black; */
+  float: right;
+}
+
+.jsonGrid {
+  /* border: 2px solid #83cafe; */
+  width: 100%;
+}

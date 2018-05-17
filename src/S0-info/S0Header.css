@@ -1,0 +1,59 @@
+.containerDiv {
+  display: flex;
+  height: 100px;
+  justify-content: space-between;
+}
+
+.numberAndTextDiv {
+  display: flex;
+  width: 800px;
+}
+
+.headerDiv {
+  width: 98%;
+  display: block;
+}
+
+.bigNumberDiv {
+  display: flex;
+  height: 75px;
+  width: 75px;
+  background-color: #2185d0;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.bigNumberDiv p {
+  max-width: 50%;
+  font-size: 44px;
+  color: white;
+}
+
+.heroText {
+  align-self: auto;
+  margin-left: 10px;
+  line-height: 2em;
+  font-size: 3rem;
+}
+
+h2 {
+  display: block;
+  line-height: 1.25;
+  letter-spacing: -0.05rem;
+  margin-top: 5px;
+  font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 2.6rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+h5 {
+  font-size: 2.4rem;
+  font-style: italic;
+  line-height: 1.5;
+  letter-spacing: -0.05rem;
+  font-weight: 300;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

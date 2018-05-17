@@ -1,0 +1,21 @@
+.goodToGo {
+  display: flex;
+  background-color: #ccffcc;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  line-height: 3.7rem;
+  width: 100%;
+  border: solid 3px #dedede;
+}
+
+.shouldUpdate {
+  display: flex;
+  background-color: yellow;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  line-height: 3.7rem;
+  width: 100%;
+  border: solid 3px #dedede;
+}

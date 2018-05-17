@@ -1,0 +1,7 @@
+.supportedBrowsersDiv {
+  display: flex;
+  width: 850px;
+  height: 120px;
+  margin-top: 25px;
+  margin-left: 200px;
+}

@@ -1,0 +1,10 @@
+.centroidContainer {
+  display: -webkit-flex;
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1197px;
+  /* border: 2px solid red; */
+}

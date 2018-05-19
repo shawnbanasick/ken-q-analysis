@@ -46,7 +46,7 @@ function parseExcelType2(acceptedFiles) {
             allWorksheets.push(temp99Array);
 
             // find q sorts
-          } else if (y === "Q-sorts") {
+          } else if (y === "Q sorts") {
             // turn off error report
             hasSortsWorksheetFromKenQ = true;
 
@@ -103,10 +103,6 @@ function parseExcelType2(acceptedFiles) {
           });
         }
       } // end error catching
-
-      console.log("all worksheets " + JSON.stringify(allWorksheets[0]));
-      console.log("all worksheets " + JSON.stringify(allWorksheets[1]));
-      console.log("all worksheets " + JSON.stringify(allWorksheets[2]));
 
       if (
         hasSortsWorksheetFromKenQ === true &&

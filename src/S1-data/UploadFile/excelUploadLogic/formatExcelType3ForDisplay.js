@@ -4,7 +4,7 @@ import grabStatementsT3 from "./grabStatementsT3";
 import createMainDataObject from "./createMainDataObject";
 import calcMultiplierArrayT2 from "./calcMultiplierArrayT2";
 import grabRespondentNamesT3 from "./grabRespondentNamesT3";
-import checkUniqueParticipantNames from '../../SortsList/checkUniqueParticipantName';
+import checkUniqueParticipantNames from "../../SortsList/checkUniqueParticipantName";
 
 const formatype3ForDisplay = function(data) {
   try {
@@ -25,7 +25,6 @@ const formatype3ForDisplay = function(data) {
         "Can't find Q-sort pattern on 'Analysis Overview' worksheet!"
       );
     }
-    console.log("qsortpattern: " + JSON.stringify(qSortPattern1.length));
     let qSortPattern2 = qSortPattern1
       .split("\\")
       .toString()
@@ -49,7 +48,6 @@ const formatype3ForDisplay = function(data) {
     if (respondentSorts.length === 0) {
       throw new Error("Cant't find any Q sorts on 'Q-sorts' worksheet!");
     }
-    console.log("respondent sorts : " + JSON.stringify(respondentSorts));
 
     // store #9 - get statements
     let currentStatements = grabStatementsT3(data[1]);

@@ -4,16 +4,21 @@ import { getStatementsExcelT1 } from "./getStatementsExcelT1";
 import { getRespondentNamesExcelT1 } from "./getRespondentNamesExcelT1";
 import { getRespondentSortsExcelT1 } from "./getRespondentSortsExcelT1";
 import createMainDataObject from "../excelUploadLogic/createMainDataObject";
-import checkUniqueParticipantNames from '../../SortsList/checkUniqueParticipantName';
+import checkUniqueParticipantNames from "../../SortsList/checkUniqueParticipantName";
 import { createMultiplierArrayAndTriangleShape } from "./createMultiplierArrayAndTriangleShape";
 
-export function formatExcelType1ForDisplay(data) {
+export function formatExcelType1ForDisplay(dataObject) {
+  let data = dataObject.sortsArray;
+  let statementsArray = dataObject.statementsArray;
+
+  console.log("data: " + JSON.stringify(data));
+
   try {
     // QAV #1  Project Name
-    let projectName = data[0][0][1];
+    let projectName = data[0][1];
 
     // // QAV #2  -  todo - fix loop function
-    let inputData1 = data[0];
+    let inputData1 = data;
     let createMultiplierAndQShapeData = createMultiplierArrayAndTriangleShape(
       inputData1
     );
@@ -55,7 +60,9 @@ export function formatExcelType1ForDisplay(data) {
     let statementNumArray = respondentDataSortsPrep[1];
 
     // QAV #7   project statements
-    let statementData1 = data[1];
+    let statementData1 = statementsArray;
+    console.log("sd1: " + JSON.stringify(statementData1));
+
     let statements = getStatementsExcelT1(statementData1);
     if (statements.length === 0) {
       throw new Error(

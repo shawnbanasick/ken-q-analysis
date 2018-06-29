@@ -1,3 +1,5 @@
+![DOI number](https://zenodo.org/badge/54827906.svg)
+
 # Ken-Q Analysis
 A web application for Q Methodology
 

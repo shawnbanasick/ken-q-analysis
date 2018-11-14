@@ -7,3 +7,5 @@ import "semantic-ui-css/semantic.min.css";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 // registerServiceWorker();
+
+console.log("public url: ", process.env.PUBLIC_URL);

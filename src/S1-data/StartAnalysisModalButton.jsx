@@ -22,6 +22,7 @@ class StartAnalysisButtonModal extends Component {
 
   handleOpen = () => {
     checkForErrors = doInputErrorCheck();
+
     // returns multiple values
     if (checkForErrors[0] === true) {
       this.store.errorMessage1 = checkForErrors[1][0];
@@ -31,7 +32,7 @@ class StartAnalysisButtonModal extends Component {
       this.store.modalOpen = true;
     } else {
       // start analysis with delay to show spinner
-      store.setState({isLoadingBeginAnalysis: true});
+      store.setState({ isLoadingBeginAnalysis: true });
       setTimeout(() => {
         let respondentNames = checkForErrors[4];
         let rawSortsArray = checkForErrors[5];
@@ -49,7 +50,7 @@ class StartAnalysisButtonModal extends Component {
 
   render() {
     let isActive = store.getState("activeStartAnalysisButton");
-    let isLoadingBeginAnalysis = store.getState("isLoadingBeginAnalysis")
+    let isLoadingBeginAnalysis = store.getState("isLoadingBeginAnalysis");
     return (
       <Modal
         trigger={

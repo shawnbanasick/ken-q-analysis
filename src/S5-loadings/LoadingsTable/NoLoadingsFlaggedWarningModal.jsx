@@ -13,7 +13,10 @@ class NoLoadingsFlaggedWarningModal extends Component {
             showFactorCharacteristicsTable: false,
             showDownloadOutputButtons: false,
             shouldDisplayFactorVizOptions: false,
-            displayFactorVisualizations: false
+            displayFactorVisualizations: false,
+            isActiveNewDownloadButton: false,
+            isActiveExcelDownloadButton: false,
+            isActiveCsvDownloadButton: false
         });
     };
 

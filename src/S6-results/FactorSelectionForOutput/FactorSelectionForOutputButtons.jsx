@@ -1,6 +1,6 @@
 import React from "react";
 import store from "../../store";
-import includes from 'lodash/includes';
+import includes from "lodash/includes";
 import { easyComp } from "react-easy-state";
 import { Button, Transition } from "semantic-ui-react";
 import outputDispatch from "../calcualteOutputLogic/1_outputDispatch";
@@ -63,7 +63,7 @@ class FactorSelectionForOutputButtons extends React.Component {
 
       store.setState(tempObj);
 
-    // clear all
+      // clear all
     } else if (factor === "clearAllFacs") {
       let tempObj2 = {};
       for (let i = 0; i < btnId.length; i++) {
@@ -77,7 +77,10 @@ class FactorSelectionForOutputButtons extends React.Component {
       tempObj2.displayFactorVisualizations = false;
       tempObj2.shouldDisplayFactorVizOptions = false;
       tempObj2.outputFactorSelectButtonsDisabled = false;
-      // reset cache of factor viz data      
+      tempObj2.isActiveNewDownloadButton = false;
+      tempObj2.isActiveExcelDownloadButton = false;
+      tempObj2.isActiveCsvDownloadButton = false;
+      // reset cache of factor viz data
       tempObj2.outputForDataViz2 = undefined;
       store.setState(tempObj2);
     } else {
@@ -129,26 +132,45 @@ class FactorSelectionForOutputButtons extends React.Component {
     // if (showOutputFactorSelection) {
 
     return (
-      <Transition visible={ showOutputFactorSelection } animation="fade" duration={ 1000 }>
+      <Transition
+        visible={showOutputFactorSelection}
+        animation="fade"
+        duration={1000}
+      >
         <div>
-          <span style={ { marginRight: 5 } }>Select Output Factors:</span>
-          { btnId.map((item, index) => (
-              <Button key={ "f" + item } toggle active={ store.getState("highlightfactor" + item) } disabled={ areDisabled } onClick={ this.handleOnclick.bind(this) } id={ "factor " + item }>
-                { item }
-              </Button>
-            )) }
-          <Button id="selectAllFacs" disabled={ areDisabled } onClick={ this.handleOnclick }>
+          <span style={{ marginRight: 5 }}>Select Output Factors:</span>
+          {btnId.map((item, index) => (
+            <Button
+              key={"f" + item}
+              toggle
+              active={store.getState("highlightfactor" + item)}
+              disabled={areDisabled}
+              onClick={this.handleOnclick.bind(this)}
+              id={"factor " + item}
+            >
+              {item}
+            </Button>
+          ))}
+          <Button
+            id="selectAllFacs"
+            disabled={areDisabled}
+            onClick={this.handleOnclick}
+          >
             Select All
           </Button>
-          <Button id="clearAllFacs" onClick={ this.handleOnclick }>
+          <Button id="clearAllFacs" onClick={this.handleOnclick}>
             Clear Selections
           </Button>
-          <Button id="startOutput" className="instagram" onClick={ this.handleSubmit }>
+          <Button
+            id="startOutput"
+            className="instagram"
+            onClick={this.handleSubmit}
+          >
             Submit
           </Button>
         </div>
       </Transition>
-      );
+    );
   }
 }
 

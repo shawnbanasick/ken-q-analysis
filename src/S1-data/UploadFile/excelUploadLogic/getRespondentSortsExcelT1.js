@@ -29,7 +29,8 @@ export function getRespondentSortsExcelT1(
     });
     data2.push(sortedArray1);
   }
-  let temp2, temp2a;
+  let temp2,
+    temp2a;
   let respondentDataSorts3 = [];
   for (let q = 0; q < data2.length; q++) {
     let temp11 = data2[q];

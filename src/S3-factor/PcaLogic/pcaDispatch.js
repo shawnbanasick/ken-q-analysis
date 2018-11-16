@@ -1,6 +1,7 @@
+// refactor for unit testing
+
 import store from "../../store";
 import cloneDeep from "lodash/cloneDeep";
-import * as numeric from "numeric-1.2.6.min";
 import sortEigenValues from "./sortEigenValues";
 import calcEigenVectors from "./calcEigenVectors";
 import determineNumberPCs from "./determineNumberPCs";
@@ -10,6 +11,7 @@ import calcEigenCumulPercentArray from "./calcEigenCumulPercentArray";
 import inflectPrincipalComponents from "./inflectPrincipalComponents";
 import factorTableEigenDataPrep from "../FactorTableEigen/FactorTableEigenDataPrep";
 import calculateCommunalities from "../../S4-rotation/varimaxLogic/2calculateCommunalities";
+import getSvd from "./svd";
 
 const pcaDispatch = () => {
   let projectHistoryArray = store.getState("projectHistoryArray");
@@ -19,12 +21,13 @@ const pcaDispatch = () => {
   let numberOfSorts = m;
   let numberofPrincipalComps = determineNumberPCs();
 
-  let eigens = numeric.eig(X);
+  // calcualte svd from correlations
+  let svdResults = getSvd(X);
+  let eigens = svdResults.S;
+  let svd = svdResults.U;
 
-  let sigma = numeric.div(numeric.dot(numeric.transpose(X), X), m);
-  let svd = numeric.svd(sigma).U;
+  let eigenValuesSorted = sortEigenValues(eigens);
 
-  let eigenValuesSorted = sortEigenValues(eigens.lambda.x);
   let getEigenCumulPercentArray = calcEigenCumulPercentArray(
     eigenValuesSorted,
     m

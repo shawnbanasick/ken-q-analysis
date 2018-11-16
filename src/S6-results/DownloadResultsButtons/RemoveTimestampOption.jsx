@@ -10,7 +10,7 @@ class RemoveTimestampOption extends Component {
   render() {
     return (
       <div>
-        <div className="switchDiv">
+        <div className="switchDiv" style={{ marginTop: 30 }}>
           <span className="switchText" style={{ fontSize: 26 }}>
             Include timestamp in download name?
           </span>

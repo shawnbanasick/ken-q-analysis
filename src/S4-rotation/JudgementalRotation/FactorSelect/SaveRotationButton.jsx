@@ -78,6 +78,9 @@ class SaveRotationButton extends React.Component {
       showScatterPlotTableDiv: false,
       // hide section 6
       showOutputFactorSelection: false,
+      isActiveNewDownloadButton: false,
+      isActiveExcelDownloadButton: false,
+      isActiveCsvDownloadButton: false,
       shouldDisplayFactorVizOptions: false,
       userSelectedFactors: [],      
       showFactorCorrelationsTable: false,

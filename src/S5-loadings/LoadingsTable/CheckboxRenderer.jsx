@@ -25,7 +25,10 @@ class CheckboxRenderer extends React.PureComponent {
             showFactorCharacteristicsTable: false,
             showDownloadOutputButtons: false,
             shouldDisplayFactorVizOptions: false,
-            displayFactorVisualizations: false
+            displayFactorVisualizations: false,
+            isActiveNewDownloadButton: false,
+            isActiveExcelDownloadButton: false,
+            isActiveCsvDownloadButton: false
         });
     }
 

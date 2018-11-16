@@ -190,6 +190,9 @@ const splitBipolarFactor = () => {
       showDownloadOutputButtons: false,
       displayFactorVisualizations: false,
       bipolarDisabled: true,
+      isActiveNewDownloadButton: false,
+      isActiveExcelDownloadButton: false,
+      isActiveCsvDownloadButton: false,
       bipolarIndexArray: bipolarIndexArray
     });
   }

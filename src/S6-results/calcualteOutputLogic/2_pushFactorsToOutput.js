@@ -99,7 +99,10 @@ const pushFactorsToOutputArray = function(
             showStandardErrorsDifferences: false,
             showFactorCharacteristicsTable: false,
             showDownloadOutputButtons: false,
-            displayFactorVisualizations: false
+            displayFactorVisualizations: false,
+            isActiveNewDownloadButton: false,
+            isActiveExcelDownloadButton: false,
+            isActiveCsvDownloadButton: false
         });
         return "haltOutputProcessing";
     }

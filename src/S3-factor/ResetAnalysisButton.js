@@ -84,7 +84,10 @@ export default class ResetAnalysisButton extends Component {
             showFactorCharacteristicsTable: false,
             showDownloadOutputButtons: false,
             userSelectedFactors: [],
-            displayFactorVisualizations: false
+            displayFactorVisualizations: false,
+            isActiveNewDownloadButton: false,
+            isActiveExcelDownloadButton: false,
+            isActiveCsvDownloadButton: false
         });
         this.handleClose();
     };

@@ -1,11 +1,9 @@
-import isNumber from 'lodash/isNumber';
+import isNumber from "lodash/isNumber";
 
 const sanitizeUserInputText = function(input) {
   if (isNumber(input)) {
     return input;
   } else {
-    console.log(input);
-
     var output = input
       // todo - check this - removed due to linter error report "unnecessary"
       //.replace(/<script[^>]*?>.*?<\/<\/script>/gi, "")

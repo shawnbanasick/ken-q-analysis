@@ -1,3 +1,5 @@
+// refactor for unit tests
+
 import store from "../../../store";
 import cloneDeep from "lodash/cloneDeep";
 

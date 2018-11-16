@@ -59,7 +59,10 @@ const invertFactor = () => {
       showStandardErrorsDifferences: false,
       showFactorCharacteristicsTable: false,
       showDownloadOutputButtons: false,
-      displayFactorVisualizations: false
+      displayFactorVisualizations: false,
+      isActiveNewDownloadButton: false,
+      isActiveExcelDownloadButton: false,
+      isActiveCsvDownloadButton: false
     });
 
     // call table update with new inverted factor

@@ -25,6 +25,9 @@ const saveDropdownValueToState = (event, data) => {
         showDownloadOutputButtons: false,
         displayFactorVisualizations: false,
         userSelectedFactors: [],
+        isActiveNewDownloadButton: false,
+        isActiveExcelDownloadButton: false,
+        isActiveCsvDownloadButton: false,
         // reset bipolar
         bipolarDisabled: false,
         bipolarSplitCount: 0,

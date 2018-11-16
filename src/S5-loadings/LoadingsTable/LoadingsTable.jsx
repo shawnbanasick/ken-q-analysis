@@ -53,6 +53,9 @@ class LoadingsTable extends Component {
     tempObj2.displayFactorVisualizations = false;
     tempObj2.shouldDisplayFactorVizOptions = false;
     tempObj2.outputFactorSelectButtonsDisabled = false;
+    tempObj2.isActiveNewDownloadButton = false;
+    tempObj2.isActiveExcelDownloadButton = false;
+    tempObj2.isActiveCsvDownloadButton = false;
     // reset cache of factor viz data
     tempObj2.outputForDataViz2 = undefined;
     

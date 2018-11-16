@@ -51,6 +51,9 @@ const varimaxDispatch = function() {
         // hide section 6
         showOutputFactorSelection: false,
         shouldDisplayFactorVizOptions: false,
+        isActiveNewDownloadButton: false,
+        isActiveExcelDownloadButton: false,
+        isActiveCsvDownloadButton: false,
         userSelectedFactors: [],
         showFactorCorrelationsTable: false,
         showStandardErrorsDifferences: false,

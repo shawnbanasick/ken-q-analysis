@@ -1,5 +1,7 @@
+// refactor for unit tests
+
 import store from "../../store";
-import pullAt from 'lodash/pullAt';
+import pullAt from "lodash/pullAt";
 import cloneDeep from "lodash/cloneDeep";
 import evenRound from "../../Utils/evenRound";
 import calculateFactorLoadingSignificanceLevel from "./3_calculateFactorLoadingSignificanceLevel";
@@ -47,13 +49,8 @@ const calculatefSigCriterionValues = function(addFlag) {
   let sigLevel2 = calculateFactorLoadingSignificanceLevel(totalStatements);
   let arrayLength = fSigCriterionArray.length;
   let arrayLength2 = fSigCriterionArray[0].length;
-  let temp1,
-    testValue,
-    others2,
-    array;
-  let i,
-    j,
-    tempArray;
+  let temp1, testValue, others2, array;
+  let i, j, tempArray;
   let fSigCriterionResults = [];
 
   for (i = 0; i < arrayLength; i++) {

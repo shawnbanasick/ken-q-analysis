@@ -4,8 +4,13 @@ import transposeMatrix from "../../Utils/transposeMatrix";
 const unStandardize = function(standardizedResults, sumSquares) {
   var results = [];
   var nLoopLen = standardizedResults.length;
-  var n, p;
-  var arrayFrag, pLoopLen, newArrayFrag, arrayItem, resultsTransposed;
+  var n,
+    p;
+  var arrayFrag,
+    pLoopLen,
+    newArrayFrag,
+    arrayItem,
+    resultsTransposed;
   var crit;
 
   for (n = 0; n < nLoopLen; n++) {
@@ -16,8 +21,7 @@ const unStandardize = function(standardizedResults, sumSquares) {
     crit = 0;
     for (p = 0; p < pLoopLen; p++) {
       arrayItem = 0;
-      arrayItem =
-        evenRound(arrayFrag[p], 5) * evenRound(Math.sqrt(sumSquares[p]), 5);
+      arrayItem = evenRound(arrayFrag[p], 5) * evenRound(Math.sqrt(sumSquares[p]), 5);
       newArrayFrag.push(evenRound(arrayItem, 5));
       crit = crit + arrayItem * Math.abs(arrayItem);
     }

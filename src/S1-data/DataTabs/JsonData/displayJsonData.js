@@ -1,7 +1,7 @@
 import store from "../../../store";
 import shiftRawSortsPositive from "../../UploadFile/uploadLogic/shiftRawSortsPositive";
 import checkUniqueParticipantName from "../../SortsList/checkUniqueParticipantName";
-
+// refactor this
 // all-app fix - re-calcuate posShiftSorts with user input if unforced sorts present
 const displayJsonData = function(selection) {
     let id = selection.value;

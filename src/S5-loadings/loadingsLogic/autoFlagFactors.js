@@ -74,7 +74,10 @@ const autoFlagFactors = function() {
       showFactorCharacteristicsTable: false,
       showDownloadOutputButtons: false,
       shouldDisplayFactorVizOptions: false,
-      displayFactorVisualizations: false
+      displayFactorVisualizations: false,
+      isActiveNewDownloadButton: false,
+      isActiveExcelDownloadButton: false,
+      isActiveCsvDownloadButton: false
     });
     return null;
   }, 10);

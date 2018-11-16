@@ -40,26 +40,14 @@ export function getPqmethodCorrelation(x, y) {
     pSum += x[p] * y[p];
   }
 
-  var num = pSum - sum1 * sum2 / n;
+  var num = pSum - (sum1 * sum2) / n;
   var den = Math.sqrt(
     (sum1Sq - Math.pow(sum1, 2) / n) * (sum2Sq - Math.pow(sum2, 2) / n)
-    // NP.times(
-    //   NP.minus(sum1Sq, NP.divide(Math.pow(sum1, 2), n)),
-    //   NP.minus(sum2Sq, NP.divide(Math.pow(sum2, 2), n))
-    // )
   );
-
-  //   console.log(num);
-  //   console.log(den);
-
-  //   num = evenRound(num, 6);
-  //   den = evenRound(den, 6);
 
   if (den === 0) {
     return 0;
   }
-
-  // var answer = NP.divide(num, den);
 
   var answer = num / den;
 

@@ -92,7 +92,10 @@ class ProjectHistory extends Component {
         showStandardErrorsDifferences: false,
         showFactorCharacteristicsTable: false,
         showDownloadOutputButtons: false,
-        displayFactorVisualizations: false
+        displayFactorVisualizations: false,
+        isActiveNewDownloadButton: false,
+        isActiveExcelDownloadButton: false,
+        isActiveCsvDownloadButton: false
       });
       return; // early return varimax undo
     }
@@ -128,7 +131,10 @@ class ProjectHistory extends Component {
         showStandardErrorsDifferences: false,
         showFactorCharacteristicsTable: false,
         showDownloadOutputButtons: false,
-        displayFactorVisualizations: false
+        displayFactorVisualizations: false,
+        isActiveNewDownloadButton: false,
+        isActiveExcelDownloadButton: false,
+        isActiveCsvDownloadButton: false
       });
       return;
     }
@@ -149,7 +155,10 @@ class ProjectHistory extends Component {
       displayFactorVisualizations: false,
       bipolarDisabled: false,
       bipolarIndexArray: [],
-      shouldDisplayFactorViz: false
+      shouldDisplayFactorViz: false,
+      isActiveNewDownloadButton: false,
+      isActiveExcelDownloadButton: false,
+      isActiveCsvDownloadButton: false
     });
     return; // normal return
   };

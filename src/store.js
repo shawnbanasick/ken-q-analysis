@@ -14,7 +14,7 @@ export default easyStore({
     let newReturnValue = cloneDeep(returnValue);
     return newReturnValue;
   },
-  version: "1.0.3",
+  version: "1.0.4",
   mainDataObject: {},
   gridColDefs: [],
   gridRowData: [],

@@ -16,7 +16,7 @@ const Section3HelpButton = () => {
     >
       <div>
         <a
-          href="https://ken_q_tools.gitbooks.io/ken-q-analysis-reference-guide/content/3-factor-extraction.html"
+          href="https://github.com/shawnbanasick/ken-q-analysis/wiki/3.-FACTOR-EXTRACTION"
           target="_blank"
           rel="noopener noreferrer"
           style={{ targetNew: "tab" }}

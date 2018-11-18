@@ -14,7 +14,7 @@ const Section2HelpButton = () => {
     >
       <div>
         <a
-          href="https://ken_q_tools.gitbooks.io/ken-q-analysis-reference-guide/content/2-correlation-matrix.html"
+          href="https://github.com/shawnbanasick/ken-q-analysis/wiki/2.-CORRELATION-MATRIX"
           target="_blank"
           rel="noopener noreferrer"
           style={{ targetNew: "tab" }}

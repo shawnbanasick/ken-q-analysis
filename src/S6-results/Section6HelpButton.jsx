@@ -14,7 +14,7 @@ const Section6HelpButton = () => {
     >
       <div>
         <a
-          href="https://ken_q_tools.gitbooks.io/ken-q-analysis-reference-guide/content/6-output.html"
+          href="https://github.com/shawnbanasick/ken-q-analysis/wiki/6.-OUTPUT"
           target="_blank"
           rel="noopener noreferrer"
           style={{ targetNew: "tab" }}

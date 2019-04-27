@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import EasyHtmlButton from "./EasyHTML";
 import KenQDataButton from "./KenQDataButton";
+import BetaLinkButton from "./BetaLinkButton";
 
 class OtherTools extends Component {
   render() {
@@ -20,6 +21,13 @@ class OtherTools extends Component {
             <KenQDataButton />
             <p style={{ fontSize: 18, fontWeight: "normal" }}>
               A web app for participant Q-sort data input and visualization
+            </p>
+          </div>
+          <div style={{ maxWidth: 250, marginLeft: 75 }}>
+            <BetaLinkButton />
+            <p style={{ fontSize: 18, fontWeight: "normal" }}>
+              The beta version is available at a new address if you still need
+              to access it.
             </p>
           </div>
         </div>

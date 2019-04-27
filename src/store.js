@@ -14,10 +14,11 @@ export default easyStore({
     let newReturnValue = cloneDeep(returnValue);
     return newReturnValue;
   },
-  version: "1.0.4",
+  version: "1.0.5",
   mainDataObject: {},
   gridColDefs: [],
   gridRowData: [],
+  autoFlagHistory: "",
   numQsorts: 0,
   numCentroidFactors: 7,
   gridColDefsFactorTable: [],

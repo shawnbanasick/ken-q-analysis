@@ -11,7 +11,7 @@ const KadeButton = () => (
     >
       <Button
         id="BetaLinkButton"
-        style={{ margin: 20, opacity: 0.9 }}
+        style={{ marginTop: 20, marginBottom: 20, opacity: 0.9 }}
         color="orange"
         size="huge"
       >

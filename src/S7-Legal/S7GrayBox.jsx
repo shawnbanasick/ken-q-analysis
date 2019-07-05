@@ -8,7 +8,7 @@ class S0GrayBox extends Component {
         <div style={{ width: 1200 }}>
           <S7Header />
           <h1>Ken-Q Analysis</h1>
-          <h2>Copyright (C) 2018 Shawn Banasick</h2>
+          <h2>Copyright (C) 2019 Shawn Banasick</h2>
           <span>
             This program is free software: you can redistribute it and/or modify
             it under the terms of the GNU General Public License as published by

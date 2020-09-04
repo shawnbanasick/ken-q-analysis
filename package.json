@@ -30,7 +30,7 @@
     "ml-pca": "^2.1.0",
     "number-precision": "^1.2.0",
     "nyc": "^13.1.0",
-    "papaparse": "^4.4.0",
+    "papaparse": "^5.2.0",
     "react": "^16.3.2",
     "react-auto-scale": "^1.0.4",
     "react-color": "^2.14.1",

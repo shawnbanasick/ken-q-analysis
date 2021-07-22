@@ -46,7 +46,7 @@
     "semantic-ui-react": "^0.74.2",
     "svgsaver": "^0.9.0",
     "threads": "^0.10.1",
-    "xlsx": "^0.11.19"
+    "xlsx": "^0.17.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,0 +1,131 @@
+#dataTabs *,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+#dataTabs dl,
+#dataTabs ol,
+#dataTabs ul {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+#dataTabs p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+#dataTabs button,
+#dataTabs input,
+#dataTabs optgroup,
+#dataTabs select,
+#dataTabs textarea {
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+#dataTabs button,
+#dataTabs select {
+  text-transform: none;
+}
+
+[type="button"],
+[type="reset"],
+[type="submit"],
+#dataTabs button {
+  -webkit-appearance: button;
+}
+[type="button"]:not(:disabled),
+[type="reset"]:not(:disabled),
+[type="submit"]:not(:disabled),
+#dataTabs button:not(:disabled) {
+  cursor: pointer;
+}
+#dataTabs button:focus:not(:focus-visible) {
+  outline: 0;
+}
+
+#dataTabs .nav {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+#dataTabs .nav-tabs {
+  border-bottom: 0px solid #dee2e6;
+}
+
+#dataTabs .nav-tabs .nav-link {
+  margin-bottom: -1px;
+  background: 0 0;
+  border: 0px solid transparent;
+
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
+
+#dataTabs .nav-tabs .nav-link:hover,
+#dataTabs .nav-tabs .nav-link:focus {
+  border-color: #e9ecef #e9ecef #dee2e6;
+  isolation: isolate;
+}
+
+#dataTabs .nav-tabs .nav-link.disabled {
+  color: #6c757d;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+#dataTabs .nav-tabs .nav-item.show .nav-link,
+#dataTabs .nav-tabs .nav-link.active {
+  color: #495057;
+  background-color: #d1d5db;
+  border-color: #dee2e6 #dee2e6 #fff;
+  font-weight: bold;
+}
+
+#dataTabs .nav-pills .nav-link {
+  background: 0 0;
+  border: 0;
+  border-radius: 0.25rem;
+}
+
+#dataTabs .nav-pills .nav-link.active,
+#dataTabs .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #0d6efd;
+}
+
+#dataTabs .nav-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: gray;
+  text-decoration: none;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+}
+#dataTabs .nav-link:focus,
+#dataTabs .nav-link:hover {
+  color: black;
+}
+
+#dataTabs .d-flex {
+  display: flex !important;
+}
+
+#dataTabs .align-items-start {
+  align-items: flex-start !important;
+}
+
+#dataTabs .flex-column {
+  flex-direction: column !important;
+}
+#dataTabs .mb-3 {
+}
+#dataTabs .me-3 {
+  margin-right: 1rem !important;
+}

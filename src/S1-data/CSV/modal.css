@@ -1,0 +1,42 @@
+.overlay_background {
+  display: flex;
+
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: fixed;
+  z-index: 50;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
+.overlay_shown {
+  opacity: 1;
+}
+
+.overlay_hidden {
+  display: none;
+  opacity: 0;
+}
+
+.overlay_card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 100px;
+  border-radius: 10px;
+  z-index: 51;
+  background-color: rgb(256, 256, 256);
+  justify-content: center;
+}
+
+form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}

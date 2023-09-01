@@ -1,0 +1,22 @@
+section {
+  height: 100px;
+  width: 200px;
+  padding: 20px;
+}
+
+section div {
+  height: 100px !important;
+  padding: 25px 10px 0px 10px;
+  text-align: center;
+}
+
+.jsonSection {
+  padding: 0px 0px 0px 0px !important;
+  height: 90px;
+  width: 180px;
+  background-color: #21ba45;
+  color: white;
+  font-size: 18px;
+  margin-top: -20px;
+  margin-left: -3px;
+}

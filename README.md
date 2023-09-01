@@ -4,7 +4,6 @@ A web application for Q Methodology
 
 Ken-Q Analysis brings the interactivity and convenience of the web to Q-methodology. It is a web application, so after the page has loaded there is no further communication with the server. All matrix calculations, factor rotations, and file downloads are processed in your browser. **Your data never leave your web browser.** Therefore, the speed of the matrix calculations, table updates, and image displays will depend on the processing power of your computer.
 
-## User Guide
 
 <!-- The User Guide and help manual is available [here](https://ken_q_tools.gitbooks.io/ken-q-analysis-reference-guide/content/) -->
 

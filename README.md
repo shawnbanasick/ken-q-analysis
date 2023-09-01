@@ -6,7 +6,7 @@ Ken-Q Analysis brings the interactivity and convenience of the web to Q-methodol
 
 ## User Guide
 
-## The User Guide and help manual is available [here](https://ken_q_tools.gitbooks.io/ken-q-analysis-reference-guide/content/)
+<!-- The User Guide and help manual is available [here](https://ken_q_tools.gitbooks.io/ken-q-analysis-reference-guide/content/) -->
 
 ## License
 

@@ -1,4 +1,4 @@
-# [Ken-Q Analysis](https://shawnbanasick.github.io/ken-q-analysis/index.html) &middot; ![DOI number](https://zenodo.org/badge/DOI/https://10.5281/zenodo.1300189.svg)
+# [Ken-Q Analysis](https://shawnbanasick.github.io/ken-q-analysis/index.html) &middot; ![DOI](https://zenodo.org/badge/54827906.svg)
 
 A web application for Q Methodology
 
@@ -10,3 +10,4 @@ Ken-Q Analysis brings the interactivity and convenience of the web to Q-methodol
 ## License
 
 Ken-Q Analysis is licensed GPL version 3
+

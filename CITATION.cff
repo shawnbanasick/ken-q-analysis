@@ -1,0 +1,10 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Banasick
+    given-names: Shawn
+    orcid: https://orcid.org/0000-0003-2696-5874
+title: shawnbanasick/ken-q-analysis: Ken-Q Analysis Version 2.0.0
+version: v2.0.0
+date-released: 2023-09-02
+            

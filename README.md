@@ -13,4 +13,5 @@ Ken-Q Analysis is licensed GPL version 3
 
 
 ## Citation
-`Banasick, S. (2023). Ken-Q Analysis (Version 2.0.0) [Computer software]. https://doi.org/10.5281/zenodo.8310377`
+`Banasick, S. (2023). Ken-Q Analysis (Version 2.0.0) [Computer software]. `
+`     https://doi.org/10.5281/zenodo.8310377`

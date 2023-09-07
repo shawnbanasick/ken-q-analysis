@@ -3,6 +3,7 @@ import includes from "lodash/includes";
 import outputDispatch from "../calcualteOutputLogic/1_outputDispatch";
 import S6DataSlice from "../../State/S6DataSlice";
 import OnGrayGeneralButton from "../../ReusableComponents/OnGrayGeneralButton";
+import OnWhiteGeneralButton from "../../ReusableComponents/OnWhiteGeneralButton";
 
 const FactorSelectionForOutputButtons = () => {
   // getState
@@ -11,14 +12,10 @@ const FactorSelectionForOutputButtons = () => {
     showOutputFactorSelection,
     outputFactorSelectButtonsDisabled,
     userSelectedFactors,
-    userSelectedDistStateSigLevel1,
-    userSelectedDistStateSigLevel2,
   } = S6DataSlice();
 
   const btnId = outputButtonsArray;
   const areDisabled = outputFactorSelectButtonsDisabled;
-  const sigLevel1 = userSelectedDistStateSigLevel1;
-  const sigLevel2 = userSelectedDistStateSigLevel2;
 
   const [buttonColorObject, setButtonColorObject] = useState({
     factor0: "bg-gray-100",
@@ -33,19 +30,13 @@ const FactorSelectionForOutputButtons = () => {
   });
 
   const clearAllFactors = () => {
-    const clearAllObj = {
-      factor0: "bg-gray-100",
-      factor1: "bg-gray-100",
-      factor2: "bg-gray-100",
-      factor3: "bg-gray-100",
-      factor4: "bg-gray-100",
-      factor5: "bg-gray-100",
-      factor6: "bg-gray-100",
-      factor7: "bg-gray-100",
-      factor8: "bg-gray-100",
-    };
+    let newButtonColorObj = {};
 
-    setButtonColorObject(clearAllObj);
+    btnId.forEach((item) => {
+      newButtonColorObj[`factor${item}`] = "bg-gray-100";
+    });
+
+    setButtonColorObject(newButtonColorObj);
 
     S6DataSlice.setState({
       userSelectedFactors: [],
@@ -67,19 +58,13 @@ const FactorSelectionForOutputButtons = () => {
       userSelectedFactors.push(temp1);
     }
 
-    const allObj = {
-      factor0: "bg-green-300",
-      factor1: "bg-green-300",
-      factor2: "bg-green-300",
-      factor3: "bg-green-300",
-      factor4: "bg-green-300",
-      factor5: "bg-green-300",
-      factor6: "bg-green-300",
-      factor7: "bg-green-300",
-      factor8: "bg-green-300",
-    };
+    let newButtonColorObj = {};
 
-    setButtonColorObject(allObj);
+    btnId.forEach((item) => {
+      newButtonColorObj[`factor${item}`] = "bg-green-300";
+    });
+
+    setButtonColorObject(newButtonColorObj);
 
     S6DataSlice.setState({
       userSelectedFactors: userSelectedFactors,
@@ -100,14 +85,18 @@ const FactorSelectionForOutputButtons = () => {
 
   const handleSubmit = () => {
     // getState
+    /*
     if (sigLevel1 <= sigLevel2) {
       S6DataSlice.setState({ notifyOutputDistStateError: true });
       return;
     }
+    */
     // also dismiss dist state threshold error toast if present
     // toast.dismiss();
     // if no error calc output
-    if (userSelectedFactors.length !== 0) {
+    if (userSelectedFactors.length === 0) {
+      window.noFacSelectedModal.showModal();
+    } else {
       let outputProcessing = outputDispatch();
 
       if (outputProcessing === "error") {
@@ -131,6 +120,7 @@ const FactorSelectionForOutputButtons = () => {
       let newFactorId = factor.split(" ").join("");
 
       buttonColorObject[newFactorId] = "bg-green-300";
+
       setButtonColorObject(buttonColorObject);
 
       S6DataSlice.setState({
@@ -179,9 +169,20 @@ const FactorSelectionForOutputButtons = () => {
           handleClick={handleSubmit}
           buttonText="Submit"
           disabled={areDisabled}
-          buttonColor="bg-gray-100"
+          buttonColor="bg-orange-300"
           otherFormatting="w-[75px]"
         />
+        <dialog id="noFacSelectedModal" className="modal">
+          <form method="dialog" className="modal-box border-2 border-gray-500">
+            <p className="font-bold text-2xl">Output Error</p>
+            <hr className="w-full mb-4 mt-4 border border-gray-700" />
+
+            <p className="text-lg mt-4">Please select the factors to output</p>
+            <div className="modal-action">
+              <OnWhiteGeneralButton buttonText="Close" />
+            </div>
+          </form>
+        </dialog>
       </div>
     );
   } else {

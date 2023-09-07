@@ -3,6 +3,7 @@ import S0Header from "./S0Header";
 import SupportedBrowsers from "./SupportedBrowsers/SupportedBrowsers";
 import OtherTools from "./OtherTools/OtherTools";
 import ReferenceManualText from "./IntroText/ReferenceManualText";
+import Citation from "./OtherTools/Citation";
 
 const S0GrayBox = () => {
   return (
@@ -10,6 +11,7 @@ const S0GrayBox = () => {
       <S0Header />
       <SupportedBrowsers />
       <ReferenceManualText />
+      <Citation />
       <OtherTools />
     </div>
   );

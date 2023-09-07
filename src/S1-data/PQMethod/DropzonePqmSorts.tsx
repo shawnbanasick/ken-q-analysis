@@ -310,7 +310,7 @@ const FileUpload = (props: any) => {
       {...getRootProps()}
     >
       <input className="" {...getInputProps()} />
-      <p>Drag and drop CSV Q sort file here, or click to select</p>
+      <p>Drag and drop DAT file here, or click to select</p>
     </div>
   );
 };

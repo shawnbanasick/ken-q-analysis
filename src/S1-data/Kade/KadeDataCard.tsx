@@ -17,7 +17,7 @@ const PQMethodStatementCard = () => {
             1. KADE Zip File
           </h6>
           <p className="font-normal text-gray-700 dark:text-gray-400">
-            A compressed zip file.
+            Compressed text files
           </p>
 
           <div>

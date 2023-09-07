@@ -17,7 +17,7 @@ const PQMethodStatementCard = () => {
             1. Load Statements STA file
           </h6>
           <p className="font-normal text-gray-700 dark:text-gray-400">
-            One statement per line
+            PQMethod STA format
           </p>
 
           <div>

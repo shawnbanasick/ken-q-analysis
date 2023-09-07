@@ -41,7 +41,8 @@ const NoLoadingsFlaggedWarningModal = () => {
       <p className="text-2xl">Error Checking</p>
       <form method="dialog" className="modal-box border-2 border-gray-600">
         <div className="flex flex-col justify-center items-center">
-          <p className="text-2xl font-bold mb-2">Output Error</p>
+          <p className="text-2xl font-bold ">Output Error</p>
+          <hr className="w-full mb-4 mt-4 border border-gray-700" />
           <p className="mb-4">
             A factor without a flagged loading was selected.
           </p>

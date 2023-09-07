@@ -26,7 +26,9 @@ const UnforcedWarningModal = () => {
   return (
     <dialog id="multipleFactorsFlaggedWarningModal" className="modal">
       <form method="dialog" className="modal-box">
-        <p className="text-2xl mb-4 font-bold">Output Selection Warning</p>
+        <p className="text-2xl font-bold">Output Selection Warning</p>
+        <hr className="w-full mb-8 mt-4 border border-gray-700" />
+
         <div>
           <p className="text-xl">
             There are Q sorts flagged on more than one factor

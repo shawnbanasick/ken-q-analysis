@@ -1,5 +1,13 @@
 export const accordionData = [
   {
+    title: "Version 2.0.1",
+    content: [
+      "added output button colors",
+      "added no factors selected error modal",
+      "added citation information",
+    ],
+  },
+  {
     title: "Version 2.0.0",
     content: [
       "added databook export",

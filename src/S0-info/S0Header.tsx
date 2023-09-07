@@ -12,7 +12,7 @@ const S0Header = () => {
           <div className=""></div>
           <p className="text-8xl my-4">Ken-Q Analysis</p>
           <p className="text-4xl my-4 pt-2">
-            A Web Application for Q Methodology &nbsp;&nbsp;&nbsp; Version 2.0.0
+            A Web Application for Q Methodology &nbsp;&nbsp;&nbsp; Version 2.0.1
           </p>
         </div>
         {/* <div>
